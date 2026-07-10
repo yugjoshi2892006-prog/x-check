@@ -1023,6 +1023,26 @@ class Employee extends CI_Controller
         $data['layout_role'] = $layout_role;
         $reports = $this->Layout_member_model->getLayoutProcessReports($scope);
 
+        // "Filter by Plan Name" dropdown options: names from the formal
+        // Layout Plans list + any plan titles already used in reports
+        // (covers legacy/free-text titles), deduped case-insensitively.
+        $plan_options = [];
+        foreach ($data['layout_plans'] as $lp) {
+            $key = strtolower(trim($lp->plan_name));
+            if ($key !== '' && !isset($plan_options[$key])) {
+                $plan_options[$key] = $lp->plan_name;
+            }
+        }
+        foreach ($reports as $row) {
+            $key = strtolower(trim($row->plan_title));
+            if ($key !== '' && !isset($plan_options[$key])) {
+                $plan_options[$key] = $row->plan_title;
+            }
+        }
+        $plan_options = array_values($plan_options);
+        natcasesort($plan_options);
+        $data['plan_options'] = array_values($plan_options);
+
         // Optional "Plan Name" filter — narrows the list down to reports
         // submitted against one specific Layout Plan, useful when a client
         // has more than one project/plan running at once.
@@ -1149,9 +1169,34 @@ class Employee extends CI_Controller
             redirect('employee/layout_process');
         }
 
+        // "Select Plan Name" dropdown should offer BOTH:
+        // 1) Plans actually set up under Layout Plan for this client, and
+        // 2) Plan titles already used in past Layout Process reports for
+        //    this client (older/free-text titles like "phase 1" that
+        //    predate the Layout Plan module) — merged and de-duplicated so
+        //    nothing is missed and nothing repeats.
+        $layout_plans = $this->Layout_member_model->getLayoutPlansForCustomer($layout_role->added_by_company_id, $customer->id);
+        $report_titles = $this->Layout_member_model->getDistinctPlanTitlesForCustomer($layout_role->added_by_company_id, $customer->id);
+
+        $plans = $layout_plans;
+        $seen_names = [];
+        foreach ($plans as $plan) {
+            $seen_names[strtolower(trim($plan->plan_name))] = true;
+        }
+
+        foreach ($report_titles as $rt) {
+            $key = strtolower(trim($rt->plan_title));
+            if ($key === '' || isset($seen_names[$key])) {
+                continue;
+            }
+            $seen_names[$key] = true;
+            $plans[] = (object) ['plan_name' => $rt->plan_title];
+        }
+
         $data['layout_role'] = $layout_role;
         $data['parent_report'] = $parent_report;
         $data['customer'] = $customer;
+        $data['plans'] = $plans;
 
         $this->load->view('employee/header');
         $this->load->view('employee/layout_process_form', $data);
@@ -1225,6 +1270,11 @@ class Employee extends CI_Controller
             'requirements' => null,
             'point_wise_report' => null,
             'status' => 'Pending Review',
+            // Structure Consultant stage needs Architect + Client + PMC
+            // (3 reviewers); every other stage only needs Client + PMC, so
+            // the Architect slot is marked Not Required and ignored by
+            // recomputeOverallStatus().
+            'architect_status' => Layout_member_model::isArchitectReviewRequired($layout_role->role) ? 'Pending' : 'Not Required',
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -1237,6 +1287,122 @@ class Employee extends CI_Controller
         }
 
         $this->session->set_flashdata('success', 'Layout process report submitted.');
+        redirect('employee/layout_process');
+    }
+
+    // Shown to the Architect once Client + PMC have both approved the
+    // Architect stage. Filling and saving this form is what hands the
+    // flow off to the Structure Consultant - see getLayoutFlow().
+    public function layout_final_project_add()
+    {
+        $layout_role = $this->Layout_member_model->getCurrentLayoutRole();
+
+        if (!$layout_role || $layout_role->role !== 'Architect') {
+            show_404();
+        }
+
+        $customer = $this->getAutoFetchClient($layout_role->added_by_company_id);
+
+        if (!$customer) {
+            $this->session->set_flashdata('error', 'No client found for your company. Contact your admin.');
+            redirect('employee/layout_process');
+        }
+
+        $architect_report = $this->Layout_member_model->getLatestStageReport($layout_role->added_by_company_id, $customer->id, 'Architect');
+
+        if (!$architect_report || $architect_report->status !== 'Approved') {
+            $this->session->set_flashdata('error', 'The Architect stage must be approved by both Client and PMC before adding the Final Project.');
+            redirect('employee/layout_process');
+        }
+
+        $existing = $this->Layout_member_model->getFinalProjectForCustomer($layout_role->added_by_company_id, $customer->id);
+
+        if ($existing) {
+            $this->session->set_flashdata('error', 'Final Project has already been added and sent to Structural.');
+            redirect('employee/layout_process');
+        }
+
+        $data['layout_role'] = $layout_role;
+        $data['customer'] = $customer;
+        $data['architect_report'] = $architect_report;
+
+        $this->load->view('employee/header');
+        $this->load->view('employee/layout_final_project_form', $data);
+        $this->load->view('employee/footer');
+    }
+
+    public function save_layout_final_project()
+    {
+        $layout_role = $this->Layout_member_model->getCurrentLayoutRole();
+
+        if (!$layout_role || $layout_role->role !== 'Architect') {
+            show_404();
+        }
+
+        $customer = $this->getAutoFetchClient($layout_role->added_by_company_id);
+
+        if (!$customer) {
+            $this->session->set_flashdata('error', 'No client found for your company. Contact your admin.');
+            redirect('employee/layout_process');
+        }
+
+        $architect_report = $this->Layout_member_model->getLatestStageReport($layout_role->added_by_company_id, $customer->id, 'Architect');
+
+        if (!$architect_report || $architect_report->status !== 'Approved') {
+            $this->session->set_flashdata('error', 'The Architect stage must be approved by both Client and PMC before adding the Final Project.');
+            redirect('employee/layout_process');
+        }
+
+        if ($this->Layout_member_model->getFinalProjectForCustomer($layout_role->added_by_company_id, $customer->id)) {
+            $this->session->set_flashdata('error', 'Final Project has already been added and sent to Structural.');
+            redirect('employee/layout_process');
+        }
+
+        $project_name = trim($this->input->post('project_name'));
+
+        if ($project_name === '') {
+            $this->session->set_flashdata('error', 'Project Name is required.');
+            redirect('employee/layout_final_project_add');
+        }
+
+        // ---------------- Final Documents (PDF) ----------------
+        $final_doc = '';
+
+        if (!empty($_FILES['final_doc']['name'])) {
+            if (!is_dir('./uploads/layout_final_projects/')) {
+                mkdir('./uploads/layout_final_projects/', 0777, true);
+            }
+
+            $config['upload_path'] = './uploads/layout_final_projects/';
+            $config['allowed_types'] = 'pdf';
+            $config['encrypt_name'] = TRUE;
+
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('final_doc')) {
+                $final_doc = $this->upload->data('file_name');
+            } else {
+                $this->session->set_flashdata('error', $this->upload->display_errors());
+                redirect('employee/layout_final_project_add');
+            }
+        } else {
+            $this->session->set_flashdata('error', 'Please upload the final project document as a PDF file.');
+            redirect('employee/layout_final_project_add');
+        }
+
+        $this->Layout_member_model->insertFinalProject([
+            'company_id' => $layout_role->added_by_company_id,
+            'customer_id' => $customer->id,
+            'architect_report_id' => $architect_report->id,
+            'project_name' => $project_name,
+            'final_doc' => $final_doc,
+            'notes' => $this->input->post('notes') ?: null,
+            'added_by' => $this->session->userdata('id'),
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $this->session->set_flashdata('success', 'Final Project added and sent to Structural.');
         redirect('employee/layout_process');
     }
 
@@ -1255,20 +1421,45 @@ class Employee extends CI_Controller
         $this->load->view('employee/footer');
     }
 
+    // Works out which reviewer slot (client / pmc / architect) the current
+    // logged-in user fills for a given report, or null if they're not a
+    // reviewer on it. The Architect slot only exists on Structure
+    // Consultant stage reports - see isArchitectReviewRequired().
+    private function resolveReviewerSlot($report)
+    {
+        if ($this->session->userdata('role') === 'customer') {
+            return 'client';
+        }
+
+        $layout_role = $this->Layout_member_model->getCurrentLayoutRole();
+
+        if (!$layout_role) {
+            return null;
+        }
+
+        if ($layout_role->role === 'PMC') {
+            return 'pmc';
+        }
+
+        if ($layout_role->role === 'Architect' && $report && Layout_member_model::isArchitectReviewRequired($report->stage)) {
+            return 'architect';
+        }
+
+        return null;
+    }
+
     public function approve_layout_process($id)
     {
-        $is_client = $this->session->userdata('role') === 'customer';
-        $layout_role = $is_client ? null : $this->Layout_member_model->getCurrentLayoutRole();
+        $report = $this->Layout_member_model->getLayoutProcessReportById($id);
+        $slot = $this->resolveReviewerSlot($report);
 
-        if (!$is_client && (!$layout_role || $layout_role->role !== 'PMC')) {
+        if (!$slot) {
             show_404();
         }
 
-        $field_status = $is_client ? 'client_status' : 'pmc_status';
-        $field_by = $is_client ? 'client_acted_by' : 'pmc_acted_by';
-        $field_at = $is_client ? 'client_acted_at' : 'pmc_acted_at';
-
-        $report = $this->Layout_member_model->getLayoutProcessReportById($id);
+        $field_status = $slot . '_status';
+        $field_by = $slot . '_acted_by';
+        $field_at = $slot . '_acted_at';
 
         if (!$report || $report->$field_status !== 'Pending') {
             $this->session->set_flashdata('error', 'You have already responded to this submission.');
@@ -1281,47 +1472,48 @@ class Employee extends CI_Controller
             $field_at => date('Y-m-d H:i:s'),
         ]);
 
-        // Only resolves to a final Approved once the OTHER side has also
-        // responded - see recomputeOverallStatus().
+        // Only resolves to a final Approved once every other required
+        // reviewer has also responded - see recomputeOverallStatus().
         $this->Layout_member_model->recomputeOverallStatus($id);
 
-        $this->session->set_flashdata('success', 'Your approval has been recorded. It will move forward once the other reviewer also responds.');
+        $this->session->set_flashdata('success', 'Your approval has been recorded. It will move forward once the other reviewer(s) also respond.');
         redirect('employee/layout_process');
     }
 
     public function remark_layout_process($id)
     {
-        $is_client = $this->session->userdata('role') === 'customer';
-        $layout_role = $is_client ? null : $this->Layout_member_model->getCurrentLayoutRole();
+        $report = $this->Layout_member_model->getLayoutProcessReportById($id);
+        $slot = $this->resolveReviewerSlot($report);
 
-        if (!$is_client && (!$layout_role || $layout_role->role !== 'PMC')) {
+        if (!$slot) {
             show_404();
         }
 
-        $remark_field = $is_client ? 'client_remark' : 'pmc_remark';
-        $status_field = $is_client ? 'client_status' : 'pmc_status';
-        $field_by = $is_client ? 'client_acted_by' : 'pmc_acted_by';
-        $field_at = $is_client ? 'client_acted_at' : 'pmc_acted_at';
-
-        $report = $this->Layout_member_model->getLayoutProcessReportById($id);
+        $remark_field = $slot . '_remark';
+        $status_field = $slot . '_status';
+        $field_by = $slot . '_acted_by';
+        $field_at = $slot . '_acted_at';
 
         if (!$report || $report->$status_field !== 'Pending') {
             $this->session->set_flashdata('error', 'You have already responded to this submission.');
             redirect('employee/layout_process');
         }
 
-        $this->Layout_member_model->updateLayoutProcessReport($id, [
-            $remark_field => $this->input->post('review_remark'),
+        $update = [
             $status_field => 'Remarked',
             $field_by => $this->session->userdata('id'),
             $field_at => date('Y-m-d H:i:s'),
-        ]);
+        ];
 
-        // Only resolves to a final Remarked once the OTHER side has also
-        // responded - see recomputeOverallStatus().
+        $update[$remark_field] = $this->input->post('review_remark');
+
+        $this->Layout_member_model->updateLayoutProcessReport($id, $update);
+
+        // Only resolves to a final Remarked once every other required
+        // reviewer has also responded - see recomputeOverallStatus().
         $this->Layout_member_model->recomputeOverallStatus($id);
 
-        $this->session->set_flashdata('success', 'Your remark has been recorded. It will be sent back once the other reviewer also responds.');
+        $this->session->set_flashdata('success', 'Your remark has been recorded. It will be sent back once the other reviewer(s) also respond.');
         redirect('employee/layout_process');
     }
 

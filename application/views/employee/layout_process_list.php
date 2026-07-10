@@ -38,6 +38,55 @@
             </div>
 
             <div class="card-body">
+
+                <?php if (!empty($layout_plans)) { ?>
+                    <!-- <div class="xc-plans-section">
+                        <p class="xc-plans-title"><i class="bx bx-folder-open"></i> Layout Plans</p>
+                        <div class="xc-plans-grid">
+                            <?php foreach ($layout_plans as $lp) { ?>
+                                <div class="xc-plan-card">
+                                    <div class="xc-plan-name"><?= html_escape($lp->plan_name); ?></div>
+                                    <?php if (!empty($lp->customer_name)) { ?>
+                                        <div class="xc-plan-meta"><?= html_escape($lp->customer_name); ?></div>
+                                    <?php } ?>
+                                    <div class="xc-plan-links">
+                                        <?php if (!empty($lp->drawing_file)) { ?>
+                                            <a href="<?= base_url('uploads/layout_plan/drawing/' . $lp->drawing_file); ?>"
+                                                target="_blank">Drawing</a>
+                                        <?php } ?>
+                                        <?php if (!empty($lp->layout_photo)) { ?>
+                                            <a href="<?= base_url('uploads/layout_plan/photo/' . $lp->layout_photo); ?>"
+                                                target="_blank">Photo</a>
+                                        <?php } ?>
+                                        <?php if (!empty($lp->soil_test_pdf)) { ?>
+                                            <a href="<?= base_url('uploads/layout_plan/soil/' . $lp->soil_test_pdf); ?>"
+                                                target="_blank">Soil Test</a>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    </div> -->
+                <?php } ?>
+
+                <?php if (!empty($plan_options)) { ?>
+                    <form method="get" class="xc-filter-row">
+                        <label for="xc-plan-filter">Filter by Plan Name</label>
+                        <select id="xc-plan-filter" name="plan" class="form-control xc-filter-select"
+                            onchange="this.form.submit()">
+                            <option value="">All Plans</option>
+                            <?php foreach ($plan_options as $opt) { ?>
+                                <option value="<?= html_escape($opt); ?>" <?= ($plan_filter === $opt) ? 'selected' : ''; ?>>
+                                    <?= html_escape($opt); ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                        <?php if (!empty($plan_filter)) { ?>
+                            <a href="<?= base_url('index.php/employee/layout_process'); ?>" class="xc-filter-clear">Clear</a>
+                        <?php } ?>
+                    </form>
+                <?php } ?>
+
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover xc-table">
                         <thead class="xc-thead">
@@ -57,7 +106,16 @@
                         <tbody>
                             <?php if (!empty($reports)) { ?>
                                 <?php $i = 1;
-                                foreach ($reports as $row) { ?>
+                                $prev_stage_key = null;
+                                foreach ($reports as $row) {
+                                    $stage_key = $row->customer_id . '|' . $row->stage;
+                                    if ($prev_stage_key !== null && $stage_key !== $prev_stage_key) { ?>
+                                        <tr class="xc-stage-divider">
+                                            <td colspan="10"></td>
+                                        </tr>
+                                    <?php }
+                                    $prev_stage_key = $stage_key;
+                                    ?>
                                     <tr>
                                         <td><?= $i++; ?></td>
                                         <td>
@@ -99,6 +157,12 @@
                                                     class="xc-mini-pill <?= $row->pmc_status === 'Approved' ? 'xc-green' : ($row->pmc_status === 'Remarked' ? 'xc-red' : 'xc-gray'); ?>">
                                                     PMC: <?= html_escape($row->pmc_status); ?>
                                                 </span>
+                                                <?php if (Layout_member_model::isArchitectReviewRequired($row->stage)) { ?>
+                                                    <span
+                                                        class="xc-mini-pill <?= $row->architect_status === 'Approved' ? 'xc-green' : ($row->architect_status === 'Remarked' ? 'xc-red' : 'xc-gray'); ?>">
+                                                        Architect: <?= html_escape($row->architect_status); ?>
+                                                    </span>
+                                                <?php } ?>
                                             </div>
                                         </td>
                                         <td>
@@ -111,9 +175,10 @@
                                                 <?php
                                                 $is_client_viewer = $this->session->userdata('role') === 'customer';
                                                 $is_pmc_viewer = !empty($layout_role) && $layout_role->role === 'PMC';
-                                                $my_turn = ($is_client_viewer && $row->client_status === 'Pending') || ($is_pmc_viewer && $row->pmc_status === 'Pending');
+                                                $is_architect_reviewer = !empty($layout_role) && $layout_role->role === 'Architect' && Layout_member_model::isArchitectReviewRequired($row->stage);
+                                                $my_turn = ($is_client_viewer && $row->client_status === 'Pending') || ($is_pmc_viewer && $row->pmc_status === 'Pending') || ($is_architect_reviewer && $row->architect_status === 'Pending');
                                                 ?>
-                                                <?php if ($is_client_viewer || $is_pmc_viewer) { ?>
+                                                <?php if ($is_client_viewer || $is_pmc_viewer || $is_architect_reviewer) { ?>
                                                     <?php if ($my_turn) { ?>
                                                         <a href="<?= base_url('index.php/employee/approve_layout_process/' . $row->id); ?>"
                                                             onclick="return confirm('Approve this layout report?');"
@@ -129,10 +194,38 @@
                                                     <?php } ?>
                                                 <?php } ?>
 
-                                                <?php if (!empty($layout_role) && $layout_role->role === 'Architect' && $row->status === 'Remarked') { ?>
+                                                <?php if (!empty($layout_role) && $layout_role->role === $row->stage && $row->status === 'Remarked') { ?>
                                                     <a href="<?= base_url('index.php/employee/layout_process_add/' . $row->id); ?>"
                                                         class="btn xc-btn-remark btn-sm">
-                                                        <i class="bx bx-plus"></i> New Form
+                                                        <i class="bx bx-plus"></i> Resubmit
+                                                    </a>
+                                                <?php } ?>
+
+                                                <?php
+                                                $next_stage_index = array_search($row->stage, Layout_member_model::$STAGE_ORDER);
+                                                $next_stage = ($next_stage_index !== false && isset(Layout_member_model::$STAGE_ORDER[$next_stage_index + 1]))
+                                                    ? Layout_member_model::$STAGE_ORDER[$next_stage_index + 1]
+                                                    : null;
+                                                ?>
+
+                                                <?php if ($row->stage === 'Architect' && $row->status === 'Approved') { ?>
+                                                    <?php $final_project = $this->Layout_member_model->getFinalProjectForCustomer($row->company_id, $row->customer_id); ?>
+                                                    <?php if (!$final_project) { ?>
+                                                        <?php if (!empty($layout_role) && $layout_role->role === 'Architect') { ?>
+                                                            <a href="<?= base_url('index.php/employee/layout_final_project_add'); ?>"
+                                                                class="btn xc-btn-approve btn-sm">
+                                                                <i class="bx bx-plus-circle"></i> Add Final Project
+                                                            </a>
+                                                        <?php } ?>
+                                                    <?php } else { ?>
+                                                        <span class="xc-muted-sm"><i class="bx bx-check-circle"></i> Sent to
+                                                            Structural</span>
+                                                    <?php } ?>
+                                                <?php } elseif ($row->status === 'Approved' && $next_stage && !empty($layout_role) && $layout_role->role === $next_stage) { ?>
+                                                    <a href="<?= base_url('index.php/employee/layout_process_add'); ?>"
+                                                        class="btn xc-btn-approve btn-sm">
+                                                        <i class="bx bx-right-arrow-alt"></i> Submit to
+                                                        <?= html_escape($next_stage); ?>
                                                     </a>
                                                 <?php } ?>
                                             </div>
@@ -344,6 +437,13 @@
         color: #fff;
     }
 
+    .xc-stage-divider td {
+        padding: 0 !important;
+        height: 14px;
+        border: none !important;
+        background: #eef1f4;
+    }
+
     .xc-empty {
         text-align: center;
         padding: 40px 12px;
@@ -389,5 +489,93 @@
         padding: 0.2em 0.55em;
         border-radius: 12px;
         white-space: nowrap;
+    }
+
+    .xc-plans-section {
+        margin-bottom: 1.2rem;
+    }
+
+    .xc-plans-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--xc-navy);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 0.6rem;
+    }
+
+    .xc-plans-title i {
+        color: var(--xc-teal);
+    }
+
+    .xc-plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+    }
+
+    .xc-plan-card {
+        border: 1px solid #e9edf1;
+        border-radius: 8px;
+        padding: 0.7rem 0.9rem;
+        background: #f9fbfb;
+    }
+
+    .xc-plan-name {
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: var(--xc-navy);
+    }
+
+    .xc-plan-meta {
+        font-size: 0.75rem;
+        color: #94a0ad;
+        margin-top: 2px;
+    }
+
+    .xc-plan-links {
+        display: flex;
+        gap: 10px;
+        margin-top: 6px;
+    }
+
+    .xc-plan-links a {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--xc-teal-dark);
+        text-decoration: underline;
+    }
+
+    .xc-filter-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .xc-filter-row label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--xc-navy);
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    .xc-filter-select {
+        width: auto;
+        max-width: 260px;
+        display: inline-block;
+        font-size: 0.85rem;
+    }
+
+    .xc-filter-clear {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #c93a3a;
+        text-decoration: underline;
     }
 </style>

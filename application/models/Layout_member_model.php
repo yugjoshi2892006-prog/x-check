@@ -160,6 +160,24 @@ class Layout_member_model extends CI_Model
             ->result();
     }
 
+    // Distinct plan titles already used in previously-submitted Layout
+    // Process reports for this client — covers older/free-text titles
+    // (e.g. "phase 1") that were submitted before a formal Layout Plan
+    // record existed for them, so they still show up as pickable options
+    // instead of forcing the architect to retype them.
+    public function getDistinctPlanTitlesForCustomer($company_id, $customer_id)
+    {
+        return $this->db
+            ->distinct()
+            ->select('plan_title')
+            ->where('company_id', $company_id)
+            ->where('customer_id', $customer_id)
+            ->where('plan_title !=', '')
+            ->order_by('plan_title', 'ASC')
+            ->get('layout_process_reports')
+            ->result();
+    }
+
     public function getLayoutPlanById($id)
     {
         return $this->db
@@ -257,13 +275,82 @@ class Layout_member_model extends CI_Model
             'pmc_status' => "ALTER TABLE layout_process_reports ADD pmc_status VARCHAR(20) NOT NULL DEFAULT 'Pending' AFTER client_acted_at",
             'pmc_acted_by' => "ALTER TABLE layout_process_reports ADD pmc_acted_by INT(11) NULL AFTER pmc_status",
             'pmc_acted_at' => "ALTER TABLE layout_process_reports ADD pmc_acted_at DATETIME NULL AFTER pmc_acted_by",
+
+            // Triple sign-off for the Structure Consultant stage only:
+            // Architect also has to review, in addition to Client + PMC.
+            // For every other stage this stays 'Not Required' and is
+            // ignored by recomputeOverallStatus().
+            'architect_status' => "ALTER TABLE layout_process_reports ADD architect_status VARCHAR(20) NOT NULL DEFAULT 'Not Required' AFTER pmc_acted_at",
+            'architect_acted_by' => "ALTER TABLE layout_process_reports ADD architect_acted_by INT(11) NULL AFTER architect_status",
+            'architect_acted_at' => "ALTER TABLE layout_process_reports ADD architect_acted_at DATETIME NULL AFTER architect_acted_by",
+            'architect_remark' => "ALTER TABLE layout_process_reports ADD architect_remark TEXT NULL AFTER architect_acted_at",
         ];
+
+        $architect_status_just_added = !$this->db->field_exists('architect_status', 'layout_process_reports');
 
         foreach ($columns as $column => $sql) {
             if (!$this->db->field_exists($column, 'layout_process_reports')) {
                 $this->db->query($sql);
             }
         }
+
+        // One-time backfill, the moment this column is first created: any
+        // Structure Consultant submission still awaiting Client/PMC (i.e.
+        // not yet Approved/Remarked) also needs the Architect's sign-off
+        // going forward, not just brand-new submissions made after this
+        // update.
+        if ($architect_status_just_added) {
+            $this->db
+                ->where('stage', 'Structure Consultant')
+                ->where('status', 'Pending Review')
+                ->update('layout_process_reports', ['architect_status' => 'Pending']);
+        }
+    }
+
+    // ---------------- Final Project (Architect -> Structural handoff) ----------------
+    // After Client + PMC approve the Architect's stage, the Architect fills
+    // this one lightweight form (Project Name, Final Doc, Notes). Saving it
+    // is what actually hands the flow off to the Structure Consultant -
+    // see getLayoutFlow(), where the next stage only unlocks once a row
+    // exists here for that customer.
+    public function ensureLayoutFinalProjectsTable()
+    {
+        $this->db->query("
+            CREATE TABLE IF NOT EXISTS layout_final_projects (
+                id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+                company_id INT(11) NOT NULL,
+                customer_id INT(11) NOT NULL,
+                architect_report_id INT(11) UNSIGNED NOT NULL,
+                project_name VARCHAR(255) NOT NULL,
+                final_doc VARCHAR(255) NOT NULL,
+                notes TEXT NULL,
+                added_by INT(11) NOT NULL,
+                created_at DATETIME NOT NULL,
+                PRIMARY KEY (id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+        ");
+    }
+
+    public function insertFinalProject($data)
+    {
+        $this->ensureLayoutFinalProjectsTable();
+        return $this->db->insert('layout_final_projects', $data);
+    }
+
+    // Latest Final Project record for this company+customer, or null if
+    // the Architect hasn't submitted one yet (i.e. Structural is still
+    // locked).
+    public function getFinalProjectForCustomer($company_id, $customer_id)
+    {
+        $this->ensureLayoutFinalProjectsTable();
+
+        return $this->db
+            ->where('company_id', $company_id)
+            ->where('customer_id', $customer_id)
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->get('layout_final_projects')
+            ->row();
     }
 
     public function getCurrentLayoutRole()
@@ -315,10 +402,10 @@ class Layout_member_model extends CI_Model
         // query builder is mid-chain corrupts it, since CodeIgniter's
         // active record builder is stateful on $this->db. That's what
         // caused "Column 'status' in where clause is ambiguous".
-        $pmc_company_id = null;
-        if ($scope === 'pmc') {
+        $layout_company_id = null;
+        if ($scope === 'pmc' || $scope === 'architect') {
             $layout_role = $this->getCurrentLayoutRole();
-            $pmc_company_id = $layout_role ? $layout_role->added_by_company_id : 0;
+            $layout_company_id = $layout_role ? $layout_role->added_by_company_id : 0;
         }
 
         $query = $this->db
@@ -331,9 +418,13 @@ class Layout_member_model extends CI_Model
             $query->where('layout_process_reports.customer_id', $customer_id);
             $query->where_in('layout_process_reports.recipient_type', ['client', 'both']);
         } elseif ($scope === 'architect') {
-            $query->where('layout_process_reports.architect_member_id', $this->session->userdata('id'));
+            // Any non-PMC layout member (Architect, Structure Consultant,
+            // Interior Designer, ...) sees the FULL flow history for their
+            // company — every stage, every revision — not just their own
+            // submissions, so they can see how the project got to them.
+            $query->where('layout_process_reports.company_id', $layout_company_id);
         } elseif ($scope === 'pmc') {
-            $query->where('layout_process_reports.company_id', $pmc_company_id);
+            $query->where('layout_process_reports.company_id', $layout_company_id);
             $query->where_in('layout_process_reports.recipient_type', ['pmc', 'both']);
         } else {
             $query->where('layout_process_reports.company_id', $this->session->userdata('company_id'));
@@ -411,11 +502,15 @@ class Layout_member_model extends CI_Model
             ->update('layout_process_reports', $data);
     }
 
-    // Dual sign-off gate: a submission only resolves out of "Pending
-    // Review" - and only then does the Architect / next stage see a final
-    // result - once BOTH the Client and the PMC have responded, either by
-    // approving or by sending a remark. One side acting alone is never
-    // enough to flip the report to Approved or Remarked.
+    // Sign-off gate: a submission only resolves out of "Pending Review" -
+    // and only then does the Architect / next stage see a final result -
+    // once every required reviewer has responded, either by approving or
+    // by sending a remark. One side acting alone is never enough to flip
+    // the report to Approved or Remarked.
+    //
+    // Every stage needs Client + PMC. The Structure Consultant stage
+    // additionally needs the Architect (3 reviewers total) - see
+    // isArchitectReviewRequired().
     public function recomputeOverallStatus($id)
     {
         $this->ensureLayoutProcessTable();
@@ -429,12 +524,17 @@ class Layout_member_model extends CI_Model
         $client_done = in_array($report->client_status, ['Approved', 'Remarked']);
         $pmc_done = in_array($report->pmc_status, ['Approved', 'Remarked']);
 
-        if (!$client_done || !$pmc_done) {
+        $architect_required = self::isArchitectReviewRequired($report->stage);
+        $architect_done = !$architect_required || in_array($report->architect_status, ['Approved', 'Remarked']);
+
+        if (!$client_done || !$pmc_done || !$architect_done) {
             $overall = 'Pending Review';
-        } elseif ($report->client_status === 'Approved' && $report->pmc_status === 'Approved') {
-            $overall = 'Approved';
         } else {
-            $overall = 'Remarked';
+            $all_approved = $report->client_status === 'Approved'
+                && $report->pmc_status === 'Approved'
+                && (!$architect_required || $report->architect_status === 'Approved');
+
+            $overall = $all_approved ? 'Approved' : 'Remarked';
         }
 
         $update = [
@@ -443,11 +543,19 @@ class Layout_member_model extends CI_Model
         ];
 
         if ($overall === 'Approved') {
-            $update['approved_by_role'] = 'Client & PMC';
+            $update['approved_by_role'] = $architect_required ? 'Architect, Client & PMC' : 'Client & PMC';
             $update['approved_at'] = date('Y-m-d H:i:s');
         }
 
         $this->db->where('id', $id)->update('layout_process_reports', $update);
+    }
+
+    // Only the Structure Consultant stage needs the Architect's sign-off
+    // in addition to Client + PMC. Kept as one helper so the controller
+    // and every view stay in sync if this list ever grows.
+    public static function isArchitectReviewRequired($stage)
+    {
+        return $stage === 'Structure Consultant';
     }
 
     // Latest (highest revision) submission for a given stage of a given
@@ -488,6 +596,7 @@ class Layout_member_model extends CI_Model
 
         $flow = [];
         $previous_approved = true; // Architect (first stage) always unlocked
+        $final_project = $this->getFinalProjectForCustomer($company_id, $customer_id);
 
         foreach (self::$STAGE_ORDER as $stage) {
             $report = $this->getLatestStageReport($company_id, $customer_id, $stage);
@@ -509,9 +618,21 @@ class Layout_member_model extends CI_Model
                 'report' => $report,
                 'state' => $state,
                 'can_submit' => $previous_approved && (!$report || $report->status === 'Remarked'),
+                // Only populated on the Architect card - the Final Project
+                // record that hands this flow off to Structural.
+                'final_project' => ($stage === 'Architect') ? $final_project : null,
             ];
 
-            $previous_approved = $report && $report->status === 'Approved';
+            $stage_approved = $report && $report->status === 'Approved';
+
+            // The Architect stage being Approved isn't enough on its own to
+            // unlock Structural - the Architect must also have submitted
+            // the Final Project form first.
+            if ($stage === 'Architect') {
+                $stage_approved = $stage_approved && !empty($final_project);
+            }
+
+            $previous_approved = $stage_approved;
         }
 
         return $flow;

@@ -1,169 +1,280 @@
 <style>
+    /* ===== X-CHECK theme tokens (scoped to this page) ===== */
+    .xc-wrapper {
+        --xc-teal: #16b8b3;
+        --xc-teal-dark: #0f9a95;
+        --xc-teal-light: #e6f9f8;
+        --xc-text-muted: #8a94a6;
+        --xc-border: #eef1f4;
+    }
+
     .xc-card {
         background: #fff;
-        border: 1px solid #e9edf1;
+        border: 1px solid var(--xc-border);
         border-radius: 14px;
         box-shadow: 0 2px 10px rgba(20, 40, 60, .04);
         overflow: hidden;
     }
 
-    .xc-card-header,
-    .xc-card-body {
-        padding: 22px 24px;
+    .xc-card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--xc-border);
     }
 
-    .xc-card-header {
-        border-bottom: 1px solid #e9edf1;
+    .xc-icon-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--xc-teal-light);
+        color: var(--xc-teal-dark);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
     }
 
     .xc-title {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #1e2733;
         margin: 0;
-        color: #1f2937;
-        font-size: 18px;
-        font-weight: 800;
     }
 
     .xc-subtitle {
-        margin: 4px 0 0;
-        color: #7c8798;
-        font-size: 13px;
+        font-size: .82rem;
+        color: var(--xc-text-muted);
+        margin: 0;
     }
 
-    .xc-label {
-        color: #7c8798;
-        display: block;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: .04em;
-        margin-bottom: 8px;
+    .xc-card-body {
+        padding: 24px;
+    }
+
+    .xc-field-label {
+        font-size: .72rem;
         text-transform: uppercase;
+        letter-spacing: .04em;
+        font-weight: 700;
+        color: var(--xc-text-muted);
+        margin-bottom: 8px;
+        display: block;
     }
 
-    .xc-input {
-        border: 1px solid #e9edf1 !important;
+    .xc-input,
+    .xc-select,
+    .xc-textarea {
+        border: 1px solid var(--xc-border) !important;
         border-radius: 10px !important;
-        padding: 10px 13px;
+        font-size: .9rem;
+        color: #2b3441;
+        padding: 10px 14px;
+        background: #fff;
     }
 
-    .xc-input:focus {
-        border-color: #16b8b3 !important;
+    .xc-input:focus,
+    .xc-select:focus,
+    .xc-textarea:focus {
+        border-color: var(--xc-teal) !important;
         box-shadow: 0 0 0 3px rgba(22, 184, 179, .12) !important;
     }
 
-    .xc-readonly-box {
-        border: 1px solid #e9edf1;
-        border-radius: 10px;
-        padding: 10px 13px;
-        background: #fafbfc;
-        color: #2b3441;
-        font-weight: 700;
+    .xc-readonly {
+        background: #fafbfc !important;
+        border: 1px solid var(--xc-border) !important;
+        border-radius: 10px !important;
+        font-size: .9rem;
+        color: #5a6473;
+        padding: 10px 14px;
     }
 
-    .xc-btn {
+    .xc-readonly:focus {
+        box-shadow: none !important;
+        border-color: var(--xc-border) !important;
+    }
+
+    .xc-file-input {
+        border: 1px dashed var(--xc-border) !important;
+        border-radius: 10px !important;
+        background: #fafbfc !important;
+        font-size: .85rem;
+        padding: 8px 12px;
+    }
+
+    .xc-file-input::file-selector-button {
+        background: var(--xc-teal-light);
+        color: var(--xc-teal-dark);
         border: none;
-        border-radius: 10px;
-        padding: 10px 18px;
-        font-weight: 800;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: .8rem;
+        padding: 6px 12px;
+        margin-right: 12px;
+        cursor: pointer;
     }
 
-    .xc-btn-main {
-        background: #16b8b3;
+    .xc-btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .xc-submit-btn {
+        background: var(--xc-teal);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        font-size: .88rem;
+        padding: 10px 22px;
+        border-radius: 10px;
+        transition: background .15s ease;
+    }
+
+    .xc-submit-btn:hover {
+        background: var(--xc-teal-dark);
         color: #fff;
     }
 
-    .xc-back {
+    .xc-back-btn {
         display: inline-flex;
         align-items: center;
         gap: 6px;
         background: #f4f6f9;
         color: #4b5768;
+        font-weight: 600;
+        font-size: .88rem;
+        padding: 10px 22px;
         border-radius: 10px;
-        padding: 10px 18px;
-        font-weight: 800;
         text-decoration: none;
+        transition: background .15s ease;
+    }
+
+    .xc-back-btn:hover {
+        background: #eaeef2;
+        color: #4b5768;
     }
 </style>
 
-<div class="page-wrapper">
+<div class="page-wrapper xc-wrapper">
     <div class="page-content">
+
         <div class="xc-card">
+
             <div class="xc-card-header">
-                <p class="xc-title"><?= !empty($parent_report) ? 'Resubmit Layout Plan' : 'Add Layout Plan'; ?></p>
-                <p class="xc-subtitle">Client, your name, plan and dates</p>
+                <div class="xc-icon-badge">
+                    <i class="bx bx-map-alt"></i>
+                </div>
+                <div>
+                    <p class="xc-title">Add Layout Plan</p>
+                    <p class="xc-subtitle">Select customer, upload drawing/photo/soil test &amp; requirement</p>
+                </div>
             </div>
 
             <div class="xc-card-body">
-                <?php if (!empty($parent_report) && ($parent_report->client_remark || $parent_report->pmc_remark)) { ?>
-                    <div class="alert alert-warning">
-                        Previous remark:
-                        <?= html_escape($parent_report->client_remark ?: $parent_report->pmc_remark); ?>
-                    </div>
-                <?php } ?>
 
-                <form action="<?= base_url('index.php/employee/save_layout_process'); ?>" method="post"
+                <form action="<?= base_url('index.php/layout_member/save_layout_plan'); ?>" method="post"
                     enctype="multipart/form-data">
-                    <input type="hidden" name="parent_report_id"
-                        value="<?= !empty($parent_report) ? (int) $parent_report->id : 0; ?>">
 
                     <div class="row">
+
                         <div class="col-md-6 mb-3">
-                            <label class="xc-label">Client Name</label>
-                            <div class="xc-readonly-box"><?= html_escape($customer->name); ?></div>
+                            <label class="xc-field-label">Select Customer</label>
+                            <select class="form-control xc-select" name="customer_id" id="customer_id" required>
+                                <option value="">Select Customer</option>
+                                <?php foreach ($customers as $customer) { ?>
+                                    <option value="<?= $customer->id; ?>"><?= $customer->name; ?></option>
+                                <?php } ?>
+                            </select>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="xc-label">Your Name</label>
-                            <div class="xc-readonly-box"><?= html_escape($layout_role->member_name); ?></div>
+                            <label class="xc-field-label">Customer Name</label>
+                            <input type="text" id="customer_name" class="form-control xc-readonly" readonly>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="xc-label">Select Plan Name</label>
-                            <?php if (!empty($plans)) { ?>
-                                <select name="layout_name" class="form-control xc-input" required>
-                                    <option value="">-- Select a Layout Plan --</option>
-                                    <?php foreach ($plans as $plan) { ?>
-                                        <option value="<?= html_escape($plan->plan_name); ?>"
-                                            <?= (!empty($parent_report) && $parent_report->plan_title === $plan->plan_name) ? 'selected' : ''; ?>>
-                                            <?= html_escape($plan->plan_name); ?>
-                                        </option>
-                                    <?php } ?>
-                                </select>
-                                <small class="text-muted">Pick from the Layout Plans already added for this
-                                    client.</small>
-                            <?php } else { ?>
-                                <input type="text" name="layout_name" class="form-control xc-input" required
-                                    value="<?= !empty($parent_report) ? html_escape($parent_report->plan_title) : ''; ?>">
-                                <small class="text-danger">No Layout Plans found for this client yet — type a name,
-                                    or add one under Layout Plan first.</small>
-                            <?php } ?>
+                            <label class="xc-field-label">Email</label>
+                            <input type="text" id="customer_email" class="form-control xc-readonly" readonly>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="xc-label">Start Date</label>
-                            <input type="date" name="start_date" class="form-control xc-input" required
-                                value="<?= !empty($parent_report) ? $parent_report->start_date : ''; ?>">
+                            <label class="xc-field-label">Mobile</label>
+                            <input type="text" id="customer_mobile" class="form-control xc-readonly" readonly>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="xc-label">End Date</label>
-                            <input type="date" name="end_date" class="form-control xc-input" required
-                                value="<?= !empty($parent_report) ? $parent_report->end_date : ''; ?>">
+                            <label class="xc-field-label">Address</label>
+                            <input type="text" id="customer_address" class="form-control xc-readonly" readonly>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="xc-label">Layout Plan (PDF)</label>
-                            <input type="file" name="layout_doc" class="form-control xc-input"
-                                accept="application/pdf,.pdf" required>
-                            <small class="text-muted">Only PDF files are accepted.</small>
+                            <label class="xc-field-label">Plan Name</label>
+                            <input type="text" name="plan_name" class="form-control xc-input" required>
                         </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="xc-field-label">Store Side Drawing</label>
+                            <input type="file" name="drawing_file" class="form-control xc-file-input">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="xc-field-label">Site Layout Photo</label>
+                            <input type="file" name="layout_photo" class="form-control xc-file-input">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="xc-field-label">Soil Test PDF</label>
+                            <input type="file" name="soil_test_pdf" class="form-control xc-file-input">
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label class="xc-field-label">Requirement</label>
+                            <textarea name="requirement" rows="5" class="form-control xc-textarea"></textarea>
+                        </div>
+
                     </div>
 
-                    <button class="xc-btn xc-btn-main" type="submit">Submit</button>
-                    <a class="xc-back" href="<?= base_url('index.php/employee/layout_process'); ?>">
-                        <i class="bx bx-arrow-back"></i> Back
-                    </a>
+                    <div class="xc-btn-row">
+                        <button class="xc-submit-btn">
+                            Add Layout Plan
+                        </button>
+
+                        <a href="<?= base_url('index.php/layout_member/layout_plan_list'); ?>" class="xc-back-btn">
+                            <i class="bx bx-arrow-back"></i> Back
+                        </a>
+                    </div>
+
                 </form>
+
             </div>
+
         </div>
+
     </div>
-</div>  
+</div>
+
+<script>
+    $("#customer_id").change(function () {
+        loadCustomer();
+    });
+
+    function loadCustomer() {
+        $.ajax({
+            url: "<?= base_url('index.php/layout_member/get_customer_details'); ?>",
+            type: "POST",
+            data: {
+                customer_id: $("#customer_id").val()
+            },
+            dataType: "json",
+            success: function (res) {
+                $("#customer_name").val(res.name);
+                $("#customer_email").val(res.email);
+                $("#customer_mobile").val(res.mobile);
+                $("#customer_address").val(res.address);
+            }
+        });
+    }
+</script>

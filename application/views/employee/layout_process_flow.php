@@ -246,9 +246,11 @@
 
                     // Can the person looking at this screen act right now?
                     $can_submit_this_stage = !empty($layout_role) && $layout_role->role === $card->stage && $card->can_submit;
+                    $architect_review_required = $card->report && Layout_member_model::isArchitectReviewRequired($card->report->stage);
                     $can_review_this_stage = $card->report && in_array($state, ['Pending Review']) && (
                         ($role === 'customer' && $card->report->client_status === 'Pending') ||
-                        (!empty($layout_role) && $layout_role->role === 'PMC' && $card->report->pmc_status === 'Pending')
+                        (!empty($layout_role) && $layout_role->role === 'PMC' && $card->report->pmc_status === 'Pending') ||
+                        ($architect_review_required && !empty($layout_role) && $layout_role->role === 'Architect' && $card->report->architect_status === 'Pending')
                     );
                 ?>
                     <li class="xc-flow-item <?= $line_done ? 'done' : ''; ?>">
@@ -271,6 +273,12 @@
                             <?php if ($card->report) { ?>
                                 <div class="xc-approval-row">
                                     <i class="bx bx-right-arrow-alt"></i> Approval &rarr;
+
+                                    <?php if ($architect_review_required) { ?>
+                                        <span class="xc-pill <?= $card->report->architect_status === 'Approved' ? 'xc-pill-green' : ($card->report->architect_status === 'Remarked' ? 'xc-pill-red' : 'xc-pill-gray'); ?>">
+                                            Architect: <?= html_escape($card->report->architect_status); ?>
+                                        </span>
+                                    <?php } ?>
 
                                     <span class="xc-pill <?= $card->report->client_status === 'Approved' ? 'xc-pill-green' : ($card->report->client_status === 'Remarked' ? 'xc-pill-red' : 'xc-pill-gray'); ?>">
                                         Client: <?= html_escape($card->report->client_status); ?>
@@ -299,6 +307,18 @@
                                     <a href="<?= base_url('index.php/employee/layout_process_add' . ($state === 'Remarked' ? '/' . $card->report->id : '')); ?>" class="xc-btn-sm xc-btn-teal">
                                         <i class="bx bx-upload"></i> <?= $state === 'Remarked' ? 'Resubmit' : 'Submit'; ?>
                                     </a>
+                                <?php } ?>
+
+                                <?php if ($card->stage === 'Architect' && $state === 'Approved') { ?>
+                                    <?php if (empty($card->final_project)) { ?>
+                                        <?php if (!empty($layout_role) && $layout_role->role === 'Architect') { ?>
+                                            <a href="<?= base_url('index.php/employee/layout_final_project_add'); ?>" class="xc-btn-sm xc-btn-teal">
+                                                <i class="bx bx-plus-circle"></i> Add Final Project
+                                            </a>
+                                        <?php } ?>
+                                    <?php } else { ?>
+                                        <span class="xc-pill xc-pill-green"><i class="bx bx-check-circle"></i> Sent to Structural</span>
+                                    <?php } ?>
                                 <?php } ?>
                             </div>
                         </div>

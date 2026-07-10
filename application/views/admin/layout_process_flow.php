@@ -162,6 +162,12 @@
                                 <div class="xc-approval-row">
                                     <i class="bx bx-right-arrow-alt"></i> Approval &rarr;
 
+                                    <?php if (Layout_member_model::isArchitectReviewRequired($card->report->stage)) { ?>
+                                        <span class="xc-pill <?= $card->report->architect_status === 'Approved' ? 'xc-pill-green' : ($card->report->architect_status === 'Remarked' ? 'xc-pill-red' : 'xc-pill-gray'); ?>">
+                                            Architect: <?= html_escape($card->report->architect_status); ?>
+                                        </span>
+                                    <?php } ?>
+
                                     <span class="xc-pill <?= $card->report->client_status === 'Approved' ? 'xc-pill-green' : ($card->report->client_status === 'Remarked' ? 'xc-pill-red' : 'xc-pill-gray'); ?>">
                                         Client: <?= html_escape($card->report->client_status); ?>
                                     </span>
