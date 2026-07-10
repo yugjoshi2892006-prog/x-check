@@ -922,7 +922,7 @@
                                                     <line x1="9" y1="9" x2="15" y2="15"></line>
                                                     <line x1="15" y1="9" x2="9" y2="15"></line>
                                                 </svg>
-                                                No Projects Found
+                                                   No Projects Found
                                             </div>
                                         </td>
                                     </tr>

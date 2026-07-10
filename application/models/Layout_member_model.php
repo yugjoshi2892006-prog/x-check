@@ -3,6 +3,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Layout_member_model extends CI_Model
 {
+    // Sequential stage flow, per Yug's flow diagram:
+    // Architect -> (Client/PMC approval) -> Structure -> Interior -> ...
+    public static $STAGE_ORDER = [
+        'Architect',
+        'Structure Consultant',
+        'Interior Designer',
+        'Electrical Consultant',
+        'PHE Consultant',
+        'Landscape Consultant',
+        'HVAC Consultant',
+        'Liasoning',
+    ];
+
     // Only show layout members THIS admin's company added
     public function getAll()
     {
@@ -133,6 +146,20 @@ class Layout_member_model extends CI_Model
             ->result();
     }
 
+    // Plans available for a given layout-company + client pairing, used to
+    // populate the "Select Plan Name" dropdown on the Layout Process form
+    // so the Architect picks from plans that were actually set up for this
+    // client, instead of retyping a free-text name.
+    public function getLayoutPlansForCustomer($company_id, $customer_id)
+    {
+        return $this->db
+            ->where('company_id', $company_id)
+            ->where('customer_id', $customer_id)
+            ->order_by('plan_name', 'ASC')
+            ->get('layout_plans')
+            ->result();
+    }
+
     public function getLayoutPlanById($id)
     {
         return $this->db
@@ -213,6 +240,23 @@ class Layout_member_model extends CI_Model
             'approved_at' => "ALTER TABLE layout_process_reports ADD approved_at DATETIME NULL AFTER approved_by_role",
             'created_at' => "ALTER TABLE layout_process_reports ADD created_at DATETIME NULL AFTER approved_at",
             'updated_at' => "ALTER TABLE layout_process_reports ADD updated_at DATETIME NULL AFTER created_at",
+
+            // Which stage of the flow this submission belongs to (Architect,
+            // Structure Consultant, Interior Designer, ...). Drives the
+            // sequential card flow in layout_process_flow().
+            'stage' => "ALTER TABLE layout_process_reports ADD stage VARCHAR(50) NOT NULL DEFAULT 'Architect' AFTER architect_member_id",
+
+            // Dual sign-off: Client and PMC each act independently. The
+            // shared `status` column only resolves to Approved/Remarked
+            // once BOTH have responded - see recomputeOverallStatus(). Only
+            // once a stage is Approved does the next stage in the flow
+            // unlock for its member to submit.
+            'client_status' => "ALTER TABLE layout_process_reports ADD client_status VARCHAR(20) NOT NULL DEFAULT 'Pending' AFTER pmc_remark",
+            'client_acted_by' => "ALTER TABLE layout_process_reports ADD client_acted_by INT(11) NULL AFTER client_status",
+            'client_acted_at' => "ALTER TABLE layout_process_reports ADD client_acted_at DATETIME NULL AFTER client_acted_by",
+            'pmc_status' => "ALTER TABLE layout_process_reports ADD pmc_status VARCHAR(20) NOT NULL DEFAULT 'Pending' AFTER client_acted_at",
+            'pmc_acted_by' => "ALTER TABLE layout_process_reports ADD pmc_acted_by INT(11) NULL AFTER pmc_status",
+            'pmc_acted_at' => "ALTER TABLE layout_process_reports ADD pmc_acted_at DATETIME NULL AFTER pmc_acted_by",
         ];
 
         foreach ($columns as $column => $sql) {
@@ -266,6 +310,17 @@ class Layout_member_model extends CI_Model
             $this->db->reset_query();
         }
 
+        // Resolve this BEFORE starting the main query below — calling
+        // getCurrentLayoutRole() (its own where()/get()) *while* the main
+        // query builder is mid-chain corrupts it, since CodeIgniter's
+        // active record builder is stateful on $this->db. That's what
+        // caused "Column 'status' in where clause is ambiguous".
+        $pmc_company_id = null;
+        if ($scope === 'pmc') {
+            $layout_role = $this->getCurrentLayoutRole();
+            $pmc_company_id = $layout_role ? $layout_role->added_by_company_id : 0;
+        }
+
         $query = $this->db
             ->select('layout_process_reports.*, customers.name as customer_name, team_members.name as architect_name')
             ->from('layout_process_reports')
@@ -278,6 +333,7 @@ class Layout_member_model extends CI_Model
         } elseif ($scope === 'architect') {
             $query->where('layout_process_reports.architect_member_id', $this->session->userdata('id'));
         } elseif ($scope === 'pmc') {
+            $query->where('layout_process_reports.company_id', $pmc_company_id);
             $query->where_in('layout_process_reports.recipient_type', ['pmc', 'both']);
         } else {
             $query->where('layout_process_reports.company_id', $this->session->userdata('company_id'));
@@ -353,6 +409,130 @@ class Layout_member_model extends CI_Model
         return $this->db
             ->where('id', $id)
             ->update('layout_process_reports', $data);
+    }
+
+    // Dual sign-off gate: a submission only resolves out of "Pending
+    // Review" - and only then does the Architect / next stage see a final
+    // result - once BOTH the Client and the PMC have responded, either by
+    // approving or by sending a remark. One side acting alone is never
+    // enough to flip the report to Approved or Remarked.
+    public function recomputeOverallStatus($id)
+    {
+        $this->ensureLayoutProcessTable();
+
+        $report = $this->db->where('id', $id)->get('layout_process_reports')->row();
+
+        if (!$report) {
+            return;
+        }
+
+        $client_done = in_array($report->client_status, ['Approved', 'Remarked']);
+        $pmc_done = in_array($report->pmc_status, ['Approved', 'Remarked']);
+
+        if (!$client_done || !$pmc_done) {
+            $overall = 'Pending Review';
+        } elseif ($report->client_status === 'Approved' && $report->pmc_status === 'Approved') {
+            $overall = 'Approved';
+        } else {
+            $overall = 'Remarked';
+        }
+
+        $update = [
+            'status' => $overall,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
+        if ($overall === 'Approved') {
+            $update['approved_by_role'] = 'Client & PMC';
+            $update['approved_at'] = date('Y-m-d H:i:s');
+        }
+
+        $this->db->where('id', $id)->update('layout_process_reports', $update);
+    }
+
+    // Latest (highest revision) submission for a given stage of a given
+    // company+customer flow. A stage can have many rows across revisions;
+    // only the newest one decides the stage's current state.
+    public function getLatestStageReport($company_id, $customer_id, $stage)
+    {
+        $this->ensureLayoutProcessTable();
+
+        return $this->db
+            ->where('company_id', $company_id)
+            ->where('customer_id', $customer_id)
+            ->where('stage', $stage)
+            ->order_by('revision_no', 'DESC')
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->get('layout_process_reports')
+            ->row();
+    }
+
+    // Card-wise flow for one company+customer pair, in the fixed stage
+    // order from the diagram. Each card carries enough to render status,
+    // the assigned member, and whether it can be actioned yet.
+    public function getLayoutFlow($company_id, $customer_id)
+    {
+        $this->ensureLayoutProcessTable();
+
+        $members = $this->db
+            ->where('added_by_company_id', $company_id)
+            ->where('status', 1)
+            ->get('layout_members')
+            ->result();
+
+        $members_by_role = [];
+        foreach ($members as $m) {
+            $members_by_role[$m->role] = $m;
+        }
+
+        $flow = [];
+        $previous_approved = true; // Architect (first stage) always unlocked
+
+        foreach (self::$STAGE_ORDER as $stage) {
+            $report = $this->getLatestStageReport($company_id, $customer_id, $stage);
+
+            if (!$report) {
+                $state = $previous_approved ? 'Not Started' : 'Locked';
+            } else {
+                // 'Pending Review', 'Approved', or 'Remarked' (needs a
+                // resubmission before it can move on).
+                $state = $report->status;
+                if ($state === 'Submitted' || $state === 'Revised') {
+                    $state = 'Pending Review';
+                }
+            }
+
+            $flow[] = (object) [
+                'stage' => $stage,
+                'member' => isset($members_by_role[$stage]) ? $members_by_role[$stage] : null,
+                'report' => $report,
+                'state' => $state,
+                'can_submit' => $previous_approved && (!$report || $report->status === 'Remarked'),
+            ];
+
+            $previous_approved = $report && $report->status === 'Approved';
+        }
+
+        return $flow;
+    }
+
+    // Every distinct company+customer pair this admin/employee's company
+    // is running a flow for - used to list all flows on the Layout
+    // Process page.
+    public function getFlowScopes($company_id)
+    {
+        $this->ensureLayoutProcessTable();
+
+        return $this->db
+            ->select('layout_process_reports.customer_id, customers.name as customer_name')
+            ->from('layout_process_reports')
+            ->join('customers', 'customers.id = layout_process_reports.customer_id', 'left')
+            ->where('layout_process_reports.company_id', $company_id)
+            ->group_by('layout_process_reports.customer_id')
+            ->order_by('layout_process_reports.customer_id', 'DESC')
+            ->get()
+            ->result();
     }
 
 }

@@ -251,6 +251,29 @@ class Layout_member extends CI_Controller
         $this->load->view('admin/footer');
     }
 
+    // Card-wise view of the full flow (Architect -> Structural -> Interior
+    // -> Electrical -> PHE -> Landscape -> HVAC -> Liasoning) for this
+    // admin's company, one card per stage.
+    public function layout_process_flow($customer_id = 0)
+    {
+        $company_id = $this->session->userdata('company_id');
+
+        $data['scopes'] = $this->Layout_member_model->getFlowScopes($company_id);
+
+        if (!$customer_id && !empty($data['scopes'])) {
+            $customer_id = $data['scopes'][0]->customer_id;
+        }
+
+        $data['customer_id'] = $customer_id;
+        $data['flow'] = ($company_id && $customer_id)
+            ? $this->Layout_member_model->getLayoutFlow($company_id, $customer_id)
+            : [];
+
+        $this->load->view('admin/header');
+        $this->load->view('admin/layout_process_flow', $data);
+        $this->load->view('admin/footer');
+    }
+
 
 
 

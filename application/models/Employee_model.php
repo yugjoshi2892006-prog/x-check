@@ -104,6 +104,27 @@ class Employee_model extends CI_Model
     }
 
 
+    // Resolve the customers row (with its company_id) for the currently
+    // logged-in customer user - used by the Layout Process flow page.
+    public function getLoggedInCustomer($user_id)
+    {
+        $user = $this->db
+            ->where('id', $user_id)
+            ->where('role', 'customer')
+            ->get('users')
+            ->row();
+
+        if (!$user) {
+            return null;
+        }
+
+        return $this->db
+            ->where('company_id', $user->company_id)
+            ->where('email', $user->email)
+            ->get('customers')
+            ->row();
+    }
+
     public function getLayoutMembers()
     {
         return $this->db

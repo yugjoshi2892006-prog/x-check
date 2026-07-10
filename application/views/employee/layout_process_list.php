@@ -12,13 +12,29 @@
                 <h4 class="mb-0">
                     <i class="bx bx-git-branch"></i>
                     Layout Process
+                    <?php
+                    if ($this->session->userdata('role') === 'customer') {
+                        $viewer_label = 'Client';
+                    } elseif (!empty($layout_role)) {
+                        $viewer_label = $layout_role->role;
+                    } else {
+                        $viewer_label = 'Employee';
+                    }
+                    ?>
+                    <span class="xc-role-badge">
+                        <i class="bx bx-user-circle"></i> Viewing as: <?= html_escape($viewer_label); ?>
+                    </span>
                 </h4>
 
-                <?php if (!empty($layout_role) && $layout_role->role === 'Architect') { ?>
+                <?php if (!empty($layout_role) && in_array($layout_role->role, Layout_member_model::$STAGE_ORDER)) { ?>
                     <a href="<?= base_url('index.php/employee/layout_process_add'); ?>" class="btn xc-btn-add">
                         <i class="bx bx-upload"></i> Upload Plan
                     </a>
                 <?php } ?>
+                <a href="<?= base_url('index.php/employee/layout_process_flow'); ?>" class="btn xc-btn-add"
+                    style="background:#7c3aed;">
+                    <i class="bx bx-git-branch"></i> Flow View
+                </a>
             </div>
 
             <div class="card-body">
@@ -29,6 +45,7 @@
                                 <th>#</th>
                                 <th>PDF</th>
                                 <th>Layout Name</th>
+                                <th>Stage / Role</th>
                                 <th>Customer</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
@@ -57,16 +74,32 @@
                                             <span class="xc-strong"><?= html_escape($row->plan_title); ?></span><br>
                                             <small class="xc-muted-sm">Revision <?= (int) $row->revision_no; ?></small>
                                         </td>
+                                        <td>
+                                            <span class="badge xc-stage-badge"><?= html_escape($row->stage); ?></span><br>
+                                            <small class="xc-muted-sm">by <?= html_escape($row->architect_name); ?></small>
+                                        </td>
                                         <td><?= html_escape($row->customer_name); ?></td>
                                         <td><?= $row->start_date ? date('d-m-Y', strtotime($row->start_date)) : '-'; ?></td>
                                         <td><?= $row->end_date ? date('d-m-Y', strtotime($row->end_date)) : '-'; ?></td>
                                         <td>
                                             <?php $schedule = $this->Layout_member_model->getScheduleStatus($row); ?>
-                                            <span class="badge <?= $schedule->class; ?>"><?= html_escape($schedule->label); ?></span>
+                                            <span
+                                                class="badge <?= $schedule->class; ?>"><?= html_escape($schedule->label); ?></span>
                                         </td>
                                         <td>
                                             <?php $status_key = $row->status === 'Approved' ? 'xc-green' : ($row->status === 'Remarked' ? 'xc-orange' : 'xc-blue'); ?>
                                             <span class="badge <?= $status_key; ?>"><?= html_escape($row->status); ?></span>
+                                            <br>
+                                            <div class="xc-mini-pills">
+                                                <span
+                                                    class="xc-mini-pill <?= $row->client_status === 'Approved' ? 'xc-green' : ($row->client_status === 'Remarked' ? 'xc-red' : 'xc-gray'); ?>">
+                                                    Client: <?= html_escape($row->client_status); ?>
+                                                </span>
+                                                <span
+                                                    class="xc-mini-pill <?= $row->pmc_status === 'Approved' ? 'xc-green' : ($row->pmc_status === 'Remarked' ? 'xc-red' : 'xc-gray'); ?>">
+                                                    PMC: <?= html_escape($row->pmc_status); ?>
+                                                </span>
+                                            </div>
                                         </td>
                                         <td>
                                             <div class="xc-actions">
@@ -75,8 +108,13 @@
                                                     <i class="bx bx-show"></i> See Report
                                                 </a>
 
-                                                <?php if ($this->session->userdata('role') === 'customer' || (!empty($layout_role) && $layout_role->role === 'PMC')) { ?>
-                                                    <?php if (in_array($row->status, ['Submitted', 'Revised'])) { ?>
+                                                <?php
+                                                $is_client_viewer = $this->session->userdata('role') === 'customer';
+                                                $is_pmc_viewer = !empty($layout_role) && $layout_role->role === 'PMC';
+                                                $my_turn = ($is_client_viewer && $row->client_status === 'Pending') || ($is_pmc_viewer && $row->pmc_status === 'Pending');
+                                                ?>
+                                                <?php if ($is_client_viewer || $is_pmc_viewer) { ?>
+                                                    <?php if ($my_turn) { ?>
                                                         <a href="<?= base_url('index.php/employee/approve_layout_process/' . $row->id); ?>"
                                                             onclick="return confirm('Approve this layout report?');"
                                                             class="btn xc-btn-approve btn-sm">
@@ -86,6 +124,8 @@
                                                             class="btn xc-btn-remark btn-sm">
                                                             <i class="bx bx-message-square-detail"></i> Remark
                                                         </a>
+                                                    <?php } else { ?>
+                                                        <span class="xc-muted-sm">You already responded</span>
                                                     <?php } ?>
                                                 <?php } ?>
 
@@ -101,7 +141,7 @@
                                 <?php } ?>
                             <?php } else { ?>
                                 <tr>
-                                    <td colspan="9" class="xc-empty">No layout plan reports found.</td>
+                                    <td colspan="10" class="xc-empty">No layout plan reports found.</td>
                                 </tr>
                             <?php } ?>
                         </tbody>
@@ -144,7 +184,9 @@
         color: var(--xc-navy);
     }
 
-    .xc-card-header h4 i { color: var(--xc-teal); }
+    .xc-card-header h4 i {
+        color: var(--xc-teal);
+    }
 
     .xc-btn-add {
         background: var(--xc-teal);
@@ -159,7 +201,11 @@
         transition: all 0.2s ease;
     }
 
-    .xc-btn-add:hover { background: var(--xc-teal-dark); color: #fff; transform: translateY(-1px); }
+    .xc-btn-add:hover {
+        background: var(--xc-teal-dark);
+        color: #fff;
+        transform: translateY(-1px);
+    }
 
     .xc-table thead.xc-thead,
     .xc-table thead.xc-thead tr,
@@ -181,8 +227,13 @@
         white-space: nowrap;
     }
 
-    .xc-table tbody tr:nth-child(even) { background: #f7fafa; }
-    .xc-table tbody tr:hover { background: rgba(15, 180, 160, 0.08); }
+    .xc-table tbody tr:nth-child(even) {
+        background: #f7fafa;
+    }
+
+    .xc-table tbody tr:hover {
+        background: rgba(15, 180, 160, 0.08);
+    }
 
     .xc-table td {
         vertical-align: middle;
@@ -191,8 +242,14 @@
         padding: 0.8rem 0.85rem;
     }
 
-    .xc-strong { font-weight: 700; color: var(--xc-navy); }
-    .xc-muted-sm { color: #94a0ad; }
+    .xc-strong {
+        font-weight: 700;
+        color: var(--xc-navy);
+    }
+
+    .xc-muted-sm {
+        color: #94a0ad;
+    }
 
     .xc-pdf-link {
         display: inline-flex;
@@ -213,11 +270,30 @@
         border-radius: 20px;
     }
 
-    .xc-green { background: #dcfce7; color: #15803d; }
-    .xc-blue { background: #eaf1ff; color: #3766e8; }
-    .xc-orange { background: #fff4e0; color: #c98a1c; }
-    .xc-red { background: #fde8e8; color: #c93a3a; }
-    .xc-gray { background: #eef1f4; color: #7c8798; }
+    .xc-green {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .xc-blue {
+        background: #eaf1ff;
+        color: #3766e8;
+    }
+
+    .xc-orange {
+        background: #fff4e0;
+        color: #c98a1c;
+    }
+
+    .xc-red {
+        background: #fde8e8;
+        color: #c93a3a;
+    }
+
+    .xc-gray {
+        background: #eef1f4;
+        color: #7c8798;
+    }
 
     .xc-actions {
         display: flex;
@@ -226,7 +302,9 @@
         flex-wrap: wrap;
     }
 
-    .xc-btn-view, .xc-btn-approve, .xc-btn-remark {
+    .xc-btn-view,
+    .xc-btn-approve,
+    .xc-btn-remark {
         border: none;
         color: #fff;
         font-weight: 600;
@@ -239,12 +317,77 @@
         transition: all 0.2s ease;
     }
 
-    .xc-btn-view { background: #0fb4a0; }
-    .xc-btn-view:hover { background: #0a8a7a; color: #fff; }
-    .xc-btn-approve { background: #22c55e; }
-    .xc-btn-approve:hover { background: #16a34a; color: #fff; }
-    .xc-btn-remark { background: #f59e0b; }
-    .xc-btn-remark:hover { background: #d97706; color: #fff; }
+    .xc-btn-view {
+        background: #0fb4a0;
+    }
 
-    .xc-empty { text-align: center; padding: 40px 12px; color: #94a0ad; }
+    .xc-btn-view:hover {
+        background: #0a8a7a;
+        color: #fff;
+    }
+
+    .xc-btn-approve {
+        background: #22c55e;
+    }
+
+    .xc-btn-approve:hover {
+        background: #16a34a;
+        color: #fff;
+    }
+
+    .xc-btn-remark {
+        background: #f59e0b;
+    }
+
+    .xc-btn-remark:hover {
+        background: #d97706;
+        color: #fff;
+    }
+
+    .xc-empty {
+        text-align: center;
+        padding: 40px 12px;
+        color: #94a0ad;
+    }
+
+    .xc-stage-badge {
+        background: #ede9fe;
+        color: #6d28d9;
+        font-weight: 600;
+        font-size: 0.78rem;
+        padding: 0.35em 0.9em;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+
+    .xc-role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #eef1f4;
+        color: #475467;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: 0;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-left: 10px;
+        vertical-align: middle;
+    }
+
+    .xc-mini-pills {
+        display: flex;
+        gap: 4px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+    }
+
+    .xc-mini-pill {
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 0.2em 0.55em;
+        border-radius: 12px;
+        white-space: nowrap;
+    }
 </style>

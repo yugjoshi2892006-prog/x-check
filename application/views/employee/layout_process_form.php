@@ -89,7 +89,7 @@
         <div class="xc-card">
             <div class="xc-card-header">
                 <p class="xc-title"><?= !empty($parent_report) ? 'Resubmit Layout Plan' : 'Add Layout Plan'; ?></p>
-                <p class="xc-subtitle">Client, dates and layout name</p>
+                <p class="xc-subtitle">Client, your name, plan and dates</p>
             </div>
 
             <div class="xc-card-body">
@@ -112,9 +112,30 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="xc-label">Layout Name</label>
-                            <input type="text" name="layout_name" class="form-control xc-input" required
-                                value="<?= !empty($parent_report) ? html_escape($parent_report->plan_title) : ''; ?>">
+                            <label class="xc-label">Your Name</label>
+                            <div class="xc-readonly-box"><?= html_escape($layout_role->member_name); ?></div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="xc-label">Select Plan Name</label>
+                            <?php if (!empty($plans)) { ?>
+                                <select name="layout_name" class="form-control xc-input" required>
+                                    <option value="">-- Select a Layout Plan --</option>
+                                    <?php foreach ($plans as $plan) { ?>
+                                        <option value="<?= html_escape($plan->plan_name); ?>"
+                                            <?= (!empty($parent_report) && $parent_report->plan_title === $plan->plan_name) ? 'selected' : ''; ?>>
+                                            <?= html_escape($plan->plan_name); ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                                <small class="text-muted">Pick from the Layout Plans already added for this
+                                    client.</small>
+                            <?php } else { ?>
+                                <input type="text" name="layout_name" class="form-control xc-input" required
+                                    value="<?= !empty($parent_report) ? html_escape($parent_report->plan_title) : ''; ?>">
+                                <small class="text-danger">No Layout Plans found for this client yet — type a name,
+                                    or add one under Layout Plan first.</small>
+                            <?php } ?>
                         </div>
 
                         <div class="col-md-6 mb-3">

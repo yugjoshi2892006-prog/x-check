@@ -173,6 +173,10 @@
                     <i class="bx bx-list-ul"></i>
                     <?= !empty($reports) ? count($reports) : 0; ?> Reports
                 </span>
+                <a href="<?= base_url('index.php/layout_member/layout_process_flow'); ?>" class="xc-pill"
+                    style="background:#ede9fe;color:#7c3aed;">
+                    <i class="bx bx-git-branch"></i> Flow View
+                </a>
             </div>
 
             <div class="table-responsive">
@@ -182,6 +186,7 @@
                             <th>#</th>
                             <th>PDF</th>
                             <th>Plan</th>
+                            <th>Stage / Role</th>
                             <th>Customer</th>
                             <th>Architect</th>
                             <th>Start Date</th>
@@ -210,6 +215,11 @@
                                         <span class="xc-strong"><?= html_escape($row->plan_title); ?></span><br>
                                         <small>Revision <?= (int) $row->revision_no; ?></small>
                                     </td>
+                                    <td>
+                                        <span class="xc-pill" style="background:#ede9fe;color:#6d28d9;">
+                                            <?= html_escape($row->stage); ?>
+                                        </span>
+                                    </td>
                                     <td><?= html_escape($row->customer_name); ?></td>
                                     <td><?= html_escape($row->architect_name); ?></td>
                                     <td><?= $row->start_date ? date('d-m-Y', strtotime($row->start_date)) : '-'; ?></td>
@@ -224,12 +234,22 @@
                                         $status_class = $row->status === 'Approved' ? 'xc-pill-green' : ($row->status === 'Remarked' ? 'xc-pill-orange' : 'xc-pill-blue');
                                         ?>
                                         <span class="xc-pill <?= $status_class; ?>"><?= html_escape($row->status); ?></span>
+                                        <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">
+                                            <span class="xc-pill <?= $row->client_status === 'Approved' ? 'xc-pill-green' : ($row->client_status === 'Remarked' ? 'xc-pill-red' : 'xc-pill-gray'); ?>"
+                                                style="font-size:.66rem;padding:4px 9px;">
+                                                Client: <?= html_escape($row->client_status); ?>
+                                            </span>
+                                            <span class="xc-pill <?= $row->pmc_status === 'Approved' ? 'xc-pill-green' : ($row->pmc_status === 'Remarked' ? 'xc-pill-red' : 'xc-pill-gray'); ?>"
+                                                style="font-size:.66rem;padding:4px 9px;">
+                                                PMC: <?= html_escape($row->pmc_status); ?>
+                                            </span>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php } ?>
                         <?php } else { ?>
                             <tr>
-                                <td colspan="8" class="xc-empty">No layout plan reports submitted yet.</td>
+                                <td colspan="9" class="xc-empty">No layout plan reports submitted yet.</td>
                             </tr>
                         <?php } ?>
                     </tbody>
