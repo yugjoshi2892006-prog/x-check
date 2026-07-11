@@ -330,7 +330,7 @@
                                     <div class="xc-action-group">
 
                                         <a href="<?= base_url('index.php/layout_member/layout_plan_view/' . $row->id); ?>"
-                                            class="xc-icon-btn xc-icon-view" title="View">
+                                            class="xc-icon-btn xc-icon    -view" title="View">
                                             <i class="bx bx-show"></i>
                                         </a>
 
@@ -361,4 +361,4 @@
         </div>
 
     </div>
-</div>
+</div>  
