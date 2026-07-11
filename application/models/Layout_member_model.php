@@ -403,9 +403,11 @@ class Layout_member_model extends CI_Model
         // active record builder is stateful on $this->db. That's what
         // caused "Column 'status' in where clause is ambiguous".
         $layout_company_id = null;
-        if ($scope === 'pmc' || $scope === 'architect') {
+        $own_stage = null;
+        if ($scope === 'pmc' || $scope === 'architect' || $scope === 'consultant') {
             $layout_role = $this->getCurrentLayoutRole();
             $layout_company_id = $layout_role ? $layout_role->added_by_company_id : 0;
+            $own_stage = $layout_role ? $layout_role->role : null;
         }
 
         $query = $this->db
@@ -418,14 +420,24 @@ class Layout_member_model extends CI_Model
             $query->where('layout_process_reports.customer_id', $customer_id);
             $query->where_in('layout_process_reports.recipient_type', ['client', 'both']);
         } elseif ($scope === 'architect') {
-            // Any non-PMC layout member (Architect, Structure Consultant,
-            // Interior Designer, ...) sees the FULL flow history for their
-            // company — every stage, every revision — not just their own
-            // submissions, so they can see how the project got to them.
+            // The Architect sees the FULL flow history for their company —
+            // every stage, every revision, every consultant's submissions —
+            // since Architect reviews/approves every stage. Other
+            // consultants use the 'consultant' scope below instead.
             $query->where('layout_process_reports.company_id', $layout_company_id);
         } elseif ($scope === 'pmc') {
             $query->where('layout_process_reports.company_id', $layout_company_id);
             $query->where_in('layout_process_reports.recipient_type', ['pmc', 'both']);
+        } elseif ($scope === 'consultant') {
+            // A consultant (Interior/Electrical/PHE/Landscape/HVAC/
+            // Liasoning) may view the foundational Architectural and
+            // Structural drawings (to work from) plus their own stage's
+            // submissions and revisions - never another consultant's work.
+            $query->where('layout_process_reports.company_id', $layout_company_id);
+            $query->group_start()
+                ->where_in('layout_process_reports.stage', ['Architect', 'Structure Consultant'])
+                ->or_where('layout_process_reports.stage', $own_stage)
+                ->group_end();
         } else {
             $query->where('layout_process_reports.company_id', $this->session->userdata('company_id'));
         }
@@ -550,12 +562,15 @@ class Layout_member_model extends CI_Model
         $this->db->where('id', $id)->update('layout_process_reports', $update);
     }
 
-    // Only the Structure Consultant stage needs the Architect's sign-off
-    // in addition to Client + PMC. Kept as one helper so the controller
-    // and every view stay in sync if this list ever grows.
+    // Every stage EXCEPT the Architect's own stage needs the Architect's
+    // sign-off in addition to Client + PMC (Structure Consultant, Interior
+    // Designer, Electrical Consultant, PHE Consultant, Landscape
+    // Consultant, HVAC Consultant, Liasoning all get 3-way review; the
+    // Architect obviously doesn't review their own submission). Kept as
+    // one helper so the controller and every view stay in sync.
     public static function isArchitectReviewRequired($stage)
     {
-        return $stage === 'Structure Consultant';
+        return $stage !== 'Architect';
     }
 
     // Latest (highest revision) submission for a given stage of a given
@@ -595,14 +610,30 @@ class Layout_member_model extends CI_Model
         }
 
         $flow = [];
-        $previous_approved = true; // Architect (first stage) always unlocked
         $final_project = $this->getFinalProjectForCustomer($company_id, $customer_id);
+
+        // Architect is always open. Structure Consultant only unlocks once
+        // the Architect stage is Approved AND the Final Project has been
+        // sent. Every OTHER consultant (Interior, Electrical, PHE,
+        // Landscape, HVAC, Liasoning) unlocks together, in parallel, the
+        // moment Structure Consultant is Approved - none of them wait on
+        // each other.
+        $structure_report = $this->getLatestStageReport($company_id, $customer_id, 'Structure Consultant');
+        $structure_approved = $structure_report && $structure_report->status === 'Approved';
 
         foreach (self::$STAGE_ORDER as $stage) {
             $report = $this->getLatestStageReport($company_id, $customer_id, $stage);
 
+            if ($stage === 'Architect') {
+                $unlocked = true;
+            } elseif ($stage === 'Structure Consultant') {
+                $unlocked = !empty($final_project);
+            } else {
+                $unlocked = $structure_approved;
+            }
+
             if (!$report) {
-                $state = $previous_approved ? 'Not Started' : 'Locked';
+                $state = $unlocked ? 'Not Started' : 'Locked';
             } else {
                 // 'Pending Review', 'Approved', or 'Remarked' (needs a
                 // resubmission before it can move on).
@@ -617,22 +648,14 @@ class Layout_member_model extends CI_Model
                 'member' => isset($members_by_role[$stage]) ? $members_by_role[$stage] : null,
                 'report' => $report,
                 'state' => $state,
-                'can_submit' => $previous_approved && (!$report || $report->status === 'Remarked'),
+                'can_submit' => $unlocked && (!$report || $report->status === 'Remarked'),
                 // Only populated on the Architect card - the Final Project
                 // record that hands this flow off to Structural.
                 'final_project' => ($stage === 'Architect') ? $final_project : null,
+                // Parallel consultant stages get grouped together in the
+                // flow view instead of being drawn as one long chain.
+                'parallel' => !in_array($stage, ['Architect', 'Structure Consultant'], true),
             ];
-
-            $stage_approved = $report && $report->status === 'Approved';
-
-            // The Architect stage being Approved isn't enough on its own to
-            // unlock Structural - the Architect must also have submitted
-            // the Final Project form first.
-            if ($stage === 'Architect') {
-                $stage_approved = $stage_approved && !empty($final_project);
-            }
-
-            $previous_approved = $stage_approved;
         }
 
         return $flow;

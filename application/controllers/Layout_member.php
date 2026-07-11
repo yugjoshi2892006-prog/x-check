@@ -300,6 +300,33 @@ class Layout_member extends CI_Controller
     {
         $company_id = $this->session->userdata('company_id');
 
+        // If the combined upload size crossed PHP's post_max_size, PHP
+        // silently empties $_POST and $_FILES before this method even
+        // runs - every field (customer_id, plan_name, files) arrives
+        // empty, which is what caused the raw "customer_id cannot be
+        // null" database error instead of a clear message. Catch that
+        // case here first.
+        if (post_size_exceeded()) {
+            $this->session->set_flashdata(
+                'error',
+                'The files you selected are too large for this server to accept (upload limit exceeded). Please upload smaller files, or ask your admin to raise upload_max_filesize / post_max_size in php.ini.'
+            );
+            redirect('layout_member/layout_plan_add');
+        }
+
+        $customer_id = $this->input->post('customer_id');
+        $plan_name = trim((string) $this->input->post('plan_name'));
+
+        if (!$customer_id) {
+            $this->session->set_flashdata('error', 'Please select a Client before saving the Layout Plan.');
+            redirect('layout_member/layout_plan_add');
+        }
+
+        if ($plan_name === '') {
+            $this->session->set_flashdata('error', 'Plan Name is required.');
+            redirect('layout_member/layout_plan_add');
+        }
+
         // ---------------- Drawing Upload ----------------
         $drawing = "";
 
@@ -374,9 +401,9 @@ class Layout_member extends CI_Controller
 
             'company_id' => $company_id,
 
-            'customer_id' => $this->input->post('customer_id'),
+            'customer_id' => $customer_id,
 
-            'plan_name' => $this->input->post('plan_name'),
+            'plan_name' => $plan_name,
 
             'drawing_file' => $drawing,
 

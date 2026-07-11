@@ -186,6 +186,11 @@ class Employee extends CI_Controller
     }
     public function save_capture()
     {
+        if (post_size_exceeded()) {
+            echo 'That image is too large for this server to accept (upload limit exceeded). Please retry with a smaller photo.';
+            exit;
+        }
+
         $project_id = $this->input->post('project_id');
         $camera_id = $this->input->post('camera_id');
         $remarks = $this->input->post('remarks');
@@ -666,10 +671,25 @@ class Employee extends CI_Controller
     }
     public function save_material_report()
     {
+        if (post_size_exceeded()) {
+            $this->session->set_flashdata(
+                'error',
+                'That file is too large for this server to accept (upload limit exceeded). Please upload a smaller file, or ask your admin to raise upload_max_filesize / post_max_size in php.ini.'
+            );
+            redirect($_SERVER['HTTP_REFERER'] ?? 'employee/dashboard');
+        }
+
+        $project_id = $this->input->post('project_id');
+
+        if (!$project_id) {
+            $this->session->set_flashdata('error', 'Missing project reference — please try submitting the report again.');
+            redirect($_SERVER['HTTP_REFERER'] ?? 'employee/dashboard');
+        }
+
         $report = [
 
             'admin_id' => $this->session->userdata('company_id'),
-            'project_id' => $this->input->post('project_id'),
+            'project_id' => $project_id,
             'employee_id' => $this->session->userdata('id'),
             'cycle_id' => 1, // later we'll calculate current cycle
             'report_date' => date('Y-m-d'),
@@ -862,6 +882,14 @@ class Employee extends CI_Controller
 
     public function save_manpower_report()
     {
+        if (post_size_exceeded()) {
+            $this->session->set_flashdata(
+                'error',
+                'That photo is too large for this server to accept (upload limit exceeded). Please upload a smaller image, or ask your admin to raise upload_max_filesize / post_max_size in php.ini.'
+            );
+            redirect($_SERVER['HTTP_REFERER'] ?? 'employee/dashboard');
+        }
+
         $project_id = $this->input->post('project_id');
 
 
@@ -1016,7 +1044,16 @@ class Employee extends CI_Controller
             $data['layout_plans'] = $this->Employee_model->getCustomerLayouts($this->session->userdata('id'));
         } else {
             $layout_role = $this->Layout_member_model->getCurrentLayoutRole();
-            $scope = ($layout_role && $layout_role->role === 'PMC') ? 'pmc' : 'architect';
+            if ($layout_role && $layout_role->role === 'PMC') {
+                $scope = 'pmc';
+            } elseif ($layout_role && $layout_role->role === 'Architect') {
+                $scope = 'architect';
+            } else {
+                // Any other consultant (Interior, Electrical, PHE,
+                // Landscape, HVAC, Liasoning) only gets the foundational
+                // drawings + their own stage - see getLayoutProcessReports().
+                $scope = 'consultant';
+            }
             $data['layout_plans'] = $this->Employee_model->getLayoutPlans();
         }
 
@@ -1211,6 +1248,18 @@ class Employee extends CI_Controller
             show_404();
         }
 
+        // See upload_guard_helper.php - if the uploaded PDF pushed the
+        // request over PHP's post_max_size, $_POST/$_FILES arrive empty
+        // and this would otherwise fall through to the generic "please
+        // upload a file" error below, even though a file WAS attached.
+        if (post_size_exceeded()) {
+            $this->session->set_flashdata(
+                'error',
+                'That file is too large for this server to accept (upload limit exceeded). Please upload a smaller PDF, or ask your admin to raise upload_max_filesize / post_max_size in php.ini.'
+            );
+            redirect('employee/layout_process_add');
+        }
+
         $parent_id = (int) $this->input->post('parent_report_id');
         $parent_report = $parent_id ? $this->Layout_member_model->getLayoutProcessReportById($parent_id) : null;
 
@@ -1339,6 +1388,14 @@ class Employee extends CI_Controller
             show_404();
         }
 
+        if (post_size_exceeded()) {
+            $this->session->set_flashdata(
+                'error',
+                'That file is too large for this server to accept (upload limit exceeded). Please upload a smaller PDF, or ask your admin to raise upload_max_filesize / post_max_size in php.ini.'
+            );
+            redirect('employee/layout_final_project_add');
+        }
+
         $customer = $this->getAutoFetchClient($layout_role->added_by_company_id);
 
         if (!$customer) {
@@ -1415,6 +1472,19 @@ class Employee extends CI_Controller
         }
 
         $data['layout_role'] = $this->Layout_member_model->getCurrentLayoutRole();
+
+        // A consultant may only open the foundational Architect / Structure
+        // Consultant reports plus their own stage's reports - never another
+        // consultant's plan, even by guessing the URL.
+        if (
+            $this->session->userdata('role') !== 'customer'
+            && $data['layout_role']
+            && !in_array($data['layout_role']->role, ['Architect', 'PMC'], true)
+            && !in_array($data['report']->stage, ['Architect', 'Structure Consultant'], true)
+            && $data['report']->stage !== $data['layout_role']->role
+        ) {
+            show_404();
+        }
 
         $this->load->view('employee/header');
         $this->load->view('employee/layout_process_view', $data);

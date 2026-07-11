@@ -1,6 +1,53 @@
-<IfModule authz_core_module>
-	Require all denied
+# -------------------------------------------------------------------
+# Raise the upload ceiling for THIS app only.
+#
+# IMPORTANT: this file must sit in the PROJECT ROOT (new_company/),
+# the same folder as index.php - NOT inside application/. The
+# application/.htaccess file only governs direct requests to
+# /application/... URLs (and should stay "Deny from all" for
+# security); it has NO effect on form submissions that go through
+# index.php in the root, which is where every save/upload request
+# in this app actually lands.
+# -------------------------------------------------------------------
+<IfModule mod_php.c>
+	php_value upload_max_filesize 100M
+	php_value post_max_size 100M
+	php_value max_execution_time 300
+	php_value max_input_time 300
+	php_value memory_limit 256M
 </IfModule>
-<IfModule !authz_core_module>
-	Deny from all
+<IfModule mod_php7.c>
+	php_value upload_max_filesize 100M
+	php_value post_max_size 100M
+	php_value max_execution_time 300
+	php_value max_input_time 300
+	php_value memory_limit 256M
+</IfModule>
+<IfModule mod_php8.c>
+	php_value upload_max_filesize 100M
+	php_value post_max_size 100M
+	php_value max_execution_time 300
+	php_value max_input_time 300
+	php_value memory_limit 256M
+</IfModule>
+<IfModule php_module>
+	php_value upload_max_filesize 100M
+	php_value post_max_size 100M
+	php_value max_execution_time 300
+	php_value max_input_time 300
+	php_value memory_limit 256M
+</IfModule>
+<IfModule php7_module>
+	php_value upload_max_filesize 100M
+	php_value post_max_size 100M
+	php_value max_execution_time 300
+	php_value max_input_time 300
+	php_value memory_limit 256M
+</IfModule>
+<IfModule php8_module>
+	php_value upload_max_filesize 100M
+	php_value post_max_size 100M
+	php_value max_execution_time 300
+	php_value max_input_time 300
+	php_value memory_limit 256M
 </IfModule>

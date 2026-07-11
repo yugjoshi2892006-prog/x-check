@@ -1,6 +1,58 @@
-<IfModule authz_core_module>
-    Require all denied
+# -------------------------------------------------------------------
+# Raise the upload ceiling for THIS app only.
+#
+# The "POST Content-Length ... exceeds the limit" crash happens because
+# post_max_size in php.ini is currently 40M. When a form's total upload
+# (drawing + photo + soil test PDF, etc.) goes over that, PHP silently
+# empties $_POST and $_FILES before CodeIgniter even runs - that's what
+# produced "Column 'customer_id' cannot be null".
+#
+# These php_value lines work because Windows XAMPP runs Apache with
+# mod_php by default. If your host instead uses php-cgi/php-fpm, Apache
+# will return a 500 error on these lines ("Invalid command 'php_value'")
+# - in that case, delete this block and raise the same values directly
+# in C:\xampp\php\php.ini (post_max_size, upload_max_filesize), then
+# restart Apache from the XAMPP control panel.
+# -------------------------------------------------------------------
+<IfModule mod_php.c>
+    php_value upload_max_filesize 100M
+    php_value post_max_size 100M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
 </IfModule>
-<IfModule !authz_core_module>
-    Deny from all
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 100M
+    php_value post_max_size 100M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
+</IfModule>
+<IfModule mod_php8.c>
+    php_value upload_max_filesize 100M
+    php_value post_max_size 100M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
+</IfModule>
+<IfModule php_module>
+    php_value upload_max_filesize 100M
+    php_value post_max_size 100M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
+</IfModule>
+<IfModule php7_module>
+    php_value upload_max_filesize 100M
+    php_value post_max_size 100M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
+</IfModule>
+<IfModule php8_module>
+    php_value upload_max_filesize 100M
+    php_value post_max_size 100M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 256M
 </IfModule>
