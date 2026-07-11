@@ -323,37 +323,47 @@
 <!-- <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script> -->
 <script>
     setInterval(function () {
+        var wrapper = document.querySelector('.wrapper');
+        var logoFull = document.getElementById('logoFull');
 
-        if (document.querySelector('.wrapper').classList.contains('toggled')) {
-
-            document.getElementById('logoFull').style.display = "none";
-
-        } else {
-
-            document.getElementById('logoFull').style.display = "block";
-
+        if (!wrapper || !logoFull) {
+            return;
         }
 
+        if (wrapper.classList.contains('toggled')) {
+            logoFull.style.display = 'none';
+        } else {
+            logoFull.style.display = 'block';
+        }
     }, 200);
+
     $(document).ready(function () {
-        const $html = $('html');
-        const $icon = $('.dark-mode-icon i');
+        var savedTheme = localStorage.getItem('theme') || 'light';
+        if (typeof applyTheme === 'function') {
+            applyTheme(savedTheme);
+        }
 
-        function applyTheme(theme) { ... }
+        $('.dark-mode-icon').on('click', function () {
+            if (typeof applyTheme === 'function') {
+                applyTheme();
+            }
+        });
 
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    applyTheme(savedTheme);
-
-    $('.dark-mode-icon').on('click', function () { ... });
-    $('#LightTheme').on('change', ...);
-    $('#DarkTheme').on('change', ...);
-    $('#SemiDarkTheme').on('change', ...);
-    $('#BoderedTheme').on('change', ...);
-
-    // ye wala hissa RAKHNA hai — password show/hide se koi lena dena nahi
-    $("#show_hide_password a").on('click', function (event) { ... });
-});
-
+        $('#show_hide_password a').on('click', function (event) {
+            event.preventDefault();
+            var input = $(this).closest('.input-group').find('input');
+            if (input.length === 0) {
+                return;
+            }
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                $(this).find('i').toggleClass('bx-show bx-hide');
+            } else {
+                input.attr('type', 'password');
+                $(this).find('i').toggleClass('bx-hide bx-show');
+            }
+        });
+    });
 </script>
 </body>
 

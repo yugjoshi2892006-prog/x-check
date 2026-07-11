@@ -332,13 +332,39 @@ class Layout_member extends CI_Controller
             redirect('layout_member/layout_plan_add');
         }
 
-        // Ensure the upload library is available before any initialize() call.
-        $this->load->library('upload');
+        // ---------------- Validate every file BEFORE writing anything to disk ----------------
+        // PHP's mime_content_type()/finfo (used internally by CodeIgniter's
+        // Upload library) reports INCONSISTENT mime strings across
+        // Windows/XAMPP setups - the exact same kind of genuine PDF can come
+        // back as "application/pdf" for one file and "application/octet-stream"
+        // (or something else) for another, which is what caused CI to reject
+        // valid files with "The filetype you are attempting to upload is not
+        // allowed." even though the file itself was fine.
+        //
+        // Fix: validate each file OURSELVES first - correct extension, plus a
+        // real content check (getimagesize() for images, the %PDF- signature
+        // for PDFs) - and only then hand the already-verified file to CI's
+        // uploader with its own (unreliable) type check turned off.
+        $file_rules = array(
+            'drawing_file' => array('label' => 'Store Side Drawing', 'exts' => array('jpg', 'jpeg', 'png', 'webp', 'pdf')),
+            'layout_photo' => array('label' => 'Site Layout Photo', 'exts' => array('jpg', 'jpeg', 'png', 'webp')),
+            'soil_test_pdf' => array('label' => 'Soil Test PDF', 'exts' => array('pdf')),
+        );
+
+        foreach ($file_rules as $field => $rule) {
+
+            $error = $this->_validate_upload($field, $rule['label'], $rule['exts']);
+
+            if ($error !== '') {
+                $this->session->set_flashdata('error', $error);
+                redirect('layout_member/layout_plan_add');
+            }
+        }
 
         // Track every file we successfully save to disk in this request so
-        // that if a LATER upload step fails, we can roll back (delete) the
-        // ones already written instead of leaving orphan files behind with
-        // no matching DB row.
+        // that if a LATER step fails (disk write error, DB insert error,
+        // etc.) we can roll back the ones already written instead of
+        // leaving orphan files with no matching DB row.
         $uploaded_paths = [];
 
         // ---------------- Drawing Upload ----------------
@@ -346,16 +372,12 @@ class Layout_member extends CI_Controller
 
         if (!empty($_FILES['drawing_file']['name'])) {
 
-            $config['upload_path'] = FCPATH . 'uploads/layout_plan/drawing/';
-            $config['allowed_types'] = 'jpg|jpeg|png|pdf';
+            $config['upload_path'] = './uploads/layout_plan/drawing/';
+            $config['allowed_types'] = '*'; // already verified above in _validate_upload()
             $config['encrypt_name'] = TRUE;
 
             if (!is_dir($config['upload_path'])) {
                 mkdir($config['upload_path'], 0755, true);
-            }
-            if (!is_dir($config['upload_path'])) {
-                $this->session->set_flashdata('error', 'Upload directory is not available: ' . $config['upload_path']);
-                redirect('layout_member/layout_plan_add');
             }
 
             $this->load->library('upload', $config);
@@ -368,7 +390,7 @@ class Layout_member extends CI_Controller
             } else {
 
                 $this->_cleanup_uploaded_files($uploaded_paths);
-                $this->session->set_flashdata('error', $this->upload->display_errors());
+                $this->session->set_flashdata('error', 'Store Side Drawing: ' . $this->upload->display_errors('', ''));
                 redirect('layout_member/layout_plan_add');
             }
         }
@@ -379,16 +401,12 @@ class Layout_member extends CI_Controller
 
         if (!empty($_FILES['layout_photo']['name'])) {
 
-            $config['upload_path'] = FCPATH . 'uploads/layout_plan/photo/';
-            $config['allowed_types'] = 'jpg|jpeg|png|webp';
+            $config['upload_path'] = './uploads/layout_plan/photo/';
+            $config['allowed_types'] = '*'; // already verified above in _validate_upload()
             $config['encrypt_name'] = TRUE;
 
             if (!is_dir($config['upload_path'])) {
                 mkdir($config['upload_path'], 0755, true);
-            }
-            if (!is_dir($config['upload_path'])) {
-                $this->session->set_flashdata('error', 'Upload directory is not available: ' . $config['upload_path']);
-                redirect('layout_member/layout_plan_add');
             }
 
             $this->upload->initialize($config);
@@ -401,7 +419,7 @@ class Layout_member extends CI_Controller
             } else {
 
                 $this->_cleanup_uploaded_files($uploaded_paths);
-                $this->session->set_flashdata('error', $this->upload->display_errors());
+                $this->session->set_flashdata('error', 'Site Layout Photo: ' . $this->upload->display_errors('', ''));
                 redirect('layout_member/layout_plan_add');
             }
         }
@@ -412,16 +430,12 @@ class Layout_member extends CI_Controller
 
         if (!empty($_FILES['soil_test_pdf']['name'])) {
 
-            $config['upload_path'] = FCPATH . 'uploads/layout_plan/soil/';
-            $config['allowed_types'] = 'pdf';
+            $config['upload_path'] = './uploads/layout_plan/soil/';
+            $config['allowed_types'] = '*'; // already verified above in _validate_upload()
             $config['encrypt_name'] = TRUE;
 
             if (!is_dir($config['upload_path'])) {
                 mkdir($config['upload_path'], 0755, true);
-            }
-            if (!is_dir($config['upload_path'])) {
-                $this->session->set_flashdata('error', 'Upload directory is not available: ' . $config['upload_path']);
-                redirect('layout_member/layout_plan_add');
             }
 
             $this->upload->initialize($config);
@@ -434,7 +448,7 @@ class Layout_member extends CI_Controller
             } else {
 
                 $this->_cleanup_uploaded_files($uploaded_paths);
-                $this->session->set_flashdata('error', $this->upload->display_errors());
+                $this->session->set_flashdata('error', 'Soil Test PDF: ' . $this->upload->display_errors('', ''));
                 redirect('layout_member/layout_plan_add');
             }
         }
@@ -477,7 +491,7 @@ class Layout_member extends CI_Controller
     }
 
     // Deletes any files this request already wrote to disk. Used when a
-    // later step in save_layout_plan() fails (bad filetype, DB error, etc.)
+    // later step in save_layout_plan() fails (disk error, DB error, etc.)
     // so we don't leave orphan uploads with no matching layout_plans row.
     private function _cleanup_uploaded_files($paths)
     {
@@ -486,6 +500,49 @@ class Layout_member extends CI_Controller
                 @unlink($path);
             }
         }
+    }
+
+    // Validates one uploaded file ourselves instead of trusting PHP's
+    // mime_content_type()/finfo detection, which is inconsistent across
+    // Windows/XAMPP setups. Checks the extension against the field's
+    // allowed list, then sanity-checks the actual file content: images
+    // must pass getimagesize(), PDFs must contain the %PDF- signature.
+    // Returns '' when the file is fine (or nothing was uploaded for this
+    // field), otherwise a ready-to-show error naming the field.
+    private function _validate_upload($field, $label, array $allowed_exts)
+    {
+        if (empty($_FILES[$field]['name'])) {
+            return '';
+        }
+
+        if ($_FILES[$field]['error'] !== UPLOAD_ERR_OK) {
+            return $label . ': the upload did not complete (error code ' . $_FILES[$field]['error'] . '). Please try again.';
+        }
+
+        $ext = strtolower(pathinfo($_FILES[$field]['name'], PATHINFO_EXTENSION));
+
+        if (!in_array($ext, $allowed_exts, true)) {
+            return $label . ': only ' . strtoupper(implode(', ', $allowed_exts)) . ' files are allowed.';
+        }
+
+        $tmp = $_FILES[$field]['tmp_name'];
+
+        if (in_array($ext, array('jpg', 'jpeg', 'png', 'webp'), true)) {
+
+            if (@getimagesize($tmp) === FALSE) {
+                return $label . ': this does not look like a valid image file.';
+            }
+
+        } elseif ($ext === 'pdf') {
+
+            $header = @file_get_contents($tmp, false, null, 0, 1024);
+
+            if ($header === FALSE || strpos($header, '%PDF-') === FALSE) {
+                return $label . ': this does not look like a valid PDF file.';
+            }
+        }
+
+        return '';
     }
 
 
