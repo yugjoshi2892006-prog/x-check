@@ -103,7 +103,7 @@ class Layout_member_model extends CI_Model
     {
         return $this->db
             ->where('company_id', $this->session->userdata('company_id'))
-            ->where('status', 1)
+            ->where('status', 'Active')
             ->order_by('name', 'ASC')
             ->get('customers')
             ->result();

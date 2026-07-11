@@ -175,6 +175,17 @@
 
             <div class="xc-card-body">
 
+                <?php if ($this->session->flashdata('success')) { ?>
+                    <div class="alert alert-success">
+                        <?= $this->session->flashdata('success'); ?>
+                    </div>
+                <?php } ?>
+                <?php if ($this->session->flashdata('error')) { ?>
+                    <div class="alert alert-danger">
+                        <?= $this->session->flashdata('error'); ?>
+                    </div>
+                <?php } ?>
+
                 <form action="<?= base_url('index.php/layout_member/save_layout_plan'); ?>" method="post"
                     enctype="multipart/form-data">
 
@@ -238,7 +249,7 @@
                     </div>
 
                     <div class="xc-btn-row">
-                        <button class="xc-submit-btn">
+                        <button type="submit" class="xc-submit-btn">
                             Add Layout Plan
                         </button>
 

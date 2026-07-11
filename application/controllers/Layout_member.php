@@ -300,6 +300,11 @@ class Layout_member extends CI_Controller
     {
         $company_id = $this->session->userdata('company_id');
 
+        if (!$company_id) {
+            $this->session->set_flashdata('error', 'Unable to determine your company. Please login again and try again.');
+            redirect('layout_member/layout_plan_add');
+        }
+
         // If the combined upload size crossed PHP's post_max_size, PHP
         // silently empties $_POST and $_FILES before this method even
         // runs - every field (customer_id, plan_name, files) arrives
@@ -327,23 +332,42 @@ class Layout_member extends CI_Controller
             redirect('layout_member/layout_plan_add');
         }
 
+        // Ensure the upload library is available before any initialize() call.
+        $this->load->library('upload');
+
+        // Track every file we successfully save to disk in this request so
+        // that if a LATER upload step fails, we can roll back (delete) the
+        // ones already written instead of leaving orphan files behind with
+        // no matching DB row.
+        $uploaded_paths = [];
+
         // ---------------- Drawing Upload ----------------
         $drawing = "";
 
         if (!empty($_FILES['drawing_file']['name'])) {
 
-            $config['upload_path'] = './uploads/layout_plan/drawing/';
+            $config['upload_path'] = FCPATH . 'uploads/layout_plan/drawing/';
             $config['allowed_types'] = 'jpg|jpeg|png|pdf';
             $config['encrypt_name'] = TRUE;
+
+            if (!is_dir($config['upload_path'])) {
+                mkdir($config['upload_path'], 0755, true);
+            }
+            if (!is_dir($config['upload_path'])) {
+                $this->session->set_flashdata('error', 'Upload directory is not available: ' . $config['upload_path']);
+                redirect('layout_member/layout_plan_add');
+            }
 
             $this->load->library('upload', $config);
 
             if ($this->upload->do_upload('drawing_file')) {
 
                 $drawing = $this->upload->data('file_name');
+                $uploaded_paths[] = $config['upload_path'] . $drawing;
 
             } else {
 
+                $this->_cleanup_uploaded_files($uploaded_paths);
                 $this->session->set_flashdata('error', $this->upload->display_errors());
                 redirect('layout_member/layout_plan_add');
             }
@@ -355,18 +379,28 @@ class Layout_member extends CI_Controller
 
         if (!empty($_FILES['layout_photo']['name'])) {
 
-            $config['upload_path'] = './uploads/layout_plan/photo/';
+            $config['upload_path'] = FCPATH . 'uploads/layout_plan/photo/';
             $config['allowed_types'] = 'jpg|jpeg|png|webp';
             $config['encrypt_name'] = TRUE;
+
+            if (!is_dir($config['upload_path'])) {
+                mkdir($config['upload_path'], 0755, true);
+            }
+            if (!is_dir($config['upload_path'])) {
+                $this->session->set_flashdata('error', 'Upload directory is not available: ' . $config['upload_path']);
+                redirect('layout_member/layout_plan_add');
+            }
 
             $this->upload->initialize($config);
 
             if ($this->upload->do_upload('layout_photo')) {
 
                 $photo = $this->upload->data('file_name');
+                $uploaded_paths[] = $config['upload_path'] . $photo;
 
             } else {
 
+                $this->_cleanup_uploaded_files($uploaded_paths);
                 $this->session->set_flashdata('error', $this->upload->display_errors());
                 redirect('layout_member/layout_plan_add');
             }
@@ -378,18 +412,28 @@ class Layout_member extends CI_Controller
 
         if (!empty($_FILES['soil_test_pdf']['name'])) {
 
-            $config['upload_path'] = './uploads/layout_plan/soil/';
+            $config['upload_path'] = FCPATH . 'uploads/layout_plan/soil/';
             $config['allowed_types'] = 'pdf';
             $config['encrypt_name'] = TRUE;
+
+            if (!is_dir($config['upload_path'])) {
+                mkdir($config['upload_path'], 0755, true);
+            }
+            if (!is_dir($config['upload_path'])) {
+                $this->session->set_flashdata('error', 'Upload directory is not available: ' . $config['upload_path']);
+                redirect('layout_member/layout_plan_add');
+            }
 
             $this->upload->initialize($config);
 
             if ($this->upload->do_upload('soil_test_pdf')) {
 
                 $soil = $this->upload->data('file_name');
+                $uploaded_paths[] = $config['upload_path'] . $soil;
 
             } else {
 
+                $this->_cleanup_uploaded_files($uploaded_paths);
                 $this->session->set_flashdata('error', $this->upload->display_errors());
                 redirect('layout_member/layout_plan_add');
             }
@@ -415,11 +459,33 @@ class Layout_member extends CI_Controller
 
         );
 
-        $this->Layout_member_model->insertLayoutPlan($data);
+        if (!$this->Layout_member_model->insertLayoutPlan($data)) {
+
+            $this->_cleanup_uploaded_files($uploaded_paths);
+
+            $db_error = $this->db->error();
+            $this->session->set_flashdata(
+                'error',
+                'Failed to save Layout Plan. ' . ($db_error['message'] ?: 'Please try again.')
+            );
+            redirect('layout_member/layout_plan_add');
+        }
 
         $this->session->set_flashdata('success', 'Layout Plan Added Successfully');
 
         redirect('layout_member/layout_plan_list');
+    }
+
+    // Deletes any files this request already wrote to disk. Used when a
+    // later step in save_layout_plan() fails (bad filetype, DB error, etc.)
+    // so we don't leave orphan uploads with no matching layout_plans row.
+    private function _cleanup_uploaded_files($paths)
+    {
+        foreach ($paths as $path) {
+            if (file_exists($path)) {
+                @unlink($path);
+            }
+        }
     }
 
 
