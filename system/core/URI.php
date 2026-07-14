@@ -38,18 +38,20 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/**
- * URI Class
- *
- * Parses URIs and determines routing
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	URI
- * @author		EllisLab Dev Team
- * @link		https://codeigniter.com/userguide3/libraries/uri.html
- */
+#[AllowDynamicProperties]
 class CI_URI {
+
+	/**
+	 * URI Class
+	 *
+	 * Parses URIs and determines routing
+	 *
+	 * @package		CodeIgniter
+	 * @subpackage	Libraries
+	 * @category	URI
+	 * @author		EllisLab Dev Team
+	 * @link		https://codeigniter.com/userguide3/libraries/uri.html
+	 */
 
 	/**
 	 * List of cached URI segments

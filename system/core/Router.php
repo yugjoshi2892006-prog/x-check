@@ -38,18 +38,20 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/**
- * Router Class
- *
- * Parses URIs and determines routing
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		https://codeigniter.com/userguide3/general/routing.html
- */
+#[AllowDynamicProperties]
 class CI_Router {
+
+	/**
+	 * Router Class
+	 *
+	 * Parses URIs and determines routing
+	 *
+	 * @package		CodeIgniter
+	 * @subpackage	Libraries
+	 * @category	Libraries
+	 * @author		EllisLab Dev Team
+	 * @link		https://codeigniter.com/userguide3/general/routing.html
+	 */
 
 	/**
 	 * CI_Config class object

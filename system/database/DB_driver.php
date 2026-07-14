@@ -38,20 +38,22 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/**
- * Database Driver Class
- *
- * This is the platform-independent base DB implementation class.
- * This class will not be called directly. Rather, the adapter
- * class for the specific database will extend and instantiate it.
- *
- * @package		CodeIgniter
- * @subpackage	Drivers
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		https://codeigniter.com/userguide3/database/
- */
+#[AllowDynamicProperties]
 abstract class CI_DB_driver {
+
+	/**
+	 * Database Driver Class
+	 *
+	 * This is the platform-independent base DB implementation class.
+	 * This class will not be called directly. Rather, the adapter
+	 * class for the specific database will extend and instantiate it.
+	 *
+	 * @package		CodeIgniter
+	 * @subpackage	Drivers
+	 * @category	Database
+	 * @author		EllisLab Dev Team
+	 * @link		https://codeigniter.com/userguide3/database/
+	 */
 
 	/**
 	 * Data Source Name / Connect string

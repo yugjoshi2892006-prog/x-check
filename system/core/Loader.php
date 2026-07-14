@@ -38,18 +38,21 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/**
- * Loader Class
- *
- * Loads framework components.
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Loader
- * @author		EllisLab Dev Team
- * @link		https://codeigniter.com/userguide3/libraries/loader.html
- */
+#[AllowDynamicProperties]
 class CI_Loader {
+
+	// All these are set automatically. Don't mess with them.
+	/**
+	 * Loader Class
+	 *
+	 * Loads framework components.
+	 *
+	 * @package		CodeIgniter
+	 * @subpackage	Libraries
+	 * @category	Loader
+	 * @author		EllisLab Dev Team
+	 * @link		https://codeigniter.com/userguide3/libraries/loader.html
+	 */
 
 	// All these are set automatically. Don't mess with them.
 	/**
