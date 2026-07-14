@@ -103,7 +103,7 @@
                     Structure Consultant.
                 </div>
 
-                <form action="<?= base_url('index.php/employee/save_layout_final_project'); ?>" method="post"
+                <form action="<?= base_url('index.php/employee/save_layout_final_project/' . (int) $architect_report->id); ?>" method="post"
                     enctype="multipart/form-data">
 
                     <div class="row">

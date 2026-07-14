@@ -1128,6 +1128,15 @@ class Employee extends CI_Controller
         $data['flow'] = ($company_id && $customer_id)
             ? $this->Layout_member_model->getLayoutFlow($company_id, $customer_id)
             : [];
+        $data['final_project'] = ($company_id && $customer_id)
+            ? $this->Layout_member_model->getFinalProjectForCustomer($company_id, $customer_id)
+            : null;
+        $data['tender_request'] = ($company_id && $customer_id)
+            ? $this->Layout_member_model->getTenderRequestForCustomer($company_id, $customer_id)
+            : null;
+        $data['all_consultants_approved'] = ($company_id && $customer_id)
+            ? $this->Layout_member_model->areAllConsultantsApproved($company_id, $customer_id)
+            : false;
 
         $this->load->view('employee/header');
         $this->load->view('employee/layout_process_flow', $data);
@@ -1277,6 +1286,27 @@ class Employee extends CI_Controller
             redirect('employee/layout_process_add' . ($parent_id ? '/' . $parent_id : ''));
         }
 
+        // Re-check the gate here too — layout_process_add() (GET) already
+        // blocks a locked stage from reaching the form, but that alone
+        // isn't enough: someone could still POST straight to this action
+        // and skip the form entirely. Without this, e.g. Structure
+        // Consultant could save a report before the Architect has sent the
+        // Final Project (or any consultant before the previous gate has
+        // actually approved).
+        $flow_check = $this->Layout_member_model->getLayoutFlow($layout_role->added_by_company_id, $customer_id);
+        $stage_card = null;
+        foreach ($flow_check as $card) {
+            if ($card->stage === $layout_role->role) {
+                $stage_card = $card;
+                break;
+            }
+        }
+
+        if ($stage_card && !$stage_card->can_submit) {
+            $this->session->set_flashdata('error', 'This stage is still locked. The previous stage has not been approved/sent yet.');
+            redirect('employee/layout_process');
+        }
+
         // ---------------- Layout Plan (PDF) ----------------
         $layout_doc = '';
 
@@ -1342,7 +1372,7 @@ class Employee extends CI_Controller
     // Shown to the Architect once Client + PMC have both approved the
     // Architect stage. Filling and saving this form is what hands the
     // flow off to the Structure Consultant - see getLayoutFlow().
-    public function layout_final_project_add()
+    public function layout_final_project_add($architect_report_id = 0)
     {
         $layout_role = $this->Layout_member_model->getCurrentLayoutRole();
 
@@ -1350,17 +1380,27 @@ class Employee extends CI_Controller
             show_404();
         }
 
-        $customer = $this->getAutoFetchClient($layout_role->added_by_company_id);
+        $architect_report = $this->Layout_member_model->getLayoutProcessReportById((int) $architect_report_id);
 
-        if (!$customer) {
-            $this->session->set_flashdata('error', 'No client found for your company. Contact your admin.');
+        if (!$architect_report || $architect_report->stage !== 'Architect') {
+            show_404();
+        }
+
+        if ($architect_report->status !== 'Approved') {
+            $this->session->set_flashdata('error', 'The Architect stage must be approved by both Client and PMC before adding the Final Project.');
             redirect('employee/layout_process');
         }
 
-        $architect_report = $this->Layout_member_model->getLatestStageReport($layout_role->added_by_company_id, $customer->id, 'Architect');
+        $customer = $this->db->where('id', $architect_report->customer_id)->get('customers')->row();
 
-        if (!$architect_report || $architect_report->status !== 'Approved') {
-            $this->session->set_flashdata('error', 'The Architect stage must be approved by both Client and PMC before adding the Final Project.');
+        if (!$customer) {
+            $this->session->set_flashdata('error', 'No client found for this Architect report. Contact your admin.');
+            redirect('employee/layout_process');
+        }
+
+        $latest_architect_report = $this->Layout_member_model->getLatestStageReport($layout_role->added_by_company_id, $customer->id, 'Architect');
+        if (!$latest_architect_report || $latest_architect_report->id !== $architect_report->id) {
+            $this->session->set_flashdata('error', 'Please use the latest approved Architect submission to send the final report to Structural.');
             redirect('employee/layout_process');
         }
 
@@ -1380,7 +1420,7 @@ class Employee extends CI_Controller
         $this->load->view('employee/footer');
     }
 
-    public function save_layout_final_project()
+    public function save_layout_final_project($architect_report_id = 0)
     {
         $layout_role = $this->Layout_member_model->getCurrentLayoutRole();
 
@@ -1393,20 +1433,30 @@ class Employee extends CI_Controller
                 'error',
                 'That file is too large for this server to accept (upload limit exceeded). Please upload a smaller PDF, or ask your admin to raise upload_max_filesize / post_max_size in php.ini.'
             );
-            redirect('employee/layout_final_project_add');
+            redirect('employee/layout_final_project_add/' . (int) $architect_report_id);
         }
 
-        $customer = $this->getAutoFetchClient($layout_role->added_by_company_id);
+        $architect_report = $this->Layout_member_model->getLayoutProcessReportById((int) $architect_report_id);
+
+        if (!$architect_report || $architect_report->stage !== 'Architect') {
+            show_404();
+        }
+
+        $customer = $this->db->where('id', $architect_report->customer_id)->get('customers')->row();
 
         if (!$customer) {
-            $this->session->set_flashdata('error', 'No client found for your company. Contact your admin.');
+            $this->session->set_flashdata('error', 'No client found for this Architect report. Contact your admin.');
             redirect('employee/layout_process');
         }
 
-        $architect_report = $this->Layout_member_model->getLatestStageReport($layout_role->added_by_company_id, $customer->id, 'Architect');
-
-        if (!$architect_report || $architect_report->status !== 'Approved') {
+        if ($architect_report->status !== 'Approved') {
             $this->session->set_flashdata('error', 'The Architect stage must be approved by both Client and PMC before adding the Final Project.');
+            redirect('employee/layout_process');
+        }
+
+        $latest_architect_report = $this->Layout_member_model->getLatestStageReport($layout_role->added_by_company_id, $customer->id, 'Architect');
+        if (!$latest_architect_report || $latest_architect_report->id !== $architect_report->id) {
+            $this->session->set_flashdata('error', 'Please use the latest approved Architect submission to send the final report to Structural.');
             redirect('employee/layout_process');
         }
 
@@ -1419,7 +1469,7 @@ class Employee extends CI_Controller
 
         if ($project_name === '') {
             $this->session->set_flashdata('error', 'Project Name is required.');
-            redirect('employee/layout_final_project_add');
+            redirect('employee/layout_final_project_add/' . (int) $architect_report_id);
         }
 
         // ---------------- Final Documents (PDF) ----------------
@@ -1461,6 +1511,53 @@ class Employee extends CI_Controller
 
         $this->session->set_flashdata('success', 'Final Project added and sent to Structural.');
         redirect('employee/layout_process');
+    }
+
+    public function send_tender_request($customer_id = 0)
+    {
+        $layout_role = $this->Layout_member_model->getCurrentLayoutRole();
+
+        if (!$layout_role || $layout_role->role !== 'PMC') {
+            show_404();
+        }
+
+        $customer_id = (int) $customer_id;
+        if (!$customer_id) {
+            $customer = $this->getAutoFetchClient($layout_role->added_by_company_id);
+            $customer_id = $customer ? (int) $customer->id : 0;
+        }
+
+        if (!$customer_id) {
+            $this->session->set_flashdata('error', 'Unable to determine the client for this action.');
+            redirect('employee/layout_process');
+        }
+
+        $final_project = $this->Layout_member_model->getFinalProjectForCustomer($layout_role->added_by_company_id, $customer_id);
+        if (!$final_project) {
+            $this->session->set_flashdata('error', 'The final project has not been handed off yet.');
+            redirect('employee/layout_process_flow/' . $customer_id);
+        }
+
+        if (!$this->Layout_member_model->areAllConsultantsApproved($layout_role->added_by_company_id, $customer_id)) {
+            $this->session->set_flashdata('error', 'All consultant stages must be approved before sending the final project to tender.');
+            redirect('employee/layout_process_flow/' . $customer_id);
+        }
+
+        if ($this->Layout_member_model->getTenderRequestForCustomer($layout_role->added_by_company_id, $customer_id)) {
+            $this->session->set_flashdata('error', 'This final project has already been sent to tender.');
+            redirect('employee/layout_process_flow/' . $customer_id);
+        }
+
+        $this->Layout_member_model->insertTenderRequest([
+            'company_id' => $layout_role->added_by_company_id,
+            'customer_id' => $customer_id,
+            'final_project_id' => $final_project->id,
+            'sent_by' => $this->session->userdata('id'),
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $this->session->set_flashdata('success', 'Final project sent to tender.');
+        redirect('employee/layout_process_flow/' . $customer_id);
     }
 
     public function layout_process_view($id)

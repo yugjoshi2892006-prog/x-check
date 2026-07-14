@@ -18,7 +18,7 @@
                 <div class="xc-flow-title-wrapper">
                     <div class="xc-flow-icon-wrapper">
                         <i class="bx bx-git-branch"></i>
-                    </div>
+                    </div>--
                     <div>
                         <h4 class="xc-flow-title">Layout Process Flow</h4>
                         <p class="xc-flow-sub">
@@ -34,7 +34,8 @@
 
             <div class="xc-flow-head-actions">
                 <?php if (!empty($scopes)) { ?>
-                    <div class="xc-select-wrapper">
+                    <div class="xc-select-wrapper"> 
+                        
                         <i class="bx bx-building"></i>
                         <select class="xc-scope-select"
                             onchange="window.location='<?= base_url('index.php/employee/layout_process_flow/'); ?>' + this.value">
@@ -53,6 +54,32 @@
                 </a>
             </div>
         </div>
+
+        <?php if (!empty($layout_role) && $layout_role->role === 'PMC') { ?>
+            <div class="xc-tender-action-bar">
+                <?php if (!empty($tender_request)) { ?>
+                    <div class="xc-tender-status xc-tender-sent">
+                        <i class="bx bx-check-circle"></i>
+                        Final project has been sent to tender.
+                    </div>
+                <?php } elseif (!empty($final_project) && !empty($all_consultants_approved)) { ?>
+                    <div class="xc-tender-status xc-tender-ready">
+                        <i class="bx bx-send"></i>
+                        All consultants have approved. You can now send the final project to tender.
+                        <a href="<?= base_url('index.php/employee/send_tender_request/' . (int) $customer_id); ?>"
+                            class="xc-btn-sm xc-btn-teal">
+                            <i class="bx bx-paper-plane"></i>
+                            <span>Send to Tender</span>
+                        </a>
+                    </div>
+                <?php } elseif (!empty($final_project)) { ?>
+                    <div class="xc-tender-status xc-tender-waiting">
+                        <i class="bx bx-time-five"></i>
+                        Waiting for all consultants to approve before sending to tender.
+                    </div>
+                <?php } ?>
+            </div>
+        <?php } ?>
 
         <?php
         $render_flow_card_inner = function ($card) use ($layout_role, $role) {
@@ -204,9 +231,11 @@
         };
 
         $sequential_cards = array_values(array_filter($flow, function ($c) {
-            return empty($c->parallel); }));
+            return empty($c->parallel);
+        }));
         $parallel_cards = array_values(array_filter($flow, function ($c) {
-            return !empty($c->parallel); }));
+            return !empty($c->parallel);
+        }));
         ?>
 
         <?php if (empty($flow)) { ?>
@@ -286,31 +315,52 @@
 </div>
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+
     :root {
-        --primary-color: #4f46e5;
-        --primary-dark: #4338ca;
-        --primary-light: #eef2ff;
-        --success-color: #10b981;
-        --success-light: #d1fae5;
-        --warning-color: #f59e0b;
-        --warning-light: #fef3c7;
-        --danger-color: #ef4444;
-        --danger-light: #fee2e2;
-        --gray-50: #f9fafb;
-        --gray-100: #f3f4f6;
-        --gray-200: #e5e7eb;
-        --gray-300: #d1d5db;
-        --gray-400: #9ca3af;
-        --gray-500: #6b7280;
-        --gray-600: #4b5563;
-        --gray-700: #374151;
-        --gray-800: #1f2937;
-        --gray-900: #111827;
-        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --xc-teal: #0fb4a0;
+        --xc-teal-dark: #0c9484;
+        --xc-teal-light: #e5faf6;
+        --xc-navy: #1a1a2e;
+        --xc-navy-soft: #2b2b45;
+        --xc-orange: #f97316;
+        --xc-orange-dark: #ea6a0c;
+        --xc-orange-light: #fff2e8;
+        --xc-purple: #7c3aed;
+        --xc-purple-dark: #6d28d9;
+        --xc-purple-light: #f4edfe;
+
+        --xc-success: #0fb4a0;
+        --xc-success-light: #e5faf6;
+        --xc-warning: #f97316;
+        --xc-warning-light: #fff2e8;
+        --xc-danger: #ef4444;
+        --xc-danger-light: #fee2e2;
+
+        --xc-gray-50: #f8f9fb;
+        --xc-gray-100: #f1f2f6;
+        --xc-gray-200: #e4e6ee;
+        --xc-gray-300: #d3d6e0;
+        --xc-gray-400: #a4a8ba;
+        --xc-gray-500: #7c8093;
+        --xc-gray-600: #5a5e70;
+        --xc-gray-700: #3f4256;
+        --xc-gray-800: #292c3f;
+        --xc-gray-900: var(--xc-navy);
+
+        --xc-font-heading: 'Sora', sans-serif;
+        --xc-font-body: 'DM Sans', sans-serif;
+        --xc-font-mono: 'JetBrains Mono', monospace;
+
+        --xc-shadow-sm: 0 1px 2px rgba(26, 26, 46, 0.06);
+        --xc-shadow: 0 4px 14px rgba(26, 26, 46, 0.07);
+        --xc-shadow-md: 0 8px 24px rgba(26, 26, 46, 0.09);
+        --xc-shadow-lg: 0 16px 40px rgba(26, 26, 46, 0.12);
+        --xc-shadow-xl: 0 20px 50px rgba(26, 26, 46, 0.16);
+    }
+
+    .page-content {
+        font-family: var(--xc-font-body);
     }
 
     /* Alert Styles */
@@ -323,7 +373,7 @@
         border: none;
         font-weight: 500;
         margin-bottom: 24px;
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--xc-shadow-md);
         animation: slideInDown 0.4s ease-out;
     }
 
@@ -332,15 +382,15 @@
     }
 
     .alert-success {
-        background: linear-gradient(135deg, var(--success-light) 0%, #fff 100%);
-        color: #047857;
-        border-left: 4px solid var(--success-color);
+        background: linear-gradient(135deg, var(--xc-success-light) 0%, #fff 100%);
+        color: #096e62;
+        border-left: 4px solid var(--xc-success);
     }
 
     .alert-danger {
-        background: linear-gradient(135deg, var(--danger-light) 0%, #fff 100%);
+        background: linear-gradient(135deg, var(--xc-danger-light) 0%, #fff 100%);
         color: #b91c1c;
-        border-left: 4px solid var(--danger-color);
+        border-left: 4px solid var(--xc-danger);
     }
 
     /* Header Styles */
@@ -350,10 +400,10 @@
         align-items: center;
         margin-bottom: 32px;
         padding: 24px;
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        background: linear-gradient(135deg, var(--xc-teal) 0%, var(--xc-teal-dark) 100%);
         border-radius: 16px;
         color: white;
-        box-shadow: var(--shadow-xl);
+        box-shadow: 0 16px 40px rgba(15, 180, 160, 0.28);
         flex-wrap: wrap;
         gap: 20px;
     }
@@ -387,6 +437,7 @@
 
     .xc-flow-title {
         margin: 0;
+        font-family: var(--xc-font-heading);
         font-size: 24px;
         font-weight: 700;
         color: white;
@@ -432,32 +483,34 @@
         position: absolute;
         left: 14px;
         font-size: 18px;
-        color: var(--gray-500);
+        color: var(--xc-gray-500);
         pointer-events: none;
         z-index: 1;
     }
 
     .xc-scope-select {
         padding: 10px 16px 10px 42px;
-        border: 2px solid var(--gray-200);
+        border: 2px solid var(--xc-gray-200);
         border-radius: 10px;
+        font-family: var(--xc-font-body);
         font-size: 14px;
         font-weight: 500;
+        color: var(--xc-navy);
         background: white;
         cursor: pointer;
         transition: all 0.3s ease;
         min-width: 200px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--xc-shadow-sm);
     }
 
     .xc-scope-select:hover {
-        border-color: var(--primary-color);
+        border-color: var(--xc-teal);
     }
 
     .xc-scope-select:focus {
         outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px var(--primary-light);
+        border-color: var(--xc-teal);
+        box-shadow: 0 0 0 3px var(--xc-teal-light);
     }
 
     /* Button Styles */
@@ -467,6 +520,7 @@
         gap: 8px;
         padding: 10px 20px;
         border-radius: 10px;
+        font-family: var(--xc-font-body);
         font-size: 14px;
         font-weight: 600;
         text-decoration: none;
@@ -474,7 +528,7 @@
         border: 2px solid transparent;
         cursor: pointer;
         white-space: nowrap;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--xc-shadow-sm);
     }
 
     .xc-btn-sm i {
@@ -483,34 +537,37 @@
 
     .xc-btn-outline {
         background: white;
-        color: var(--primary-color);
+        color: var(--xc-teal-dark);
         border-color: white;
     }
 
     .xc-btn-outline:hover {
-        background: var(--primary-light);
+        background: var(--xc-teal-light);
         transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--xc-shadow-md);
+        color: var(--xc-teal-dark);
     }
 
     .xc-btn-teal {
-        background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+        background: linear-gradient(135deg, var(--xc-teal) 0%, var(--xc-teal-dark) 100%);
         color: white;
     }
 
     .xc-btn-teal:hover {
         transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
+        box-shadow: var(--xc-shadow-lg);
+        color: white;
     }
 
     .xc-btn-orange {
-        background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+        background: linear-gradient(135deg, var(--xc-orange) 0%, var(--xc-orange-dark) 100%);
         color: white;
     }
 
     .xc-btn-orange:hover {
         transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
+        box-shadow: var(--xc-shadow-lg);
+        color: white;
     }
 
     .xc-btn-pulse {
@@ -519,7 +576,7 @@
 
     /* Flow Container */
     .xc-flow-container {
-        background: var(--gray-50);
+        background: var(--xc-gray-50);
         border-radius: 16px;
         padding: 24px;
     }
@@ -552,7 +609,7 @@
     }
 
     .xc-flow-item.done .xc-flow-line {
-        background: linear-gradient(180deg, var(--success-color) 0%, var(--success-color) 100%);
+        background: linear-gradient(180deg, var(--xc-teal) 0%, var(--xc-teal) 100%);
     }
 
     /* Flow Rail */
@@ -572,7 +629,7 @@
         justify-content: center;
         font-size: 22px;
         z-index: 2;
-        box-shadow: var(--shadow-lg);
+        box-shadow: var(--xc-shadow-lg);
         transition: all 0.3s ease;
     }
 
@@ -581,31 +638,31 @@
     }
 
     .xc-flow-dot.st-locked {
-        background: linear-gradient(135deg, var(--gray-400) 0%, var(--gray-500) 100%);
+        background: linear-gradient(135deg, var(--xc-purple) 0%, var(--xc-purple-dark) 100%);
     }
 
     .xc-flow-dot.st-not-started {
-        background: linear-gradient(135deg, var(--gray-300) 0%, var(--gray-400) 100%);
+        background: linear-gradient(135deg, var(--xc-gray-300) 0%, var(--xc-gray-400) 100%);
     }
 
     .xc-flow-dot.st-pending {
-        background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+        background: linear-gradient(135deg, var(--xc-orange) 0%, var(--xc-orange-dark) 100%);
         animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
     .xc-flow-dot.st-remarked {
-        background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+        background: linear-gradient(135deg, var(--xc-danger) 0%, #dc2626 100%);
     }
 
     .xc-flow-dot.st-approved {
-        background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        background: linear-gradient(135deg, var(--xc-teal) 0%, var(--xc-teal-dark) 100%);
     }
 
     .xc-flow-line {
         width: 4px;
         flex: 1;
         min-height: 60px;
-        background: var(--gray-200);
+        background: var(--xc-gray-200);
         margin-top: 8px;
         border-radius: 2px;
         transition: all 0.5s ease;
@@ -617,25 +674,25 @@
         background: white;
         border-radius: 16px;
         padding: 24px;
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--xc-shadow-md);
         transition: all 0.3s ease;
         border: 2px solid transparent;
     }
 
     .xc-flow-card:hover {
         transform: translateY(-4px);
-        box-shadow: var(--shadow-xl);
-        border-color: var(--primary-light);
+        box-shadow: var(--xc-shadow-xl);
+        border-color: var(--xc-teal-light);
     }
 
     .xc-flow-card.locked {
         opacity: 0.6;
-        background: var(--gray-50);
+        background: var(--xc-gray-50);
     }
 
     .xc-flow-card.approved {
-        border-color: var(--success-light);
-        background: linear-gradient(135deg, #fff 0%, #f0fdf4 100%);
+        border-color: var(--xc-teal-light);
+        background: linear-gradient(135deg, #fff 0%, var(--xc-teal-light) 100%);
     }
 
     .xc-flow-card-header {
@@ -656,7 +713,7 @@
         width: 44px;
         height: 44px;
         border-radius: 12px;
-        background: linear-gradient(135deg, var(--primary-light) 0%, #fff 100%);
+        background: linear-gradient(135deg, var(--xc-teal-light) 0%, #fff 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -665,13 +722,14 @@
 
     .xc-stage-icon i {
         font-size: 22px;
-        color: var(--primary-color);
+        color: var(--xc-teal-dark);
     }
 
     .xc-flow-stage {
+        font-family: var(--xc-font-heading);
         font-size: 18px;
         font-weight: 700;
-        color: var(--gray-800);
+        color: var(--xc-navy);
         margin-bottom: 4px;
     }
 
@@ -680,7 +738,7 @@
         align-items: center;
         gap: 6px;
         font-size: 14px;
-        color: var(--gray-600);
+        color: var(--xc-gray-600);
     }
 
     .xc-flow-member i {
@@ -688,7 +746,7 @@
     }
 
     .text-muted {
-        color: var(--gray-400);
+        color: var(--xc-gray-400);
         font-style: italic;
     }
 
@@ -702,7 +760,7 @@
         font-size: 13px;
         font-weight: 600;
         white-space: nowrap;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--xc-shadow-sm);
     }
 
     .xc-pill-sm {
@@ -715,28 +773,28 @@
     }
 
     .xc-pill-gray {
-        background: var(--gray-100);
-        color: var(--gray-700);
+        background: var(--xc-gray-100);
+        color: var(--xc-gray-700);
     }
 
     .xc-pill-green {
-        background: var(--success-light);
-        color: #065f46;
+        background: var(--xc-teal-light);
+        color: #096e62;
     }
 
     .xc-pill-orange {
-        background: var(--warning-light);
-        color: #92400e;
+        background: var(--xc-orange-light);
+        color: var(--xc-orange-dark);
     }
 
     .xc-pill-red {
-        background: var(--danger-light);
+        background: var(--xc-danger-light);
         color: #991b1b;
     }
 
     /* Approval Section */
     .xc-approval-section {
-        background: var(--gray-50);
+        background: var(--xc-gray-50);
         border-radius: 12px;
         padding: 16px;
         margin-bottom: 20px;
@@ -748,13 +806,13 @@
         gap: 8px;
         font-size: 14px;
         font-weight: 600;
-        color: var(--gray-700);
+        color: var(--xc-gray-700);
         margin-bottom: 12px;
     }
 
     .xc-approval-title i {
         font-size: 18px;
-        color: var(--primary-color);
+        color: var(--xc-teal);
     }
 
     .xc-approval-grid {
@@ -770,9 +828,10 @@
     }
 
     .xc-approval-label {
-        font-size: 12px;
+        font-family: var(--xc-font-mono);
+        font-size: 11px;
         font-weight: 600;
-        color: var(--gray-600);
+        color: var(--xc-gray-600);
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
@@ -789,8 +848,8 @@
         align-items: center;
         gap: 8px;
         padding: 10px 16px;
-        background: var(--success-light);
-        color: #065f46;
+        background: var(--xc-teal-light);
+        color: #096e62;
         border-radius: 10px;
         font-weight: 600;
         font-size: 14px;
@@ -811,11 +870,11 @@
         align-items: center;
         gap: 16px;
         padding: 20px 24px;
-        background: linear-gradient(135deg, #fff 0%, var(--primary-light) 100%);
+        background: linear-gradient(135deg, #fff 0%, var(--xc-purple-light) 100%);
         border-radius: 12px;
         margin-bottom: 24px;
-        border-left: 4px solid var(--primary-color);
-        box-shadow: var(--shadow-md);
+        border-left: 4px solid var(--xc-purple);
+        box-shadow: var(--xc-shadow-md);
     }
 
     .xc-parallel-icon {
@@ -826,25 +885,26 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--xc-shadow-sm);
     }
 
     .xc-parallel-icon i {
         font-size: 24px;
-        color: var(--primary-color);
+        color: var(--xc-purple);
     }
 
     .xc-parallel-heading h5 {
         margin: 0;
+        font-family: var(--xc-font-heading);
         font-size: 18px;
         font-weight: 700;
-        color: var(--gray-800);
+        color: var(--xc-navy);
     }
 
     .xc-parallel-heading p {
         margin: 4px 0 0 0;
         font-size: 14px;
-        color: var(--gray-600);
+        color: var(--xc-gray-600);
     }
 
     .xc-parallel-grid {
@@ -879,14 +939,14 @@
         padding: 80px 20px;
         background: white;
         border-radius: 16px;
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--xc-shadow-md);
     }
 
     .xc-empty-icon {
         width: 80px;
         height: 80px;
         margin: 0 auto 20px;
-        background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+        background: linear-gradient(135deg, var(--xc-gray-100) 0%, var(--xc-gray-200) 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -895,19 +955,20 @@
 
     .xc-empty-icon i {
         font-size: 40px;
-        color: var(--gray-400);
+        color: var(--xc-gray-400);
     }
 
     .xc-empty-flow h5 {
+        font-family: var(--xc-font-heading);
         font-size: 20px;
         font-weight: 700;
-        color: var(--gray-800);
+        color: var(--xc-navy);
         margin: 0 0 8px 0;
     }
 
     .xc-empty-flow p {
         font-size: 14px;
-        color: var(--gray-600);
+        color: var(--xc-gray-600);
         margin: 0;
     }
 
