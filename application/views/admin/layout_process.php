@@ -1,4 +1,4 @@
-<style>
+﻿<style>
     .xc-wrapper {
         --xc-teal: #16b8b3;
         --xc-teal-dark: #0f9a95;
@@ -173,7 +173,7 @@
                     <i class="bx bx-list-ul"></i>
                     <?= !empty($reports) ? count($reports) : 0; ?> Reports
                 </span>
-                <a href="<?= base_url('index.php/layout_member/layout_process_flow'); ?>" class="xc-pill"
+                <a href="<?= base_url('layout_member/layout_process_flow'); ?>" class="xc-pill"
                     style="background:#ede9fe;color:#7c3aed;">
                     <i class="bx bx-git-branch"></i> Flow View
                 </a>

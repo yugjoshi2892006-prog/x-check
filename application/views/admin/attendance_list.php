@@ -1,4 +1,4 @@
-<style>
+﻿<style>
     .xc-al-wrap {
         padding: 24px;
     }
@@ -182,10 +182,10 @@
                 <div class="card-body xc-al-card-body">
 
                     <div class="xc-al-breadcrumb">
-                        <a href="<?= base_url('index.php/admin/dashboard') ?>">Dashboard</a> /
+                        <a href="<?= base_url('admin/dashboard') ?>">Dashboard</a> /
                         <?php if (!empty($project)): ?>
                             <a
-                                href="<?= base_url('index.php/admin/attendance_projects') ?>"><?= htmlspecialchars($project->project_name) ?></a>
+                                href="<?= base_url('admin/attendance_projects') ?>"><?= htmlspecialchars($project->project_name) ?></a>
                             /
                         <?php endif; ?>
                         Attendance List

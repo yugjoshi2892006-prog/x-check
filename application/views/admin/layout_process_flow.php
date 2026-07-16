@@ -1,4 +1,4 @@
-<style>
+﻿<style>
     @import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
 
     :root {
@@ -994,7 +994,7 @@
                     <div class="xc-select-wrapper">
                         <i class="bx bx-building"></i>
                         <select class="xc-scope-select"
-                            onchange="window.location='<?= base_url('index.php/layout_member/layout_process_flow/'); ?>' + this.value">
+                            onchange="window.location='<?= base_url('layout_member/layout_process_flow/'); ?>' + this.value">
                             <?php foreach ($scopes as $s) { ?>
                                 <option value="<?= (int) $s->customer_id; ?>" <?= $s->customer_id == $customer_id ? 'selected' : ''; ?>>
                                     <?= html_escape($s->customer_name ?: ('Client #' . $s->customer_id)); ?>
@@ -1004,7 +1004,7 @@
                     </div>
                 <?php } ?>
 
-                <a href="<?= base_url('index.php/layout_member/layout_process'); ?>" class="xc-btn-sm xc-btn-outline">
+                <a href="<?= base_url('layout_member/layout_process'); ?>" class="xc-btn-sm xc-btn-outline">
                     <i class="bx bx-list-ul"></i>
                     <span>Table View</span>
                 </a>
@@ -1179,7 +1179,7 @@
                                 <span>View PDF</span>
                             </a>
                         <?php } ?>
-                        <a href="<?= base_url('index.php/layout_member/layout_process'); ?>" class="xc-btn-sm xc-btn-ghost">
+                        <a href="<?= base_url('layout_member/layout_process'); ?>" class="xc-btn-sm xc-btn-ghost">
                             <i class="bx bx-show"></i>
                             <span>View in Table</span>
                         </a>

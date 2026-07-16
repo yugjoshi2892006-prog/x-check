@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <!-- Breadcrumb -->
@@ -7,7 +7,7 @@
                 <h4 class="mb-1" style="color:#1a1a2e; font-weight:700;">Material Report</h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 small">
-                        <li class="breadcrumb-item"><a href="<?= base_url('index.php/employee/dashboard') ?>"
+                        <li class="breadcrumb-item"><a href="<?= base_url('employee/dashboard') ?>"
                                 style="color:#0fb4a0; text-decoration:none;">Dashboard</a></li>
                         <li class="breadcrumb-item active" aria-current="page" style="color:#6c757d;">Material Report
                         </li>
@@ -25,7 +25,7 @@
 
             <div class="xc-card-body">
 
-                <form method="post" action="<?= base_url('index.php/employee/save_material_request') ?>">
+                <form method="post" action="<?= base_url('employee/save_material_request') ?>">
 
                     <input type="hidden" name="project_id" value="<?= htmlspecialchars($project_id) ?>">
 
@@ -182,7 +182,7 @@
 
                                             <?php if ($row->status == 'Pending') { ?>
 
-                                                <a href="<?= base_url('index.php/employee/delete_material_request/' . $row->id . '/' . $project_id) ?>"
+                                                <a href="<?= base_url('employee/delete_material_request/' . $row->id . '/' . $project_id) ?>"
                                                     class="xc-btn-outline-danger"
                                                     onclick="return confirm('Are you sure you want to delete this request?')">
 
@@ -415,7 +415,7 @@
 
                     $.ajax({
 
-                        url: "<?= base_url('index.php/employee/get_subcategories'); ?>",
+                        url: "<?= base_url('employee/get_subcategories'); ?>",
 
                         type: "POST",
 

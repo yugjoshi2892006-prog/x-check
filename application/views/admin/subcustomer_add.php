@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <style>
@@ -152,11 +152,11 @@
                 <h2>Add User</h2>
             </div>
             <div class="xc-breadcrumb">
-                <a href="<?= base_url('index.php/dashboard') ?>">Masters</a>
+                <a href="<?= base_url('dashboard') ?>">Masters</a>
                 <span>›</span>
-                <a href="<?= base_url('index.php/customer') ?>">Customers</a>
+                <a href="<?= base_url('customer') ?>">Customers</a>
                 <span>›</span>
-                <a href="<?= base_url('index.php/customer/subcustomer_list/' . $customer_id) ?>">Users</a>
+                <a href="<?= base_url('customer/subcustomer_list/' . $customer_id) ?>">Users</a>
                 <span>›</span> Add User
             </div>
             <div class="xc-wrapper">
@@ -167,7 +167,7 @@
 
                     <div class="xc-section-label">User Information</div>
 
-                    <form method="post" action="<?= base_url('index.php/customer/insert_subcustomer') ?>">
+                    <form method="post" action="<?= base_url('customer/insert_subcustomer') ?>">
 
                         <input type="hidden" name="customer_id" value="<?= $customer_id ?>">
 

@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <div class="card xc-card radius-10">
@@ -13,7 +13,7 @@
 
                 <!-- Bootstrap alerts removed in favor of SweetAlert2 popups below -->
 
-                <form action="<?= base_url('index.php/layout_member/save'); ?>" method="post" id="memberForm">
+                <form action="<?= base_url('layout_member/save'); ?>" method="post" id="memberForm">
 
                     <div class="row">
 
@@ -330,7 +330,7 @@
 
             $.ajax({
 
-                url: "<?= base_url('index.php/layout_member/get_team_members'); ?>",
+                url: "<?= base_url('layout_member/get_team_members'); ?>",
 
                 type: "POST",
 
@@ -403,7 +403,7 @@
 
             $.ajax({
 
-                url: "<?= base_url('index.php/layout_member/check_role_exists'); ?>",
+                url: "<?= base_url('layout_member/check_role_exists'); ?>",
 
                 type: "POST",
 
@@ -453,7 +453,7 @@
 
             $.ajax({
 
-                url: "<?= base_url('index.php/layout_member/check_role_exists'); ?>",
+                url: "<?= base_url('layout_member/check_role_exists'); ?>",
 
                 type: "POST",
 

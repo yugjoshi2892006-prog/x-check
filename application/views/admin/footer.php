@@ -140,21 +140,17 @@
 
 <!--plugins-->
 
-<script src="<?= base_url('assets/front_end/js/jquery-3.3.1.min.js') ?>"></script>
+<!-- Load jQuery once (required by plugins and app.js) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script src="<?= base_url('assets/plugins/simplebar/js/simplebar.min.js') ?>"></script>
-
 <script src="<?= base_url('assets/plugins/metismenu/js/metisMenu.min.js') ?>"></script>
-
 <script src="<?= base_url('assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js') ?>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput.min.js"></script>
-
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js"></script>
 <script src="https://unpkg.com/libphonenumber-js@1.10.14/bundle/libphonenumber-js.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js"
@@ -167,14 +163,9 @@
 
 <!--app JS-->
 
-<!-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"> -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
-<script src="<?= base_url('assets/js/app.js') ?>"></script>
+<!-- load app.js once (versioned) -->
 <script src="<?= base_url('assets/js/app.js') . '?v=' . @filemtime(FCPATH . 'assets/js/app.js') ?>"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-
-<script src="<?= base_url('assets/js/app.js') . '?v=' . @filemtime(FCPATH . 'assets/js/app.js') ?>"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <!-- <script src="<?= base_url('assets/js/index.js') ?>"></script> -->

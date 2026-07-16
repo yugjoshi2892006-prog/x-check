@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <style>
@@ -324,7 +324,7 @@
 
                 <!-- Header -->
                 <div class="xc-breadcrumb">
-                    <a href="<?= base_url('index.php/dashboard') ?>">Masters</a>
+                    <a href="<?= base_url('dashboard') ?>">Masters</a>
                     <span>›</span> Folder List
                 </div>
                 <div class="xc-header">
@@ -333,7 +333,7 @@
 
                 <!-- Add Folder Form -->
                 <div class="xc-filter-card">
-                    <form method="post" action="<?= base_url('index.php/folder/insert') ?>">
+                    <form method="post" action="<?= base_url('folder/insert') ?>">
                         <div class="row g-3">
 
                             <div class="col-md-5">
@@ -400,7 +400,7 @@
                                                         Edit
                                                     </button>
 
-                                                    <a href="<?= base_url('index.php/folder/delete/' . $row->id) ?>"
+                                                    <a href="<?= base_url('folder/delete/' . $row->id) ?>"
                                                         class="btn-xc-delete" onclick="return confirm('Delete Folder?')">
                                                         Delete
                                                     </a>
@@ -509,7 +509,7 @@
 
             $('#editFolderForm').attr(
                 'action',
-                '<?= base_url("index.php/folder/update/") ?>' + id
+                '<?= base_url("folder/update/") ?>' + id
             );
 
             var myModal = new bootstrap.Modal(

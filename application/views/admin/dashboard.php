@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // dashboard.php - CodeIgniter View
 // Controller must pass: $current_plan, $project_count, $team_count, $customer_count, $folder_count
 ?>
@@ -116,7 +116,7 @@
                         </div>
                     </div>
 
-                    <a href="<?= base_url('index.php/plan') ?>" class="xc-currentplan-upgrade-btn">
+                    <a href="<?= base_url('plan') ?>" class="xc-currentplan-upgrade-btn">
                         <i class="ti ti-rocket me-2"></i>
                         Upgrade Plan
                         <i class="ti ti-arrow-right ms-auto"></i>
@@ -135,7 +135,7 @@
                         <span class="xc-header-badge">6 actions</span>
                     </div>
                     <div class="xc-actions-grid">
-                        <a href="<?= base_url('index.php/project/add') ?>" class="xc-action-item xc-action-primary"
+                        <a href="<?= base_url('project/add') ?>" class="xc-action-item xc-action-primary"
                             data-tooltip="Create new project">
                             <div class="xc-action-icon">
                                 <i class="ti ti-plus"></i>
@@ -143,7 +143,7 @@
                             <span class="xc-action-label">New Project</span>
                             <div class="xc-action-shine"></div>
                         </a>
-                        <a href="<?= base_url('index.php/team/add') ?>" class="xc-action-item xc-action-navy"
+                        <a href="<?= base_url('team/add') ?>" class="xc-action-item xc-action-navy"
                             data-tooltip="Add team member">
                             <div class="xc-action-icon">
                                 <i class="ti ti-user-plus"></i>
@@ -151,7 +151,7 @@
                             <span class="xc-action-label">Add Member</span>
                             <div class="xc-action-shine"></div>
                         </a>
-                        <a href="<?= base_url('index.php/customer/add') ?>"
+                        <a href="<?= base_url('customer/add') ?>"
                             class="xc-action-item xc-action-purple-light" data-tooltip="Register new customer">
                             <div class="xc-action-icon">
                                 <i class="ti ti-user-check"></i>
@@ -159,7 +159,7 @@
                             <span class="xc-action-label">New Customer</span>
                             <div class="xc-action-shine"></div>
                         </a>
-                        <a href="<?= base_url('index.php/folder') ?>" class="xc-action-item xc-action-orange"
+                        <a href="<?= base_url('folder') ?>" class="xc-action-item xc-action-orange"
                             data-tooltip="Organize files">
                             <div class="xc-action-icon">
                                 <i class="ti ti-folder-plus"></i>
@@ -167,7 +167,7 @@
                             <span class="xc-action-label">Create Folder</span>
                             <div class="xc-action-shine"></div>
                         </a>
-                        <a href="<?= base_url('index.php/admin/manpower_report_list') ?>"
+                        <a href="<?= base_url('admin/manpower_report_list') ?>"
                             class="xc-action-item xc-action-purple" data-tooltip="Analytics & insights">
                             <div class="xc-action-icon">
                                 <i class="ti ti-chart-bar"></i>
@@ -175,7 +175,7 @@
                             <span class="xc-action-label">View Reports</span>
                             <div class="xc-action-shine"></div>
                         </a>
-                        <a href="<?= base_url('index.php/profile') ?>" class="xc-action-item xc-action-dark"
+                        <a href="<?= base_url('profile') ?>" class="xc-action-item xc-action-dark"
                             data-tooltip="Configure settings">
                             <div class="xc-action-icon">
                                 <i class="ti ti-settings"></i>
@@ -195,7 +195,7 @@
                             <i class="ti ti-clock me-2"></i>
                             Recent Activity
                         </h4>
-                        <a href="<?= base_url('index.php/activity') ?>" class="xc-view-all-link">
+                        <a href="<?= base_url('activity') ?>" class="xc-view-all-link">
                             View All
                             <i class="ti ti-arrow-right ms-1"></i>
                         </a>
@@ -281,7 +281,7 @@
                             </span>
                         </div>
                     </div>
-                    <a href="<?= base_url('index.php/project/project_list') ?>" class="xc-stat-link">
+                    <a href="<?= base_url('project/project_list') ?>" class="xc-stat-link">
                         <span>View all projects</span>
                         <i class="ti ti-arrow-right"></i>
                     </a>
@@ -314,7 +314,7 @@
                             </span>
                         </div>
                     </div>
-                    <a href="<?= base_url('index.php/team') ?>" class="xc-stat-link">
+                    <a href="<?= base_url('team') ?>" class="xc-stat-link">
                         <span>View all members</span>
                         <i class="ti ti-arrow-right"></i>
                     </a>
@@ -347,7 +347,7 @@
                             </span>
                         </div>
                     </div>
-                    <a href="<?= base_url('index.php/customer') ?>" class="xc-stat-link">
+                    <a href="<?= base_url('customer') ?>" class="xc-stat-link">
                         <span>View all customers</span>
                         <i class="ti ti-arrow-right"></i>
                     </a>
@@ -380,7 +380,7 @@
                             </span>
                         </div>
                     </div>
-                    <a href="<?= base_url('index.php/folder') ?>" class="xc-stat-link">
+                    <a href="<?= base_url('folder') ?>" class="xc-stat-link">
                         <span>View all folders</span>
                         <i class="ti ti-arrow-right"></i>
                     </a>
@@ -536,7 +536,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="<?= base_url('index.php/team/performance') ?>" class="xc-view-all-performance">
+                    <a href="<?= base_url('team/performance') ?>" class="xc-view-all-performance">
                         <i class="ti ti-users me-2"></i>
                         View All Team Performance
                         <i class="ti ti-arrow-right ms-auto"></i>

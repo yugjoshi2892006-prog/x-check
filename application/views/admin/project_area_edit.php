@@ -1,6 +1,6 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
-        <form method="post" action="<?= base_url('index.php/project/add_project_area') ?>">
+        <form method="post" action="<?= base_url('project/add_project_area') ?>">
 
             <input type="hidden" name="project_id" value="<?= $project_id ?>">
 
@@ -120,7 +120,7 @@
 
         <div class="text-end mt-3">
 
-            <a href="<?= base_url('index.php/project/edit_camera/' . $project_id) ?>" class="btn btn-primary">
+            <a href="<?= base_url('project/edit_camera/' . $project_id) ?>" class="btn btn-primary">
                 Save & Next →
             </a>
         </div>

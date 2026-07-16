@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
         <?php if ($this->session->flashdata('success')) { ?>
             <div class="alert alert-success alert-modern">
@@ -38,7 +38,7 @@
                         
                         <i class="bx bx-building"></i>
                         <select class="xc-scope-select"
-                            onchange="window.location='<?= base_url('index.php/employee/layout_process_flow/'); ?>' + this.value">
+                            onchange="window.location='<?= base_url('employee/layout_process_flow/'); ?>' + this.value">
                             <?php foreach ($scopes as $s) { ?>
                                 <option value="<?= (int) $s->customer_id; ?>" <?= $s->customer_id == $customer_id ? 'selected' : ''; ?>>
                                     <?= html_escape($s->customer_name ?: ('Client #' . $s->customer_id)); ?>
@@ -48,7 +48,7 @@
                     </div>
                 <?php } ?>
 
-                <a href="<?= base_url('index.php/employee/layout_process'); ?>" class="xc-btn-sm xc-btn-outline">
+                <a href="<?= base_url('employee/layout_process'); ?>" class="xc-btn-sm xc-btn-outline">
                     <i class="bx bx-list-ul"></i>
                     <span>Table View</span>
                 </a>
@@ -66,7 +66,7 @@
                     <div class="xc-tender-status xc-tender-ready">
                         <i class="bx bx-send"></i>
                         All consultants have approved. You can now send the final project to tender.
-                        <a href="<?= base_url('index.php/employee/send_tender_request/' . (int) $customer_id); ?>"
+                        <a href="<?= base_url('employee/send_tender_request/' . (int) $customer_id); ?>"
                             class="xc-btn-sm xc-btn-teal">
                             <i class="bx bx-paper-plane"></i>
                             <span>Send to Tender</span>
@@ -187,7 +187,7 @@
 
                 <div class="xc-flow-actions">
                     <?php if ($card->report) { ?>
-                        <a href="<?= base_url('index.php/employee/layout_process_view/' . $card->report->id); ?>"
+                        <a href="<?= base_url('employee/layout_process_view/' . $card->report->id); ?>"
                             class="xc-btn-sm xc-btn-outline">
                             <i class="bx bx-show"></i>
                             <span>View Details</span>
@@ -195,7 +195,7 @@
                     <?php } ?>
 
                     <?php if ($can_review_this_stage) { ?>
-                        <a href="<?= base_url('index.php/employee/layout_process_view/' . $card->report->id); ?>"
+                        <a href="<?= base_url('employee/layout_process_view/' . $card->report->id); ?>"
                             class="xc-btn-sm xc-btn-orange xc-btn-pulse">
                             <i class="bx bx-message-square-detail"></i>
                             <span>Review Now</span>
@@ -203,7 +203,7 @@
                     <?php } ?>
 
                     <?php if ($can_submit_this_stage) { ?>
-                        <a href="<?= base_url('index.php/employee/layout_process_add' . ($state === 'Remarked' ? '/' . $card->report->id : '')); ?>"
+                        <a href="<?= base_url('employee/layout_process_add' . ($state === 'Remarked' ? '/' . $card->report->id : '')); ?>"
                             class="xc-btn-sm xc-btn-teal">
                             <i class="bx <?= $state === 'Remarked' ? 'bx-revision' : 'bx-upload'; ?>"></i>
                             <span><?= $state === 'Remarked' ? 'Resubmit' : 'Submit Report'; ?></span>
@@ -213,7 +213,7 @@
                     <?php if ($card->stage === 'Architect' && $state === 'Approved') { ?>
                         <?php if (empty($card->final_project)) { ?>
                             <?php if (!empty($layout_role) && $layout_role->role === 'Architect') { ?>
-                                <a href="<?= base_url('index.php/employee/layout_final_project_add'); ?>" class="xc-btn-sm xc-btn-teal">
+                                <a href="<?= base_url('employee/layout_final_project_add'); ?>" class="xc-btn-sm xc-btn-teal">
                                     <i class="bx bx-plus-circle"></i>
                                     <span>Add Final Project</span>
                                 </a>

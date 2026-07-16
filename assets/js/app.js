@@ -1,6 +1,11 @@
 $(function () {
 	"use strict";
 
+	// Debug: confirm app.js loaded
+	if (window.console && console.log) {
+		console.log('app.js initialized');
+	}
+
 	var $window = $(window);
 	var $document = $(document);
 	var $wrapper = $(".wrapper");
@@ -32,6 +37,10 @@ $(function () {
 
 	function toggleSidebar() {
 		$wrapper.toggleClass("toggled");
+
+		if (window.console && console.log) {
+			console.log('toggleSidebar: toggled=', $wrapper.hasClass('toggled'));
+		}
 
 		if (!$wrapper.hasClass("toggled")) {
 			$wrapper.removeClass("sidebar-hovered");
@@ -176,7 +185,7 @@ $(function () {
 	initPerfectScrollbar(".header-notifications-list");
 	applyTheme(localStorage.getItem("theme") || $("html").attr("data-bs-theme") || "light");
 
-	$(".mobile-toggle-icon, .mobile-toggle-menu, .overlay").on("click", function () {
+	$(".mobile-toggle-icon, .mobile-toggle-menu, .overlay, .xc-admin-sidebar-overlay, .xc-emp-sidebar-overlay").on("click", function () {
 		toggleSidebar();
 	});
 
@@ -201,6 +210,11 @@ $(function () {
 	bindAccordionMenu();
 	markActiveMenu();
 	bindDesktopHover();
+
+	// Collapse sidebar by default on small screens for better mobile UX
+	if (isMobileViewport()) {
+		$wrapper.addClass("toggled");
+	}
 
 	$window.on("resize", bindDesktopHover);
 

@@ -1,4 +1,4 @@
-<style>
+﻿<style>
     .xc-profile-wrapper {
         background: #f4f7f8;
         padding: 24px;
@@ -328,7 +328,7 @@
                             <hr class="xc-divider">
 
                             <!-- Upload Photo -->
-                            <form action="<?= base_url('index.php/employee/upload_profile_photo') ?>" method="post"
+                            <form action="<?= base_url('employee/upload_profile_photo') ?>" method="post"
                                 enctype="multipart/form-data">
 
                                 <input type="file" name="profile_photo" class="xc-upload-input" required>
@@ -350,7 +350,7 @@
                     <div class="xc-card">
                         <div class="xc-card-body">
 
-                            <form method="post" action="<?= base_url('index.php/employee/update_profile') ?>">
+                            <form method="post" action="<?= base_url('employee/update_profile') ?>">
 
                                 <table class="xc-detail-table">
 

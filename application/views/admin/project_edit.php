@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <style>
@@ -553,7 +553,7 @@
                     <h2>Add Project</h2>
                 </div>
                 <div class="xc-breadcrumb">
-                    <a href="<?= base_url('index.php/dashboard') ?>">Project Monitoring</a>
+                    <a href="<?= base_url('dashboard') ?>">Project Monitoring</a>
                     <span>›</span> Add Project
                 </div>
 
@@ -583,9 +583,9 @@
                 <!-- STEP 1 Form card -->
                 <div class="xc-form-card">
 
-                    <!-- <form method="post" action="<?= base_url('index.php/project/save_step1') ?>"> -->
+                    <!-- <form method="post" action="<?= base_url('project/save_step1') ?>"> -->
 
-                    <form method="post" action="<?= base_url('index.php/project/update_step1/' . $project->id) ?>">
+                    <form method="post" action="<?= base_url('project/update_step1/' . $project->id) ?>">
 
                         <!-- Customer -->
                         <div class="xc-section-label">Customer Details</div>
@@ -940,7 +940,7 @@
                         <hr class="xc-divider">
 
                         <div class="xc-form-footer">
-                            <a href="<?= base_url('index.php/project') ?>" class="btn-xc-cancel">Cancel</a>
+                            <a href="<?= base_url('project') ?>" class="btn-xc-cancel">Cancel</a>
                             <button type="submit" class="btn-xc-save">Save & Next →</button>
                         </div>
 
@@ -1108,7 +1108,7 @@
         // CUSTOMER DETAILS
         $.ajax({
 
-            url: "<?= base_url('index.php/project/get_customer') ?>",
+            url: "<?= base_url('project/get_customer') ?>",
 
             type: "POST",
 
@@ -1135,7 +1135,7 @@
         // CUSTOMER USERS
         $.ajax({
 
-            url: "<?= base_url('index.php/project/get_customer_users') ?>",
+            url: "<?= base_url('project/get_customer_users') ?>",
 
             type: "POST",
 
@@ -1185,7 +1185,7 @@
 
         $.ajax({
 
-            url: "<?= base_url('index.php/project/get_priority_subcategories') ?>",
+            url: "<?= base_url('project/get_priority_subcategories') ?>",
 
             type: "POST",
 

@@ -1,4 +1,4 @@
-<style>
+﻿<style>
     :root {
         --xc-ink: #0f172a;
         --xc-ink-soft: #475569;
@@ -460,7 +460,7 @@
 
                                                 <div class="xc-mp-actions">
 
-                                                    <a href="<?= base_url('index.php/admin/view_manpower/' . $row->id); ?>"
+                                                    <a href="<?= base_url('admin/view_manpower/' . $row->id); ?>"
                                                         class="xc-mp-btn view" title="View">
                                                         <i class="bx bx-show"></i>
                                                     </a>

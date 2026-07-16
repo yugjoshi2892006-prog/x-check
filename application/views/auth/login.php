@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en" data-bs-theme="light">
 
 <head>
@@ -812,7 +812,7 @@
                         </div>
                     <?php endif; ?>
 
-                    <form id="loginForm" action="<?= base_url('index.php/auth/login') ?>" method="post" novalidate>
+                    <form id="loginForm" action="<?= base_url('auth/login') ?>" method="post" novalidate>
 
                         <div class="xc-form-group">
                             <label>Email Address</label>
@@ -848,7 +848,7 @@
                     <div class="xc-divider">or</div>
 
                     <p class="xc-register-link">
-                        Don't have an account? <a href="<?= base_url('index.php/auth/register') ?>">Create one</a>
+                        Don't have an account? <a href="<?= base_url('auth/register') ?>">Create one</a>
                     </p>
 
                 </div>

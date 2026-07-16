@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <div class="xc-card">
@@ -98,14 +98,14 @@
 
                                         <?php if ($row->status == "Pending") { ?>
 
-                                            <a href="<?= base_url('index.php/materials/approve_request/' . $row->id) ?>"
+                                            <a href="<?= base_url('materials/approve_request/' . $row->id) ?>"
                                                 class="xc-btn-outline-success">
 
                                                 Approve
 
                                             </a>
 
-                                            <a href="<?= base_url('index.php/materials/reject_request/' . $row->id) ?>"
+                                            <a href="<?= base_url('materials/reject_request/' . $row->id) ?>"
                                                 class="xc-btn-outline-danger">
 
                                                 Reject

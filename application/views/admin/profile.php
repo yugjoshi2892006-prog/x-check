@@ -1,10 +1,10 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <div class="card shadow-sm">
             <div class="card-body">
 
-                <form method="post" action="<?= base_url('index.php/profile/save') ?>" enctype="multipart/form-data">
+                <form method="post" action="<?= base_url('profile/save') ?>" enctype="multipart/form-data">
 
                     <!-- Profile Top Section -->
 
@@ -232,20 +232,64 @@
 
 <script>
 
-    document.getElementById('profileImage')
-        .addEventListener('change', function (e) {
+<?php
+function xc_ini_size_to_bytes($val) {
+    $val = trim($val);
+    $last = strtolower($val[strlen($val)-1]);
+    $num = (int)$val;
+    switch($last) {
+        case 'g': $num *= 1024;
+        case 'm': $num *= 1024;
+        case 'k': $num *= 1024;
+    }
+    return $num;
+}
 
-            let reader = new FileReader();
+$upload_max_bytes = xc_ini_size_to_bytes(ini_get('upload_max_filesize'));
+$post_max_bytes = xc_ini_size_to_bytes(ini_get('post_max_size'));
 
-            reader.onload = function () {
+echo "const XC_SERVER_MAX_UPLOAD = {$upload_max_bytes};\n";
+echo "const XC_SERVER_MAX_POST = {$post_max_bytes};\n";
 
-                document.getElementById('previewImage').src =
-                    reader.result;
+?>
 
-            };
+function humanBytes(bytes) {
+    if (bytes >= 1073741824) return (bytes / 1073741824).toFixed(2) + ' GB';
+    if (bytes >= 1048576) return (bytes / 1048576).toFixed(2) + ' MB';
+    if (bytes >= 1024) return (bytes / 1024).toFixed(2) + ' KB';
+    return bytes + ' bytes';
+}
 
-            reader.readAsDataURL(e.target.files[0]);
+document.getElementById('profileImage')
+    .addEventListener('change', function (e) {
 
-        });
+        const file = e.target.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        // Validate against server-side limits
+        if (file.size > XC_SERVER_MAX_UPLOAD) {
+            alert('Selected file (' + humanBytes(file.size) + ') exceeds the server upload limit of ' + humanBytes(XC_SERVER_MAX_UPLOAD) + '. Please choose a smaller file.');
+            e.target.value = '';
+            return;
+        }
+
+        if (file.size > XC_SERVER_MAX_POST) {
+            alert('Selected file (' + humanBytes(file.size) + ') exceeds the server POST limit of ' + humanBytes(XC_SERVER_MAX_POST) + '. Please choose a smaller file.');
+            e.target.value = '';
+            return;
+        }
+
+        let reader = new FileReader();
+
+        reader.onload = function () {
+            document.getElementById('previewImage').src = reader.result;
+        };
+
+        reader.readAsDataURL(file);
+
+    });
 
 </script>

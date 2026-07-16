@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <style>
@@ -156,9 +156,9 @@
                     <h2>Edit Customer</h2>
                 </div>
                 <div class="xc-breadcrumb">
-                    <a href="<?= base_url('index.php/dashboard') ?>">Masters</a>
+                    <a href="<?= base_url('dashboard') ?>">Masters</a>
                     <span>›</span>
-                    <a href="<?= base_url('index.php/customer') ?>">Customers</a>
+                    <a href="<?= base_url('customer') ?>">Customers</a>
                     <span>›</span> Edit Customer
                 </div>
 
@@ -167,7 +167,7 @@
 
                     <div class="xc-section-label">Customer Information</div>
 
-                    <form method="post" action="<?= base_url('index.php/customer/update/' . $customer->id) ?>" autocomplete="off">
+                    <form method="post" action="<?= base_url('customer/update/' . $customer->id) ?>" autocomplete="off">
 
                         <div class="row g-3">
 

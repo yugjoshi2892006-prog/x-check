@@ -30,6 +30,26 @@ class Profile extends CI_Controller
 
         $profile = $this->Profile_model->getProfile();
 
+        // Protect against oversized POST (PHP will discard $_POST/$_FILES when exceeded)
+        $postMax = ini_get('post_max_size');
+        // Convert shorthand byte value (e.g., '40M') to bytes
+        $postMaxBytes = 0;
+        if ($postMax) {
+            $unit = strtoupper(substr($postMax, -1));
+            $value = (int) $postMax;
+            switch ($unit) {
+                case 'G': $postMaxBytes = $value * 1024 * 1024 * 1024; break;
+                case 'M': $postMaxBytes = $value * 1024 * 1024; break;
+                case 'K': $postMaxBytes = $value * 1024; break;
+                default: $postMaxBytes = $value;
+            }
+        }
+
+        if (isset($_SERVER['CONTENT_LENGTH']) && $postMaxBytes > 0 && (int) $_SERVER['CONTENT_LENGTH'] > $postMaxBytes) {
+            $this->session->set_flashdata('error', 'Uploaded data exceeds server limit (' . $postMax . '). Please upload a smaller file.');
+            redirect('profile');
+        }
+
 
         $user_id = $this->session->userdata('id');
         $company_id = $this->session->userdata('company_id');
@@ -52,6 +72,12 @@ class Profile extends CI_Controller
             'user_id' => $user_id,
             'company_id' => $company_id
         ];
+
+        // Basic validation: required fields
+        if (empty($data['company_name'])) {
+            $this->session->set_flashdata('error', 'Company name is required.');
+            redirect('profile');
+        }
 
         /* Image Upload */
 

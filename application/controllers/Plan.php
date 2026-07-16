@@ -154,15 +154,7 @@ class Plan extends CI_Controller
         redirect('admin/dashboard');
     }
 
-
-
-
-
-
-
-
-
-    public function payment_history()
+        public function payment_history()
     {
         $company_id = $this->session->userdata('company_id');
 

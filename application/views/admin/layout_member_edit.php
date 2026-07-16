@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <!-- Page title -->
@@ -7,7 +7,7 @@
                 <div class="xc-page-title d-sm-flex align-items-center justify-content-between">
                     <h4 class="mb-sm-0">Edit Layout Member</h4>
                     <ol class="xc-breadcrumb">
-                        <li><a href="<?= base_url('index.php/layout_member'); ?>">Layout</a></li>
+                        <li><a href="<?= base_url('layout_member'); ?>">Layout</a></li>
                         <li class="active">Edit Member</li>
                     </ol>
                 </div>
@@ -28,7 +28,7 @@
 
                     <div class="card-body">
 
-                        <form action="<?= base_url('index.php/layout_member/update/' . $member->id); ?>" method="post">
+                        <form action="<?= base_url('layout_member/update/' . $member->id); ?>" method="post">
 
                             <!-- Section: Company & Member -->
                             <div class="xc-section-title">
@@ -208,7 +208,7 @@
 
                             <div class="text-end">
 
-                                <a href="<?= base_url('index.php/layout_member'); ?>" class="btn xc-btn-cancel">
+                                <a href="<?= base_url('layout_member'); ?>" class="btn xc-btn-cancel">
 
                                     Cancel
 
@@ -495,7 +495,7 @@
 
             $.ajax({
 
-                url: "<?= base_url('index.php/layout_member/get_team_members'); ?>",
+                url: "<?= base_url('layout_member/get_team_members'); ?>",
 
                 type: "POST",
 

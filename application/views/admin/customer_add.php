@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <style>
@@ -162,9 +162,9 @@
                     <h2>Add Customer</h2>
                 </div>
                 <div class="xc-breadcrumb">
-                    <a href="<?= base_url('index.php/dashboard') ?>">Masters</a>
+                    <a href="<?= base_url('dashboard') ?>">Masters</a>
                     <span>›</span>
-                    <a href="<?= base_url('index.php/customer') ?>">Customers</a>
+                    <a href="<?= base_url('customer') ?>">Customers</a>
                     <span>›</span> Add Customer
                 </div>
 
@@ -173,7 +173,7 @@
 
                     <div class="xc-section-label">Customer Information</div>
 
-                    <form method="post" action="<?= base_url('index.php/customer/insert') ?>" autocomplete="off">
+                    <form method="post" action="<?= base_url('customer/insert') ?>" autocomplete="off">
 
                         <div class="row g-3">
 
@@ -249,7 +249,7 @@
 
                         <div class="xc-form-footer">
                             <button type="submit" class="btn-xc-save">Save Customer</button>
-                            <a href="<?= base_url('index.php/customer') ?>" class="btn-xc-cancel">Cancel</a>
+                            <a href="<?= base_url('customer') ?>" class="btn-xc-cancel">Cancel</a>
                         </div>
 
                     </form>

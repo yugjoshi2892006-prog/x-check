@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <style>
@@ -184,14 +184,14 @@
             <!-- Header -->
             <div class="xc-header">
                 <h2>Users of <?= htmlspecialchars($customer->name) ?></h2>
-                <a href="<?= base_url('index.php/customer/add_subcustomer/' . $customer->id) ?>" class="btn-xc-add">
+                <a href="<?= base_url('customer/add_subcustomer/' . $customer->id) ?>" class="btn-xc-add">
                     + Add User
                 </a>
             </div>
             <div class="xc-breadcrumb">
-                <a href="<?= base_url('index.php/dashboard') ?>">Masters</a>
+                <a href="<?= base_url('dashboard') ?>">Masters</a>
                 <span>›</span>
-                <a href="<?= base_url('index.php/customer') ?>">Customers</a>
+                <a href="<?= base_url('customer') ?>">Customers</a>
                 <span>›</span> <?= htmlspecialchars($customer->name) ?>
             </div>
             <div class="xc-wrapper">
@@ -224,9 +224,9 @@
                                         </td>
                                         <td>
                                             <div class="xc-actions">
-                                                <a href="<?= base_url('index.php/customer/edit_subcustomer/' . $row->id) ?>"
+                                                <a href="<?= base_url('customer/edit_subcustomer/' . $row->id) ?>"
                                                     class="btn-xc btn-xc-edit">Edit</a>
-                                                <a href="<?= base_url('index.php/customer/delete_subcustomer/' . $row->id) ?>"
+                                                <a href="<?= base_url('customer/delete_subcustomer/' . $row->id) ?>"
                                                     class="btn-xc btn-xc-delete"
                                                     onclick="return confirm('Delete User?')">Delete</a>
                                             </div>

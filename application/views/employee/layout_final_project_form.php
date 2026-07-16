@@ -1,4 +1,4 @@
-<style>
+﻿<style>
     .xc-card {
         background: #fff;
         border: 1px solid #e9edf1;
@@ -103,7 +103,7 @@
                     Structure Consultant.
                 </div>
 
-                <form action="<?= base_url('index.php/employee/save_layout_final_project/' . (int) $architect_report->id); ?>" method="post"
+                <form action="<?= base_url('employee/save_layout_final_project/' . (int) $architect_report->id); ?>" method="post"
                     enctype="multipart/form-data">
 
                     <div class="row">
@@ -142,7 +142,7 @@
                     </div>
 
                     <button class="xc-btn xc-btn-main" type="submit">Save &amp; Send to Structural</button>
-                    <a class="xc-back" href="<?= base_url('index.php/employee/layout_process'); ?>">
+                    <a class="xc-back" href="<?= base_url('employee/layout_process'); ?>">
                         <i class="bx bx-arrow-back"></i> Back
                     </a>
                 </form>

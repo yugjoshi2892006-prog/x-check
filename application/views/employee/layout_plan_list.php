@@ -1,4 +1,4 @@
-<style>
+﻿<style>
     .xc-card {
         border: none;
         border-radius: 16px;
@@ -296,17 +296,17 @@
                                         <td>
                                             <div class="xc-actions">
 
-                                                <a href="<?= base_url('index.php/employee/layout_plan_details/' . $row->id); ?>"
+                                                <a href="<?= base_url('employee/layout_plan_details/' . $row->id); ?>"
                                                     class="xc-icon-btn xc-icon-view" title="View">
                                                     <i class="bx bx-show"></i>
                                                 </a>
 
-                                                <!-- <a href="<?= base_url('index.php/employee/layout_plan_edit/' . $row->id); ?>"
+                                                <!-- <a href="<?= base_url('employee/layout_plan_edit/' . $row->id); ?>"
                                                     class="xc-icon-btn xc-icon-edit" title="Edit">
                                                     <i class="bx bx-edit"></i>
                                                 </a>
 
-                                                <a href="<?= base_url('index.php/employee/layout_plan_delete/' . $row->id); ?>"
+                                                <a href="<?= base_url('employee/layout_plan_delete/' . $row->id); ?>"
                                                     class="xc-icon-btn xc-icon-delete" title="Delete"
                                                     onclick="return confirm('Are you sure you want to delete this layout plan?');">
                                                     <i class="bx bx-trash"></i>

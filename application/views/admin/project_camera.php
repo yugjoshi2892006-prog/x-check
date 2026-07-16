@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <style>
@@ -499,7 +499,7 @@
                     <h2>Camera Mapping</h2>
                 </div>
                 <div class="xc-breadcrumb">
-                    <a href="<?= base_url('index.php/dashboard') ?>">Project Monitoring</a>
+                    <a href="<?= base_url('dashboard') ?>">Project Monitoring</a>
                     <span>›</span> Camera Mapping
                 </div>
 
@@ -740,7 +740,7 @@
                 function saveCamera(floorId, camName, x, y) {
 
                     $.ajax({
-                        url: '<?= base_url("index.php/project/save_camera") ?>',
+                        url: '<?= base_url("project/save_camera") ?>',
                         type: 'POST',
                         data: {
                             draft_token: '<?= $draft_token ?>',
@@ -759,7 +759,7 @@
                     $btn.prop('disabled', true);
 
                     $.ajax({
-                        url: '<?= base_url("index.php/project/finish") ?>',
+                        url: '<?= base_url("project/finish") ?>',
                         type: 'POST',
                         dataType: 'json',
                         data: {
@@ -774,7 +774,7 @@
                                 alert('Project Saved Successfully');
 
                                 window.location.href =
-                                    '<?= base_url("index.php/admin/dashboard") ?>';
+                                    '<?= base_url("admin/dashboard") ?>';
                             }
                             else {
                                 alert(res.message);

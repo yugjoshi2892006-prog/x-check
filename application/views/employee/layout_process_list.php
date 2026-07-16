@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
         <?php if ($this->session->flashdata('success')) { ?>
             <div class="alert alert-success xc-alert xc-alert-success">
@@ -62,7 +62,7 @@
                                 <?php } ?>
                             </select>
                             <?php if (!empty($plan_filter)) { ?>
-                                <a href="<?= base_url('index.php/employee/layout_process'); ?>" class="xc-clear-filter"
+                                <a href="<?= base_url('employee/layout_process'); ?>" class="xc-clear-filter"
                                     title="Clear filter">
                                     <i class="bx bx-x"></i>
                                 </a>
@@ -73,12 +73,12 @@
             </div>
 
             <div class="xc-action-bar-right">
-                <a href="<?= base_url('index.php/employee/layout_process_flow'); ?>" class="xc-btn xc-btn-secondary">
+                <a href="<?= base_url('employee/layout_process_flow'); ?>" class="xc-btn xc-btn-secondary">
                     <i class="bx bx-git-branch"></i>
                     <span>Flow View</span>
                 </a>
                 <?php if (!empty($layout_role) && in_array($layout_role->role, Layout_member_model::$STAGE_ORDER)) { ?>
-                    <a href="<?= base_url('index.php/employee/layout_process_add'); ?>" class="xc-btn xc-btn-primary">
+                    <a href="<?= base_url('employee/layout_process_add'); ?>" class="xc-btn xc-btn-primary">
                         <i class="bx bx-upload"></i>
                         <span>Upload Plan</span>
                     </a>
@@ -230,7 +230,7 @@
 
                                         <td>
                                             <div class="xc-actions">
-                                                <a href="<?= base_url('index.php/employee/layout_process_view/' . $row->id); ?>"
+                                                <a href="<?= base_url('employee/layout_process_view/' . $row->id); ?>"
                                                     class="xc-action-btn xc-action-view">
                                                     <i class="bx bx-show"></i>
                                                     <span>View Report</span>
@@ -245,13 +245,13 @@
 
                                                 <?php if ($is_client_viewer || $is_pmc_viewer || $is_architect_reviewer) { ?>
                                                     <?php if ($my_turn) { ?>
-                                                        <a href="<?= base_url('index.php/employee/approve_layout_process/' . $row->id); ?>"
+                                                        <a href="<?= base_url('employee/approve_layout_process/' . $row->id); ?>"
                                                             onclick="return confirm('Are you sure you want to approve this layout report?');"
                                                             class="xc-action-btn xc-action-approve">
                                                             <i class="bx bx-check-circle"></i>
                                                             <span>Approve</span>
                                                         </a>
-                                                        <a href="<?= base_url('index.php/employee/layout_process_view/' . $row->id . '#remark'); ?>"
+                                                        <a href="<?= base_url('employee/layout_process_view/' . $row->id . '#remark'); ?>"
                                                             class="xc-action-btn xc-action-remark">
                                                             <i class="bx bx-message-square-detail"></i>
                                                             <span>Remark</span>
@@ -265,7 +265,7 @@
                                                 <?php } ?>
 
                                                 <?php if (!empty($layout_role) && $layout_role->role === $row->stage && $row->status === 'Remarked') { ?>
-                                                    <a href="<?= base_url('index.php/employee/layout_process_add/' . $row->id); ?>"
+                                                    <a href="<?= base_url('employee/layout_process_add/' . $row->id); ?>"
                                                         class="xc-action-btn xc-action-resubmit">
                                                         <i class="bx bx-revision"></i>
                                                         <span>Resubmit</span>
@@ -288,7 +288,7 @@
                                                     ?>
                                                     <?php if (!$final_project) { ?>
                                                         <?php if ($show_final_project_button && !empty($layout_role) && $layout_role->role === 'Architect') { ?>
-                                                            <a href="<?= base_url('index.php/employee/layout_final_project_add/' . (int) $row->id); ?>"
+                                                            <a href="<?= base_url('employee/layout_final_project_add/' . (int) $row->id); ?>"
                                                                 class="xc-action-btn xc-action-final">
                                                                 <i class="bx bx-folder-plus"></i>
                                                                 <span>Add Final Project</span>
@@ -301,7 +301,7 @@
                                                         </span>
                                                     <?php } ?>
                                                 <?php } elseif ($row->status === 'Approved' && $next_stage && !empty($layout_role) && $layout_role->role === $next_stage && $show_submit_to_next_stage) { ?>
-                                                    <a href="<?= base_url('index.php/employee/layout_process_add'); ?>"
+                                                    <a href="<?= base_url('employee/layout_process_add'); ?>"
                                                         class="xc-action-btn xc-action-next">
                                                         <i class="bx bx-right-arrow-alt"></i>
                                                         <span>Submit to <?= html_escape($next_stage); ?></span>
@@ -321,7 +321,7 @@
                                             <h3>No Layout Reports Found</h3>
                                             <p>There are no layout plan reports to display at this moment.</p>
                                             <?php if (!empty($layout_role) && in_array($layout_role->role, Layout_member_model::$STAGE_ORDER)) { ?>
-                                                <a href="<?= base_url('index.php/employee/layout_process_add'); ?>"
+                                                <a href="<?= base_url('employee/layout_process_add'); ?>"
                                                     class="xc-btn xc-btn-primary">
                                                     <i class="bx bx-plus"></i>
                                                     <span>Upload First Plan</span>

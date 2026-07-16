@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
 
         <style>
@@ -698,7 +698,7 @@
                     <h2>Add Project</h2>
                 </div>
                 <div class="xc-breadcrumb">
-                    <a href="<?= base_url('index.php/dashboard') ?>">Project Monitoring</a>
+                    <a href="<?= base_url('dashboard') ?>">Project Monitoring</a>
                     <span>&rsaquo;</span> Add Project
                 </div>
 
@@ -725,7 +725,7 @@
                     </div>
                 </div>
 
-                <form id="projectForm" method="post" action="<?= base_url('index.php/project/save_step1') ?>">
+                <form id="projectForm" method="post" action="<?= base_url('project/save_step1') ?>">
 
                     <!-- Two-column layout: left = customer/project/location, right = upload + team -->
                     <div class="xc-grid">
@@ -1077,7 +1077,7 @@
 
                     <!-- Footer -->
                     <div class="xc-form-footer">
-                        <a href="<?= base_url('index.php/project') ?>" class="btn-xc-cancel">Cancel</a>
+                        <a href="<?= base_url('project') ?>" class="btn-xc-cancel">Cancel</a>
                         <button type="submit" class="btn-xc-save">Save &amp; Next &rarr;</button>
                     </div>
 
@@ -1202,7 +1202,7 @@
 
                     $.ajax({
 
-                        url: "<?= base_url('index.php/project/get_customer') ?>",
+                        url: "<?= base_url('project/get_customer') ?>",
 
                         type: "POST",
 
@@ -1233,7 +1233,7 @@
 
                     $.ajax({
 
-                        url: "<?= base_url('index.php/project/get_customer_users') ?>",
+                        url: "<?= base_url('project/get_customer_users') ?>",
 
                         type: "POST",
 
@@ -1281,7 +1281,7 @@
 
                             if (res.status == 'success') {
                                 window.location.href =
-                                    "<?= base_url('index.php/project/floors/') ?>"
+                                    "<?= base_url('project/floors/') ?>"
                                     + res.draft_token;
                             }
                             else {
@@ -1300,7 +1300,7 @@
 
                     $.ajax({
 
-                        url: "<?= base_url('index.php/project/get_priority_subcategories') ?>",
+                        url: "<?= base_url('project/get_priority_subcategories') ?>",
 
                         type: "POST",
 

@@ -1,4 +1,4 @@
-<div class="page-wrapper">
+﻿<div class="page-wrapper">
     <div class="page-content">
         <style>
             :root {
@@ -639,7 +639,7 @@
                                     Search
                                 </button>
 
-                                <a href="<?= base_url('index.php/materials/project_reports/' . $project->id); ?>"
+                                <a href="<?= base_url('materials/project_reports/' . $project->id); ?>"
                                     class="xc-mr-btn xc-mr-btn-reset">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -783,7 +783,7 @@
 
             <div class="xc-mr-export-row">
 
-                <a href="<?= base_url('index.php/materials/export_invoice/' . $project->id); ?>"
+                <a href="<?= base_url('materials/export_invoice/' . $project->id); ?>"
                     class="xc-mr-btn-export">
 
                     <i class='bx bxs-file-pdf'></i>
