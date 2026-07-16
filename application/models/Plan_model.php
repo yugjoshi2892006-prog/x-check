@@ -49,6 +49,38 @@ class Plan_model extends CI_Model
             ->row();
     }
 
+    public function getPlanById($plan_id)
+    {
+        return $this->db
+            ->where('id', $plan_id)
+            ->get('plans')
+            ->row();
+    }
+
+    public function getAllPlans()
+    {
+        return $this->db
+            ->order_by('id', 'ASC')
+            ->get('plans')
+            ->result();
+    }
+
+    public function createPlan($data)
+    {
+        $data['created_at'] = date('Y-m-d H:i:s');
+        return $this->db->insert('plans', $data);
+    }
+
+    public function updatePlan($plan_id, $data)
+    {
+        return $this->db->where('id', $plan_id)->update('plans', $data);
+    }
+
+    public function deletePlan($plan_id)
+    {
+        return $this->db->where('id', $plan_id)->delete('plans');
+    }
+
     public function getPaymentHistory($company_id)
     {
         return $this->db

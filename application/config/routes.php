@@ -68,7 +68,12 @@ $route['team/delete/(:num)'] = 'team/delete/$1';
 $route['profile'] = 'profile';
 
 $route['payment-history'] = 'plan/payment_history';
-
+$route['superadmin/plans'] = 'superadmin/plans';
+$route['superadmin/plan/add'] = 'superadmin/add_plan';
+$route['superadmin/plan/save'] = 'superadmin/save_plan';
+$route['superadmin/plan/edit/(:num)'] = 'superadmin/edit_plan/$1';
+$route['superadmin/plan/update/(:num)'] = 'superadmin/update_plan/$1';
+$route['superadmin/plan/delete/(:num)'] = 'superadmin/delete_plan/$1';
 
 $route['profile/save'] = 'profile/save';
 

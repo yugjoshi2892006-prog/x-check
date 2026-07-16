@@ -392,60 +392,34 @@ $profile = $CI->Profile_model->getProfile();
                 </li>
 
                 <!-- Project Monitoring -->
-                <li>
+                <!-- <li>
                     <a href="<?= base_url(''); ?>">
                         <div class="parent-icon">
                             <i class='bx bx-cctv'></i>
                         </div>
                         <div class="menu-title">Project Monitoring</div>
                     </a>
+                </li> -->
+                <li>
+                    <a href="<?= base_url('superadmin/companies'); ?>">
+                        <div class="parent-icon">
+                            <i class='bx bx-cctv'></i>
+                        </div>
+                        <div class="menu-title">Company</div>
+                    </a>
                 </li>
+                <li>
+                    <a href="<?= base_url('superadmin/plans'); ?>">
+                        <div class="parent-icon">
+                            <i class='bx bx-wallet'></i>
+                        </div>
+                        <div class="menu-title">Plan Management</div>
+                    </a>
+                </li>
+
 
                 <!-- Master -->
-                <li>
-                    <a href="javascript:;" class="has-arrow">
-                        <div class="parent-icon">
-                            <i class='bx bx-grid-alt'></i>
-                        </div>
-                        <div class="menu-title">Master</div>
-                    </a>
 
-                    <ul>
-
-                        <!-- Projects -->
-                        <li>
-                            <a href="<?= base_url(''); ?>">
-                                <i class='bx bx-building-house'></i>
-                                Projects
-                            </a>
-                        </li>
-
-                        <!-- Team -->
-                        <li>
-                            <a href="<?= base_url(''); ?>">
-                                <i class='bx bx-group'></i>
-                                Team
-                            </a>
-                        </li>
-
-                        <!-- Customer -->
-                        <li>
-                            <a href="<?= base_url(''); ?>">
-                                <i class='bx bx-user'></i>
-                                Customer
-                            </a>
-                        </li>
-
-                        <!-- Folder -->
-                        <li>
-                            <a href="<?= base_url(''); ?>">
-                                <i class='bx bx-folder-open'></i>
-                                Folder List
-                            </a>
-                        </li>
-
-                    </ul>
-                </li>
 
             </ul>
             <!--end navigation-->

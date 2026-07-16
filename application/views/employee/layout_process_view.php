@@ -324,7 +324,7 @@
 
     .xc-pdf-card:hover {
         border-color: var(--danger);
-        transform: translateY(-4px);
+        transform: translateY(-4px); 
         box-shadow: 0 10px 26px rgba(201, 58, 58, 0.18);
         color: var(--text-dark);
     }
