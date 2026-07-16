@@ -370,7 +370,7 @@
                 $locked = empty($attendance_today);
                 ?><div style="flex:1 1 220px;min-width:200px;">
 
-<a href="<?= base_url('index.php/employee/add_attendance/'.$project->id) ?>"
+<a href="<?= base_url('employee/add_attendance/'.$project->id) ?>"
 class="xc-feature-card">
 
 <div class="xc-feature-icon">
@@ -388,7 +388,7 @@ Mark Today's Attendance
 </div>
 
                 <div style="flex: 1 1 220px; min-width: 200px;">
-                    <a href="<?= base_url('index.php/employee/attendance_list/' . $project->id) ?>"
+                    <a href="<?= base_url('employee/attendance_list/' . $project->id) ?>"
                         class="xc-feature-card">
 
                         <div class="xc-feature-icon">📋</div>
@@ -404,7 +404,7 @@ Mark Today's Attendance
 
                 <!-- Project Details -->
                 <div style="flex: 1 1 220px; min-width: 200px;">
-                    <a href="<?= base_url('index.php/employee/project_info/' . $project->id) ?>"
+                    <a href="<?= base_url('employee/project_info/' . $project->id) ?>"
                         class="xc-feature-card">
                         <div class="xc-feature-icon">
                             <svg viewBox="0 0 24 24">
@@ -421,7 +421,7 @@ Mark Today's Attendance
 
                 <!-- Capture Images (quick action) -->
                 <!-- <div style="flex: 1 1 220px; min-width: 200px;">
-                        <a href="<?= base_url('index.php/employee/capture_images/' . $project->id) ?>"
+                        <a href="<?= base_url('employee/capture_images/' . $project->id) ?>"
                             class="xc-quick-btn">
                             <div class="xc-feature-icon">
                                 <svg viewBox="0 0 24 24">
@@ -476,7 +476,7 @@ Mark Today's Attendance
 
                     <?php if (!$locked) { ?>
 
-                        <a href="<?= base_url('index.php/employee/materials_report/' . $project->id) ?>" class="xc-feature-card">
+                        <a href="<?= base_url('employee/materials_report/' . $project->id) ?>" class="xc-feature-card">
 
                             <div class="xc-feature-icon">
                                 📑
@@ -515,7 +515,7 @@ Mark Today's Attendance
 
                     <?php if (!$locked) { ?>
 
-                        <a href="<?= base_url('index.php/employee/view_images/' . $project->id) ?>" class="xc-feature-card">
+                        <a href="<?= base_url('employee/view_images/' . $project->id) ?>" class="xc-feature-card">
 
                         <?php } else { ?>
 
@@ -537,7 +537,7 @@ Mark Today's Attendance
 
                 <div style="flex: 1 1 220px; min-width: 200px;">
 
-                    <a href="<?= base_url('index.php/employee/material_request/' . $project->id) ?>"
+                    <a href="<?= base_url('employee/material_request/' . $project->id) ?>"
                         class="xc-feature-card">
 
                         <div class="xc-feature-icon">

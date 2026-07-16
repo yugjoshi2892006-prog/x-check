@@ -289,22 +289,22 @@
 
             <!-- Breadcrumb -->
             <div class="breadcrumb-nav mb-1">
-                <a href="<?= base_url('index.php/dashboard') ?>">Masters</a> &rsaquo;
-                <a href="<?= base_url('index.php/team') ?>">Team</a> &rsaquo;
+                <a href="<?= base_url('dashboard') ?>">Masters</a> &rsaquo;
+                <a href="<?= base_url('team') ?>">Team</a> &rsaquo;
                 Add Member
             </div>
 
             <!-- Page Header -->
             <div class="page-header">
                 <h3>Add Team Member</h3>
-                <a href="<?= base_url('index.php/team') ?>" class="btn-back">
+                <a href="<?= base_url('team') ?>" class="btn-back">
                     <i class="ti ti-arrow-left"></i> Back to Team
                 </a>
             </div>
 
             <!-- Form Card -->
             <div class="form-card">
-                <form method="post" action="<?= base_url('index.php/team/insert') ?>" autocomplete="off" id="teamForm">
+                <form method="post" action="<?= base_url('team/insert') ?>" autocomplete="off" id="teamForm">
 
                     <!-- Section: Personal Info -->
                     <div class="section-title">Personal Information</div>
@@ -434,7 +434,7 @@
                         <button type="submit" class="btn-save">
                             <i class="ti ti-device-floppy"></i> Save Team Member
                         </button>
-                        <a href="<?= base_url('index.php/team') ?>" class="btn-cancel">
+                        <a href="<?= base_url('team') ?>" class="btn-cancel">
                             <i class="ti ti-x"></i> Cancel
                         </a>
                     </div>

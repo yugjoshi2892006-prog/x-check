@@ -9,7 +9,7 @@
 
             <div class="xc-card xc-form-card">
 
-                <form method="post" action="<?= base_url('index.php/project/save_area') ?>">
+                <form method="post" action="<?= base_url('project/save_area') ?>">
 
                     <input type="hidden" name="draft_token" value="<?= $draft_token ?>">
 
@@ -120,7 +120,7 @@
 
             <div class="xc-wizard-actions">
 
-                <a href="<?= base_url('index.php/project/camera/' . $draft_token) ?>" class="btn xc-btn-next">
+                <a href="<?= base_url('project/camera/' . $draft_token) ?>" class="btn xc-btn-next">
                     Save & Next <i class="fa fa-arrow-right ms-1"></i>
                 </a>
 

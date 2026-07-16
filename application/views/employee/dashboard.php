@@ -375,7 +375,7 @@
                                             <td>
                                                 <div class="xc-actions">
 
-                                                    <a href="<?= base_url('index.php/employee/project/' . $row->id) ?>"
+                                                    <a href="<?= base_url('employee/project/' . $row->id) ?>"
                                                         class="xc-btn xc-btn-view">
                                                         <svg viewBox="0 0 24 24">
                                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -384,7 +384,7 @@
                                                         View
                                                     </a>
 
-                                                    <a href="<?= base_url('index.php/chat/project/' . $row->id) ?>"
+                                                    <a href="<?= base_url('chat/project/' . $row->id) ?>"
                                                         class="xc-btn xc-btn-chat">
                                                         <svg viewBox="0 0 24 24">
                                                             <path

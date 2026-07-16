@@ -4,7 +4,7 @@
         <div class="card shadow-sm">
             <div class="card-body">
 
-                <form method="post" action="<?= base_url('index.php/profile/save') ?>" enctype="multipart/form-data">
+                <form method="post" action="<?= base_url('profile/save') ?>" enctype="multipart/form-data">
 
                     <!-- Profile Top Section -->
 

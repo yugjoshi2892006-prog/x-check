@@ -92,7 +92,7 @@
 
             <br>
 
-            <a href="<?= base_url('index.php/project/edit_areas/' . $project_id) ?>" class="btn btn-success">
+            <a href="<?= base_url('project/edit_areas/' . $project_id) ?>" class="btn btn-success">
 
                 Next →
 

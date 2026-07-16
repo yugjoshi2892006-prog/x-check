@@ -148,11 +148,11 @@
                     <h2>Edit User</h2>
                 </div>
                 <div class="xc-breadcrumb">
-                    <a href="<?= base_url('index.php/dashboard') ?>">Masters</a>
+                    <a href="<?= base_url('dashboard') ?>">Masters</a>
                     <span>›</span>
-                    <a href="<?= base_url('index.php/customer') ?>">Customers</a>
+                    <a href="<?= base_url('customer') ?>">Customers</a>
                     <span>›</span>
-                    <a href="<?= base_url('index.php/customer/subcustomer_list/' . $user->customer_id) ?>">Users</a>
+                    <a href="<?= base_url('customer/subcustomer_list/' . $user->customer_id) ?>">Users</a>
                     <span>›</span> Edit User
                 </div>
 
@@ -161,7 +161,7 @@
 
                     <div class="xc-section-label">User Information</div>
 
-                    <form method="post" action="<?= base_url('index.php/customer/update_subcustomer/' . $user->id) ?>">
+                    <form method="post" action="<?= base_url('customer/update_subcustomer/' . $user->id) ?>">
 
                         <input type="hidden" name="customer_id" value="<?= $user->customer_id ?>">
 
@@ -191,7 +191,7 @@
 
                         <div class="xc-form-footer">
                             <button type="submit" class="btn-xc-save">Update User</button>
-                            <a href="<?= base_url('index.php/customer/subcustomer_list/' . $user->customer_id) ?>"
+                            <a href="<?= base_url('customer/subcustomer_list/' . $user->customer_id) ?>"
                                 class="btn-xc-cancel">Cancel</a>
                         </div>
 

@@ -353,6 +353,56 @@ class Layout_member_model extends CI_Model
             ->row();
     }
 
+    public function ensureLayoutTenderRequestsTable()
+    {
+        $this->db->query("CREATE TABLE IF NOT EXISTS layout_tender_requests (
+            id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            company_id INT(11) NOT NULL,
+            customer_id INT(11) NOT NULL,
+            final_project_id INT(11) UNSIGNED NOT NULL,
+            sent_by INT(11) NOT NULL,
+            created_at DATETIME NOT NULL,
+            PRIMARY KEY (id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+    }
+
+    public function insertTenderRequest($data)
+    {
+        $this->ensureLayoutTenderRequestsTable();
+        return $this->db->insert('layout_tender_requests', $data);
+    }
+
+    public function getTenderRequestForCustomer($company_id, $customer_id)
+    {
+        $this->ensureLayoutTenderRequestsTable();
+
+        return $this->db
+            ->where('company_id', $company_id)
+            ->where('customer_id', $customer_id)
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->get('layout_tender_requests')
+            ->row();
+    }
+
+    public function areAllConsultantsApproved($company_id, $customer_id)
+    {
+        $this->ensureLayoutProcessTable();
+
+        foreach (self::$STAGE_ORDER as $stage) {
+            if ($stage === 'Architect') {
+                continue;
+            }
+
+            $report = $this->getLatestStageReport($company_id, $customer_id, $stage);
+            if (!$report || $report->status !== 'Approved') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function getCurrentLayoutRole()
     {
         return $this->db

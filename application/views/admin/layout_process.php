@@ -166,14 +166,14 @@
         <div class="xc-card">
             <div class="xc-card-header">
                 <div>
-                    <p class="xc-title">Layout Process</p>
-                    <p class="xc-subtitle">Architect submissions, Client/PMC approvals and revision remarks</p>
+                    <p class="xc-title">Layout Process Management</p>
+                    <p class="xc-subtitle">Track and manage layout approvals across all stages</p>
                 </div>
                 <span class="xc-pill xc-pill-teal">
                     <i class="bx bx-list-ul"></i>
                     <?= !empty($reports) ? count($reports) : 0; ?> Reports
                 </span>
-                <a href="<?= base_url('index.php/layout_member/layout_process_flow'); ?>" class="xc-pill"
+                <a href="<?= base_url('layout_member/layout_process_flow'); ?>" class="xc-pill"
                     style="background:#ede9fe;color:#7c3aed;">
                     <i class="bx bx-git-branch"></i> Flow View
                 </a>
@@ -186,9 +186,7 @@
                             <th>#</th>
                             <th>PDF</th>
                             <th>Plan</th>
-                            <th>Stage / Role</th>
                             <th>Customer</th>
-                            <th>Architect</th>
                             <th>Start Date</th>
                             <th>End Date</th>
                             <th>Schedule</th>
@@ -215,13 +213,7 @@
                                         <span class="xc-strong"><?= html_escape($row->plan_title); ?></span><br>
                                         <small>Revision <?= (int) $row->revision_no; ?></small>
                                     </td>
-                                    <td>
-                                        <span class="xc-pill" style="background:#ede9fe;color:#6d28d9;">
-                                            <?= html_escape($row->stage); ?>
-                                        </span>
-                                    </td>
                                     <td><?= html_escape($row->customer_name); ?></td>
-                                    <td><?= html_escape($row->architect_name); ?></td>
                                     <td><?= $row->start_date ? date('d-m-Y', strtotime($row->start_date)) : '-'; ?></td>
                                     <td><?= $row->end_date ? date('d-m-Y', strtotime($row->end_date)) : '-'; ?></td>
                                     <td>

@@ -181,17 +181,17 @@
                 <!-- Header -->
                 <div class="xc-header">
                     <h2>Customers</h2>
-                    <a href="<?= base_url('index.php/customer/add') ?>" class="btn-xc-add">
+                    <a href="<?= base_url('customer/add') ?>" class="btn-xc-add">
                         + Add Customer
                     </a>
                 </div>
                 <div class="xc-breadcrumb">
-                    <a href="<?= base_url('index.php/admin/dashboard') ?>">Masters</a>
+                    <a href="<?= base_url('admin/dashboard') ?>">Masters</a>
                     <span>›</span> Customers
                 </div>
 
                 <!-- Filter bar (flat row, no card label) -->
-                <form method="GET" action="<?= base_url('index.php/customer') ?>">
+                <form method="GET" action="<?= base_url('customer') ?>">
                     <div class="xc-filter-bar">
 
                         <input type="text" name="search" class="form-control"
@@ -226,7 +226,7 @@
                         </select>
 
                         <button type="submit" class="btn-xc-search">Search</button>
-                        <a href="<?= base_url('index.php/customer') ?>" class="btn-xc-reset">Reset</a>
+                        <a href="<?= base_url('customer') ?>" class="btn-xc-reset">Reset</a>
 
                     </div>
                 </form>
@@ -265,12 +265,12 @@
                                         </td>
                                         <td>
                                             <div class="xc-actions">
-                                                <a href="<?= base_url('index.php/customer/edit/' . $row->id) ?>"
+                                                <a href="<?= base_url('customer/edit/' . $row->id) ?>"
                                                     class="btn-xc btn-xc-edit">Edit</a>
-                                                <a href="<?= base_url('index.php/customer/delete/' . $row->id) ?>"
+                                                <a href="<?= base_url('customer/delete/' . $row->id) ?>"
                                                     class="btn-xc btn-xc-delete"
                                                     onclick="return confirm('Delete Customer?')">Delete</a>
-                                                <a href="<?= base_url('index.php/customer/subcustomer_list/' . $row->id) ?>"
+                                                <a href="<?= base_url('customer/subcustomer_list/' . $row->id) ?>"
                                                     class="btn-xc btn-xc-users">Users</a>
                                             </div>
                                         </td>
@@ -356,7 +356,7 @@ function loadCities(state) {
     const citySelect = document.getElementById('filter_city');
     citySelect.innerHTML = '<option value="">Loading…</option>';
     if (!state) { citySelect.innerHTML = '<option value="">Select City</option>'; return; }
-    fetch('<?= base_url('index.php/customer/get_cities') ?>?state=' + encodeURIComponent(state))
+    fetch('<?= base_url('customer/get_cities') ?>?state=' + encodeURIComponent(state))
         .then(r => r.json())
         .then(cities => {
             citySelect.innerHTML = '<option value="">Select City</option>';

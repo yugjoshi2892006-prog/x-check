@@ -490,6 +490,155 @@ class Layout_member extends CI_Controller
         redirect('layout_member/layout_plan_list');
     }
 
+    public function update_layout_plan($id)
+    {
+        if (post_size_exceeded()) {
+            $this->session->set_flashdata(
+                'error',
+                'The files you selected are too large for this server to accept (upload limit exceeded). Please upload smaller files, or ask your admin to raise upload_max_filesize / post_max_size in php.ini.'
+            );
+            redirect('layout_member/layout_plan_edit/' . $id);
+        }
+
+        $plan = $this->Layout_member_model->getLayoutPlanById($id);
+
+        if (!$plan) {
+            $this->session->set_flashdata('error', 'Layout Plan not found.');
+            redirect('layout_member/layout_plan_list');
+        }
+
+        $customer_id = $this->input->post('customer_id');
+        $plan_name = trim((string) $this->input->post('plan_name'));
+
+        if (!$customer_id) {
+            $this->session->set_flashdata('error', 'Please select a Client before updating the Layout Plan.');
+            redirect('layout_member/layout_plan_edit/' . $id);
+        }
+
+        if ($plan_name === '') {
+            $this->session->set_flashdata('error', 'Plan Name is required.');
+            redirect('layout_member/layout_plan_edit/' . $id);
+        }
+
+        $file_rules = array(
+            'drawing_file' => array('label' => 'Store Side Drawing', 'exts' => array('jpg', 'jpeg', 'png', 'webp', 'pdf')),
+            'layout_photo' => array('label' => 'Site Layout Photo', 'exts' => array('jpg', 'jpeg', 'png', 'webp')),
+            'soil_test_pdf' => array('label' => 'Soil Test PDF', 'exts' => array('pdf')),
+        );
+
+        foreach ($file_rules as $field => $rule) {
+            $error = $this->_validate_upload($field, $rule['label'], $rule['exts']);
+
+            if ($error !== '') {
+                $this->session->set_flashdata('error', $error);
+                redirect('layout_member/layout_plan_edit/' . $id);
+            }
+        }
+
+        $uploaded_paths = [];
+
+        $drawing = $plan->drawing_file;
+        $photo = $plan->layout_photo;
+        $soil = $plan->soil_test_pdf;
+
+        if (!empty($_FILES['drawing_file']['name'])) {
+            $config['upload_path'] = './uploads/layout_plan/drawing/';
+            $config['allowed_types'] = '*';
+            $config['encrypt_name'] = TRUE;
+
+            if (!is_dir($config['upload_path'])) {
+                mkdir($config['upload_path'], 0755, true);
+            }
+
+            $this->load->library('upload', $config);
+
+            if ($this->upload->do_upload('drawing_file')) {
+                $drawing = $this->upload->data('file_name');
+                $uploaded_paths[] = $config['upload_path'] . $drawing;
+
+                if (!empty($plan->drawing_file) && file_exists('./uploads/layout_plan/drawing/' . $plan->drawing_file)) {
+                    @unlink('./uploads/layout_plan/drawing/' . $plan->drawing_file);
+                }
+            } else {
+                $this->_cleanup_uploaded_files($uploaded_paths);
+                $this->session->set_flashdata('error', 'Store Side Drawing: ' . $this->upload->display_errors('', ''));
+                redirect('layout_member/layout_plan_edit/' . $id);
+            }
+        }
+
+        if (!empty($_FILES['layout_photo']['name'])) {
+            $config['upload_path'] = './uploads/layout_plan/photo/';
+            $config['allowed_types'] = '*';
+            $config['encrypt_name'] = TRUE;
+
+            if (!is_dir($config['upload_path'])) {
+                mkdir($config['upload_path'], 0755, true);
+            }
+
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('layout_photo')) {
+                $photo = $this->upload->data('file_name');
+                $uploaded_paths[] = $config['upload_path'] . $photo;
+
+                if (!empty($plan->layout_photo) && file_exists('./uploads/layout_plan/photo/' . $plan->layout_photo)) {
+                    @unlink('./uploads/layout_plan/photo/' . $plan->layout_photo);
+                }
+            } else {
+                $this->_cleanup_uploaded_files($uploaded_paths);
+                $this->session->set_flashdata('error', 'Site Layout Photo: ' . $this->upload->display_errors('', ''));
+                redirect('layout_member/layout_plan_edit/' . $id);
+            }
+        }
+
+        if (!empty($_FILES['soil_test_pdf']['name'])) {
+            $config['upload_path'] = './uploads/layout_plan/soil/';
+            $config['allowed_types'] = '*';
+            $config['encrypt_name'] = TRUE;
+
+            if (!is_dir($config['upload_path'])) {
+                mkdir($config['upload_path'], 0755, true);
+            }
+
+            $this->upload->initialize($config);
+
+            if ($this->upload->do_upload('soil_test_pdf')) {
+                $soil = $this->upload->data('file_name');
+                $uploaded_paths[] = $config['upload_path'] . $soil;
+
+                if (!empty($plan->soil_test_pdf) && file_exists('./uploads/layout_plan/soil/' . $plan->soil_test_pdf)) {
+                    @unlink('./uploads/layout_plan/soil/' . $plan->soil_test_pdf);
+                }
+            } else {
+                $this->_cleanup_uploaded_files($uploaded_paths);
+                $this->session->set_flashdata('error', 'Soil Test PDF: ' . $this->upload->display_errors('', ''));
+                redirect('layout_member/layout_plan_edit/' . $id);
+            }
+        }
+
+        $data = array(
+            'customer_id' => $customer_id,
+            'plan_name' => $plan_name,
+            'drawing_file' => $drawing,
+            'layout_photo' => $photo,
+            'soil_test_pdf' => $soil,
+            'requirement' => $this->input->post('requirement')
+        );
+
+        if (!$this->Layout_member_model->updateLayoutPlan($id, $data)) {
+            $this->_cleanup_uploaded_files($uploaded_paths);
+            $db_error = $this->db->error();
+            $this->session->set_flashdata(
+                'error',
+                'Failed to update Layout Plan. ' . ($db_error['message'] ?: 'Please try again.')
+            );
+            redirect('layout_member/layout_plan_edit/' . $id);
+        }
+
+        $this->session->set_flashdata('success', 'Layout Plan Updated Successfully');
+        redirect('layout_member/layout_plan_list');
+    }
+
     // Deletes any files this request already wrote to disk. Used when a
     // later step in save_layout_plan() fails (disk error, DB error, etc.)
     // so we don't leave orphan uploads with no matching layout_plans row.

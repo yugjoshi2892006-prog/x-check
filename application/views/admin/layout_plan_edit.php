@@ -201,7 +201,7 @@
 
             <div class="xc-card-body">
 
-                <form action="<?= base_url('index.php/layout_member/update_layout_plan/' . $plan->id); ?>" method="post"
+                <form action="<?= base_url('layout_member/update_layout_plan/' . $plan->id); ?>" method="post"
                     enctype="multipart/form-data">
 
                     <div class="row">
@@ -356,7 +356,7 @@
                             Update Layout Plan
                         </button>
 
-                        <a href="<?= base_url('index.php/layout_member/layout_plan_list'); ?>" class="xc-back-btn">
+                        <a href="<?= base_url('layout_member/layout_plan_list'); ?>" class="xc-back-btn">
                             <i class="bx bx-arrow-back"></i> Back
                         </a>
 
@@ -389,7 +389,7 @@
 
         $.ajax({
 
-            url: "<?= base_url('index.php/layout_member/get_customer_details'); ?>",
+            url: "<?= base_url('layout_member/get_customer_details'); ?>",
 
             type: "POST",
 

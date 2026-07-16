@@ -495,7 +495,7 @@ $profile = $CI->Profile_model->getProfile();
 
                 <!-- Dashboard -->
                 <li>
-                    <a href="<?= base_url('index.php/employee/dashboard'); ?>">
+                    <a href="<?= base_url('employee/dashboard'); ?>">
                         <div class="parent-icon">
                             <i class='bx bx-home-alt'></i>
                         </div>
@@ -505,7 +505,7 @@ $profile = $CI->Profile_model->getProfile();
 
                 <!-- Layout Plan -->
                 <li>
-                    <a href="<?= base_url('index.php/employee/layout_plans'); ?>">
+                    <a href="<?= base_url('employee/layout_plans'); ?>">
                         <div class="parent-icon">
                             <i class='bx bx-map-alt'></i>
                         </div>
@@ -515,7 +515,7 @@ $profile = $CI->Profile_model->getProfile();
 
                 <!-- Layout Process -->
                 <li>
-                    <a href="<?= base_url('index.php/employee/layout_process'); ?>">
+                    <a href="<?= base_url('employee/layout_process'); ?>">
                         <div class="parent-icon">
                             <i class='bx bx-git-branch'></i>
                         </div>
@@ -597,22 +597,22 @@ $profile = $CI->Profile_model->getProfile();
 
                             <div class="profile-card-body">
 
-                                <a href="<?= base_url('index.php/employee/profile') ?>" class="profile-item">
+                                <a href="<?= base_url('employee/profile') ?>" class="profile-item">
                                     <span class="profile-item-icon"><i class="bx bx-user"></i></span>
                                     <span>My Profile</span>
                                 </a>
 
-                                <!-- <a href="<?= base_url('index.php/plan') ?>" class="profile-item">
+                                <!-- <a href="<?= base_url('plan') ?>" class="profile-item">
         <i class="bx bx-package"></i>
         <span>Plan</span>
     </a> -->
 
-                                <!-- <a href="<?= base_url('index.php/auth/change_password') ?>" class="profile-item">
+                                <!-- <a href="<?= base_url('auth/change_password') ?>" class="profile-item">
         <i class="bx bx-lock-alt"></i>
         <span>Change Password</span>
     </a> -->
 
-                                <a href="<?= base_url('index.php/auth/logout') ?>" class="profile-item logout">
+                                <a href="<?= base_url('auth/logout') ?>" class="profile-item logout">
                                     <span class="profile-item-icon"><i class="bx bx-log-out"></i></span>
                                     <span>Log Out</span>
                                 </a>
@@ -722,3 +722,4 @@ $profile = $CI->Profile_model->getProfile();
             </script>
         </header>
         <!--end header -->
+

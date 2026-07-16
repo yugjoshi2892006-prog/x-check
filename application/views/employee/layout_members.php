@@ -72,7 +72,7 @@
 
                                         <td>
 
-                                            <a href="<?= base_url('index.php/employee/layout_member_details/' . $row->id); ?>"
+                                            <a href="<?= base_url('employee/layout_member_details/' . $row->id); ?>"
                                                 class="btn btn-sm btn-info text-white">
 
                                                 <i class="bx bx-show"></i>

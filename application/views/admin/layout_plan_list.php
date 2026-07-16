@@ -222,7 +222,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <!-- <h4 class="mb-0">Layout Plan List</h4> -->
 
-            <a href="<?= base_url('index.php/layout_member/layout_plan_add'); ?>" class="xc-add-btn">
+            <a href="<?= base_url('layout_member/layout_plan_add'); ?>" class="xc-add-btn">
                 <i class="bx bx-plus"></i> Add Layout Plan
             </a>
         </div>
@@ -329,17 +329,17 @@
                                 <td>
                                     <div class="xc-action-group">
 
-                                        <a href="<?= base_url('index.php/layout_member/layout_plan_view/' . $row->id); ?>"
+                                        <a href="<?= base_url('layout_member/layout_plan_view/' . $row->id); ?>"
                                             class="xc-icon-btn xc-icon    -view" title="View">
                                             <i class="bx bx-show"></i>
                                         </a>
 
-                                        <a href="<?= base_url('index.php/layout_member/layout_plan_edit/' . $row->id); ?>"
+                                        <a href="<?= base_url('layout_member/layout_plan_edit/' . $row->id); ?>"
                                             class="xc-icon-btn xc-icon-edit" title="Edit">
                                             <i class="bx bx-edit"></i>
                                         </a>
 
-                                        <a href="<?= base_url('index.php/layout_member/delete_layout_plan/' . $row->id); ?>"
+                                        <a href="<?= base_url('layout_member/delete_layout_plan/' . $row->id); ?>"
                                             onclick="return confirm('Are you sure?')" class="xc-icon-btn xc-icon-delete"
                                             title="Delete">
                                             <i class="bx bx-trash"></i>

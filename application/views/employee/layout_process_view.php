@@ -439,7 +439,7 @@
             <!-- Breadcrumb -->
             <div class="xc-breadcrumb">
                 <i class="bx bx-home-alt"></i>
-                <a href="<?= base_url('index.php/employee/layout_process'); ?>">Layout Process</a>
+                <a href="<?= base_url('employee/layout_process'); ?>">Layout Process</a>
                 <i class="bx bx-chevron-right"></i>
                 <span>View Details</span>
             </div>
@@ -619,7 +619,7 @@
                             </div>
 
                             <div class="xc-btn-group">
-                                <a href="<?= base_url('index.php/employee/approve_layout_process/' . $report->id); ?>"
+                                <a href="<?= base_url('employee/approve_layout_process/' . $report->id); ?>"
                                     onclick="return confirm('Are you sure you want to approve this layout report?');"
                                     class="xc-pill xc-green">
                                     <i class="bx bx-check-double"></i> Approve Layout
@@ -627,7 +627,7 @@
                             </div>
 
                             <form id="remark"
-                                action="<?= base_url('index.php/employee/remark_layout_process/' . $report->id); ?>"
+                                action="<?= base_url('employee/remark_layout_process/' . $report->id); ?>"
                                 method="post" class="mt-4">
                                 <div class="xc-form-group">
                                     <label class="xc-label">Add Remark (Optional)</label>
@@ -657,7 +657,7 @@
                             <p style="color: var(--gray-600); margin-bottom: 16px; font-size: 14px;">
                                 This layout has been remarked. Please review the feedback and submit a revised version.
                             </p>
-                            <a href="<?= base_url('index.php/employee/layout_process_add/' . $report->id); ?>"
+                            <a href="<?= base_url('employee/layout_process_add/' . $report->id); ?>"
                                 class="xc-pill xc-orange">
                                 <i class="bx bx-upload"></i> Submit Revised Layout
                             </a>
@@ -666,7 +666,7 @@
 
                     <!-- Back Button -->
                     <div class="mt-4">
-                        <a href="<?= base_url('index.php/employee/layout_process'); ?>" class="xc-pill xc-teal">
+                        <a href="<?= base_url('employee/layout_process'); ?>" class="xc-pill xc-teal">
                             <i class="bx bx-arrow-back"></i> Back to Layout Process
                         </a>
                     </div>

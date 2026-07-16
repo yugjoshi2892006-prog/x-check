@@ -38,7 +38,7 @@
 
                     <?php } ?>
 
-                    <form method="post" action="<?= base_url('index.php/materials/add_category') ?>"
+                    <form method="post" action="<?= base_url('materials/add_category') ?>"
                         class="xc-mc-add-form">
 
                         <div class="row g-2">

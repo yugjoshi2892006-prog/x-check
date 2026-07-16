@@ -377,17 +377,17 @@
                 <!-- Header -->
                 <div class="xc-header">
                     <h2>Projects</h2>
-                    <a href="<?= base_url('index.php/project/add') ?>" class="btn-xc-add">
+                    <a href="<?= base_url('project/add') ?>" class="btn-xc-add">
                         + Add Project
                     </a>
                 </div>
                 <div class="xc-breadcrumb">
-                    <a href="<?= base_url('index.php/dashboard') ?>">Project Monitoring</a>
+                    <a href="<?= base_url('dashboard') ?>">Project Monitoring</a>
                     <span>›</span> Projects
                 </div>
 
                 <!-- Filter bar -->
-                <form method="GET" action="<?= base_url('index.php/project') ?>">
+                <form method="GET" action="<?= base_url('project') ?>">
                     <div class="xc-filter-bar">
 
                         <div class="xc-filter-row">
@@ -418,7 +418,7 @@
                             </select>
                             <button type="submit" class="btn-xc-search">Search</button>
                             <button type="button" class="btn-xc-reset"
-                                onclick="window.location='<?= base_url('index.php/project') ?>'">Reset</button>
+                                onclick="window.location='<?= base_url('project') ?>'">Reset</button>
                         </div>
 
                     </div>
@@ -487,9 +487,9 @@
                                             </td>
                                             <td>
                                                 <div class="xc-actions">
-                                                    <a href="<?= base_url('index.php/project/edit/' . $row->id) ?>"
+                                                    <a href="<?= base_url('project/edit/' . $row->id) ?>"
                                                         class="btn-xc btn-xc-edit">Edit</a>
-                                                    <a href="<?= base_url('index.php/project/delete/' . $row->id) ?>"
+                                                    <a href="<?= base_url('project/delete/' . $row->id) ?>"
                                                         class="btn-xc btn-xc-delete"
                                                         onclick="return confirm('Delete this project?')">Delete</a>
                                                 </div>

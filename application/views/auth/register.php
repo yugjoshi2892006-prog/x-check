@@ -301,7 +301,7 @@
                 <h4>Create your account</h4>
                 <p class="xc-form-sub">Fill in your details to get started with X-CHECK.</p>
 
-                <form method="post" action="<?= base_url('index.php/save-register') ?>">
+                <form method="post" action="<?= base_url('save-register') ?>">
 
                     <div class="xc-mb">
                         <label>Company Name</label>
@@ -355,7 +355,7 @@
 
                 <div class="xc-login-text">
                     Already have an account?
-                    <a href="<?= base_url('index.php/auth') ?>">Login here</a>
+                    <a href="<?= base_url('auth') ?>">Login here</a>
                 </div>
 
             </div>

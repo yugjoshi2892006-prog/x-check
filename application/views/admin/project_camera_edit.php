@@ -499,7 +499,7 @@
                     <h2>Camera Mapping</h2>
                 </div>
                 <div class="xc-breadcrumb">
-                    <a href="<?= base_url('index.php/dashboard') ?>">Project Monitoring</a>
+                    <a href="<?= base_url('dashboard') ?>">Project Monitoring</a>
                     <span>›</span> Camera Mapping
                 </div>
 
@@ -792,7 +792,7 @@
                 function saveCamera(floorId, camName, x, y) {
 
                     $.ajax({
-                        url: '<?= base_url("index.php/project/update_camera_position") ?>',
+                        url: '<?= base_url("project/update_camera_position") ?>',
                         type: 'POST',
                         data: {
                             project_id: '<?= $project_id ?>',
@@ -809,7 +809,7 @@
                     alert('Camera Mapping Updated Successfully');
 
                     window.location.href =
-                        '<?= base_url("index.php/project/project_list") ?>';
+                        '<?= base_url("project/project_list") ?>';
 
                 });
 
@@ -817,3 +817,4 @@
         </script>
     </div>
 </div>
+

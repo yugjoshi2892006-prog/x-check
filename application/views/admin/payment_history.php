@@ -64,7 +64,7 @@
 
                                 <!-- <td data-label="Action">
 
-                                    <a href="<?= base_url('index.php/plan/invoice/' . $row->id) ?>"
+                                    <a href="<?= base_url('plan/invoice/' . $row->id) ?>"
                                         class="btn btn-sm btn-outline-primary">
                                         <i class="bx bx-receipt"></i> Invoice
                                     </a>

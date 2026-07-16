@@ -186,7 +186,7 @@
                     </div>
                 <?php } ?>
 
-                <form action="<?= base_url('index.php/layout_member/save_layout_plan'); ?>" method="post"
+                <form action="<?= base_url('layout_member/save_layout_plan'); ?>" method="post"
                     enctype="multipart/form-data">
 
                     <div class="row">
@@ -253,7 +253,7 @@
                             Add Layout Plan
                         </button>
 
-                        <a href="<?= base_url('index.php/layout_member/layout_plan_list'); ?>" class="xc-back-btn">
+                        <a href="<?= base_url('layout_member/layout_plan_list'); ?>" class="xc-back-btn">
                             <i class="bx bx-arrow-back"></i> Back
                         </a>
                     </div>
@@ -274,7 +274,7 @@
 
     function loadCustomer() {
         $.ajax({
-            url: "<?= base_url('index.php/layout_member/get_customer_details'); ?>",
+            url: "<?= base_url('layout_member/get_customer_details'); ?>",
             type: "POST",
             data: {
                 customer_id: $("#customer_id").val()

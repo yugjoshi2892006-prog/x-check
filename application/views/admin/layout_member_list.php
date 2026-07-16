@@ -10,7 +10,7 @@
                     Layout Member List
                 </h4>
 
-                <a href="<?= base_url('index.php/layout_member/add'); ?>" class="btn xc-btn-add">
+                <a href="<?= base_url('layout_member/add'); ?>" class="btn xc-btn-add">
 
                     <i class="bx bx-plus"></i>
                     Add Layout Member
@@ -112,14 +112,14 @@
 
                                     <td>
 
-                                        <a href="<?= base_url('index.php/layout_member/edit/' . $row->id); ?>"
+                                        <a href="<?= base_url('layout_member/edit/' . $row->id); ?>"
                                             class="btn xc-btn-edit btn-sm">
 
                                             Edit
 
                                         </a>
 
-                                        <a href="<?= base_url('index.php/layout_member/delete/' . $row->id); ?>"
+                                        <a href="<?= base_url('layout_member/delete/' . $row->id); ?>"
                                             onclick="return confirm('Delete this member?')"
                                             class="btn xc-btn-delete btn-sm">
 

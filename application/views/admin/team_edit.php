@@ -208,8 +208,8 @@
 
             <!-- Breadcrumb -->
             <div class="breadcrumb-nav mb-1">
-                <a href="<?= base_url('index.php/dashboard') ?>">Masters</a> &rsaquo;
-                <a href="<?= base_url('index.php/team') ?>">Team</a> &rsaquo;
+                <a href="<?= base_url('dashboard') ?>">Masters</a> &rsaquo;
+                <a href="<?= base_url('team') ?>">Team</a> &rsaquo;
                 Edit Member
             </div>
 
@@ -222,7 +222,7 @@
                         T<?= str_pad($member->id, 5, '0', STR_PAD_LEFT) ?>
                     </span>
                 </div>
-                <a href="<?= base_url('index.php/team') ?>" class="btn-back">
+                <a href="<?= base_url('team') ?>" class="btn-back">
                     <i class="ti ti-arrow-left"></i> Back to Team
                 </a>
             </div>
@@ -387,7 +387,7 @@
                         <button type="submit" class="btn-save">
                             <i class="ti ti-device-floppy"></i> Update Member
                         </button>
-                        <a href="<?= base_url('index.php/team') ?>" class="btn-cancel">
+                        <a href="<?= base_url('team') ?>" class="btn-cancel">
                             <i class="ti ti-x"></i> Cancel
                         </a>
                     </div>

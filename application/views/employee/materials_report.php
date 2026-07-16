@@ -352,7 +352,7 @@
 </style>
 <div class="page-wrapper">
     <div class="page-content">
-        <form action="<?= base_url('index.php/employee/save_material_report'); ?>" method="post"
+        <form action="<?= base_url('employee/save_material_report'); ?>" method="post"
             enctype="multipart/form-data">
 
             <input type="hidden" name="project_id" value="<?= $project_id ?>">

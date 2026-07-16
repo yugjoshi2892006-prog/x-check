@@ -391,20 +391,20 @@
 
             <!-- Breadcrumb -->
             <div class="xc-tm-breadcrumb mb-1">
-                <a href="<?= base_url('index.php/dashboard') ?>">Masters</a> &rsaquo; Team
+                <a href="<?= base_url('dashboard') ?>">Masters</a> &rsaquo; Team
             </div>
 
             <!-- Page Header -->
             <div class="xc-tm-page-header">
                 <h3>Team</h3>
-                <a href="<?= base_url('index.php/team/add') ?>" class="xc-tm-btn-add">
+                <a href="<?= base_url('team/add') ?>" class="xc-tm-btn-add">
                     <i class="ti ti-plus"></i> Add Team
                 </a>
             </div>
 
             <!-- Filter Card -->
             <div class="xc-tm-filter-card">
-                <form method="GET" action="<?= base_url('index.php/team') ?>">
+                <form method="GET" action="<?= base_url('team') ?>">
                     <div class="row g-2 mb-2">
                         <div class="col-md-4">
                             <div class="input-group">
@@ -474,7 +474,7 @@
                             </button>
                         </div>
                         <div class="col-auto">
-                            <a href="<?= base_url('index.php/team') ?>" class="xc-tm-btn-reset">
+                            <a href="<?= base_url('team') ?>" class="xc-tm-btn-reset">
                                 <i class="ti ti-refresh"></i> Reset
                             </a>
                         </div>
@@ -527,7 +527,7 @@
                                             <span
                                                 class="xc-tm-proj-count"><?= isset($row->assigned_projects) ? $row->assigned_projects : 0 ?></span>
                                             <?php if (!empty($row->assigned_projects) && $row->assigned_projects > 0) { ?>
-                                                <a href="<?= base_url('index.php/team/projects/' . $row->id) ?>"
+                                                <a href="<?= base_url('team/projects/' . $row->id) ?>"
                                                     class="xc-tm-proj-link"> ›</a>
                                             <?php } ?>
                                         </td>
@@ -540,11 +540,11 @@
                                         </td>
                                         <td>
                                             <div class="d-flex gap-2">
-                                                <a href="<?= base_url('index.php/team/edit/' . $row->id) ?>"
+                                                <a href="<?= base_url('team/edit/' . $row->id) ?>"
                                                     class="xc-tm-btn-edit">
                                                     <i class="ti ti-pencil"></i> Edit
                                                 </a>
-                                                <a href="<?= base_url('index.php/team/delete/' . $row->id) ?>"
+                                                <a href="<?= base_url('team/delete/' . $row->id) ?>"
                                                     class="xc-tm-btn-delete"
                                                     onclick="return confirm('Are you sure you want to delete this team member?')">
                                                     <i class="ti ti-trash"></i> Delete
@@ -558,7 +558,7 @@
                                     <td colspan="9">
                                         <div class="xc-tm-empty">
                                             <i class="ti ti-users-off"></i>
-                                            <p>No team members found. <a href="<?= base_url('index.php/team/add') ?>"
+                                            <p>No team members found. <a href="<?= base_url('team/add') ?>"
                                                     style="color:var(--xc-teal);">Add one?</a></p>
                                         </div>
                                     </td>

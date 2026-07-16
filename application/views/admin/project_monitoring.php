@@ -763,7 +763,7 @@
 
                                                 <div class="xc-action-group">
 
-                                                    <a href="<?= base_url('index.php/admin/project_dashboard/' . $project->id) ?>"
+                                                    <a href="<?= base_url('admin/project_dashboard/' . $project->id) ?>"
                                                         class="xc-action-btn" title="View">
 
                                                         <svg viewBox="0 0 24 24">
@@ -773,7 +773,7 @@
 
                                                     </a>
 
-                                                    <a href="<?= base_url('index.php/chat/project/' . $project->id) ?>"
+                                                    <a href="<?= base_url('chat/project/' . $project->id) ?>"
                                                         class="xc-action-btn xc-chat-btn" title="Chat">
 
                                                         <svg viewBox="0 0 24 24">
@@ -783,7 +783,7 @@
                                                         </svg>
 
                                                     </a>
-                                                    <a href="<?= base_url('index.php/materials/project_reports/' . $project->id) ?>"
+                                                    <a href="<?= base_url('materials/project_reports/' . $project->id) ?>"
                                                         class="xc-action-btn" title="Materials Report">
 
                                                         <i class="bx bx-package"></i>

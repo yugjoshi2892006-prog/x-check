@@ -220,7 +220,7 @@
 
                 <hr class="xc-divider">
 
-                <a href="<?= base_url('index.php/layout_member/layout_plan_list'); ?>" class="xc-back-btn">
+                <a href="<?= base_url('layout_member/layout_plan_list'); ?>" class="xc-back-btn">
                     <i class="bx bx-arrow-back"></i> Back
                 </a>
 

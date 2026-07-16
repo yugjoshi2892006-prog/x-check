@@ -491,7 +491,7 @@ $profile = $CI->Profile_model->getProfile();
 
                 <!-- Dashboard -->
                 <li>
-                    <a href="<?= base_url('index.php/admin/dashboard'); ?>">
+                    <a href="<?= base_url('admin/dashboard'); ?>">
                         <div class="parent-icon">
                             <i class='bx bx-home-circle'></i>
                         </div>
@@ -501,7 +501,7 @@ $profile = $CI->Profile_model->getProfile();
 
                 <!-- Project Monitoring -->
                 <li>
-                    <a href="<?= base_url('index.php/project/project_monitoring'); ?>">
+                    <a href="<?= base_url('project/project_monitoring'); ?>">
                         <div class="parent-icon">
                             <i class='bx bx-line-chart'></i>
                         </div>
@@ -520,28 +520,28 @@ $profile = $CI->Profile_model->getProfile();
 
                     <ul>
                         <li>
-                            <a href="<?= base_url('index.php/project/project_list'); ?>">
+                            <a href="<?= base_url('project/project_list'); ?>">
                                 <i class='bx bx-buildings'></i>
                                 Projects
                             </a>
                         </li>
 
                         <li>
-                            <a href="<?= base_url('index.php/team'); ?>">
+                            <a href="<?= base_url('team'); ?>">
                                 <i class='bx bx-group'></i>
                                 Team
                             </a>
                         </li>
 
                         <li>
-                            <a href="<?= base_url('index.php/customer'); ?>">
+                            <a href="<?= base_url('customer'); ?>">
                                 <i class='bx bx-user'></i>
                                 Customer
                             </a>
                         </li>
 
                         <li>
-                            <a href="<?= base_url('index.php/folder'); ?>">
+                            <a href="<?= base_url('folder'); ?>">
                                 <i class='bx bx-folder'></i>
                                 Folder List
                             </a>
@@ -551,7 +551,7 @@ $profile = $CI->Profile_model->getProfile();
 
                 <!-- Attendance -->
                 <li>
-                    <a href="<?= base_url('index.php/admin/attendance_projects'); ?>">
+                    <a href="<?= base_url('admin/attendance_projects'); ?>">
                         <div class="parent-icon">
                             <i class='bx bx-calendar-check'></i>
                         </div>
@@ -561,7 +561,7 @@ $profile = $CI->Profile_model->getProfile();
 
                 <!-- Manpower Reports -->
                 <li>
-                    <a href="<?= base_url('index.php/admin/manpower_report_list'); ?>">
+                    <a href="<?= base_url('admin/manpower_report_list'); ?>">
                         <div class="parent-icon">
                             <i class='bx bx-bar-chart-square'></i>
                         </div>
@@ -580,14 +580,14 @@ $profile = $CI->Profile_model->getProfile();
 
                     <ul>
                         <li>
-                            <a href="<?= base_url('index.php/materials/categories'); ?>">
+                            <a href="<?= base_url('materials/categories'); ?>">
                                 <i class='bx bx-category'></i>
                                 Category
                             </a>
                         </li>
 
                         <li>
-                            <a href="<?= base_url('index.php/materials/subcategories'); ?>">
+                            <a href="<?= base_url('materials/subcategories'); ?>">
                                 <i class='bx bx-list-ul'></i>
                                 Sub Category
                             </a>
@@ -606,21 +606,21 @@ $profile = $CI->Profile_model->getProfile();
 
                     <ul>
                         <li>
-                            <a href="<?= base_url('index.php/layout_member'); ?>">
+                            <a href="<?= base_url('layout_member'); ?>">
                                 <i class='bx bx-user-plus'></i>
                                 Members List
                             </a>
                         </li>
 
                         <li>
-                            <a href="<?= base_url('index.php/layout_member/layout_plan_list'); ?>">
+                            <a href="<?= base_url('layout_member/layout_plan_list'); ?>">
                                 <i class='bx bx-map-alt'></i>
                                 Layout Plan
                             </a>
                         </li>
 
                         <li>
-                            <a href="<?= base_url('index.php/layout_member/layout_process'); ?>">
+                            <a href="<?= base_url('layout_member/layout_process'); ?>">
                                 <i class='bx bx-git-branch'></i>
                                 Layout Process
                             </a>
@@ -682,22 +682,22 @@ $profile = $CI->Profile_model->getProfile();
 
                                 <div class="profile-card-body">
 
-                                    <a href="<?= base_url('index.php/profile') ?>" class="profile-item">
+                                    <a href="<?= base_url('profile') ?>" class="profile-item">
                                         <span class="profile-item-icon"><i class='bx bx-user'></i></span>
                                         <span>My Profile</span>
                                     </a>
 
-                                    <a href="<?= base_url('index.php/plan') ?>" class="profile-item">
+                                    <a href="<?= base_url('plan') ?>" class="profile-item">
                                         <span class="profile-item-icon"><i class='bx bx-package'></i></span>
                                         <span>Plan</span>
                                     </a>
 
-                                    <a href="<?= base_url('index.php/auth/change_password') ?>" class="profile-item">
+                                    <a href="<?= base_url('auth/change_password') ?>" class="profile-item">
                                         <span class="profile-item-icon"><i class='bx bx-lock-alt'></i></span>
                                         <span>Change Password</span>
                                     </a>
 
-                                    <a href="<?= base_url('index.php/auth/logout') ?>" class="profile-item logout">
+                                    <a href="<?= base_url('auth/logout') ?>" class="profile-item logout">
                                         <span class="profile-item-icon"><i class='bx bx-log-out'></i></span>
                                         <span>Log Out</span>
                                     </a>
@@ -842,3 +842,4 @@ $profile = $CI->Profile_model->getProfile();
             </script> -->
         </header>
         <!--end header -->
+

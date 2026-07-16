@@ -45,7 +45,7 @@
                                                         <?= htmlspecialchars($project->project_name) ?>
                                                     </td>
                                                     <td data-label="Action">
-                                                        <a href="<?= base_url('index.php/admin/attendance_list/' . $project->id) ?>"
+                                                        <a href="<?= base_url('admin/attendance_list/' . $project->id) ?>"
                                                             class="xc-pa-btn">
                                                             <i class='bx bx-show'></i> View
                                                         </a>

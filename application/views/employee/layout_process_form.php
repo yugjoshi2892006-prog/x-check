@@ -100,7 +100,7 @@
                     </div>
                 <?php } ?>
 
-                <form action="<?= base_url('index.php/employee/save_layout_process'); ?>" method="post"
+                <form action="<?= base_url('employee/save_layout_process'); ?>" method="post"
                     enctype="multipart/form-data">
                     <input type="hidden" name="parent_report_id"
                         value="<?= !empty($parent_report) ? (int) $parent_report->id : 0; ?>">
@@ -159,7 +159,7 @@
                     </div>
 
                     <button class="xc-btn xc-btn-main" type="submit">Submit</button>
-                    <a class="xc-back" href="<?= base_url('index.php/employee/layout_process'); ?>">
+                    <a class="xc-back" href="<?= base_url('employee/layout_process'); ?>">
                         <i class="bx bx-arrow-back"></i> Back
                     </a>
                 </form>

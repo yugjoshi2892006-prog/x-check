@@ -383,7 +383,7 @@ $profile = $CI->Profile_model->getProfile();
 
                 <!-- Dashboard -->
                 <li>
-                    <a href="<?= base_url('index.php/superadmin/dashboard'); ?>">
+                    <a href="<?= base_url('superadmin/dashboard'); ?>">
                         <div class="parent-icon">
                             <i class='bx bx-home-alt'></i>
                         </div>
@@ -501,7 +501,7 @@ $profile = $CI->Profile_model->getProfile();
                                     <span>Plan</span>
                                 </a> -->
 
-                                <a href="<?= base_url('index.php/auth/change_password') ?>" class="profile-item">
+                                <a href="<?= base_url('auth/change_password') ?>" class="profile-item">
                                     <i class="bx bx-lock-alt"></i>
                                     <span>Change Password</span>
                                 </a>

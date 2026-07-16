@@ -701,7 +701,7 @@
 
                         <?php } else { ?>
 
-                            <a href="<?= base_url('index.php/plan/buy/1') ?>" class="xc-plan-status-pill cta-state">
+                            <a href="<?= base_url('plan/buy/1') ?>" class="xc-plan-status-pill cta-state">
                                 <span class="xc-plan-status-dot"></span>
                                 Get Started
                             </a>
@@ -722,7 +722,7 @@
 
                                 <h2>Choose Your Plan</h2>
 
-                                <a href="<?= base_url('index.php/plan/payment_history') ?>" class="btn btn-dark">
+                                <a href="<?= base_url('plan/payment_history') ?>" class="btn btn-dark">
                                     <i class="fa fa-history"></i>
                                     View Payment History
                                 </a>
@@ -799,7 +799,7 @@
                                                 20 Projects
                                             </li>
                                         </ul>
-                                        <a href="<?= base_url('index.php/plan/buy/1') ?>" class="btn-xc-buy orange-solid">
+                                        <a href="<?= base_url('plan/buy/1') ?>" class="btn-xc-buy orange-solid">
                                             <span>Get Started</span>
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                                 stroke-linecap="round" stroke-linejoin="round">
@@ -865,7 +865,7 @@
                                                 100 Projects
                                             </li>
                                         </ul>
-                                        <a href="<?= base_url('index.php/plan/buy/2') ?>" class="btn-xc-buy teal-solid">
+                                        <a href="<?= base_url('plan/buy/2') ?>" class="btn-xc-buy teal-solid">
                                             <span>Buy Now</span>
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                                 stroke-linecap="round" stroke-linejoin="round">
@@ -931,7 +931,7 @@
                                                 Unlimited Projects
                                             </li>
                                         </ul>
-                                        <a href="<?= base_url('index.php/plan/buy/3') ?>" class="btn-xc-buy purple-solid">
+                                        <a href="<?= base_url('plan/buy/3') ?>" class="btn-xc-buy purple-solid">
                                             <span>Buy Now</span>
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                                 stroke-linecap="round" stroke-linejoin="round">
