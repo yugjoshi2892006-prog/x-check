@@ -282,7 +282,7 @@ class Employee extends CI_Controller
         //         'created_at' => date('Y-m-d H:i:s')
         //     ];
 
-        //     $this->db->insert('index.php/project_images', $insert);
+        //     $this->db->insert('project_images', $insert);
 
         //     redirect('employee/capture_images/' . $project_id);
         // }

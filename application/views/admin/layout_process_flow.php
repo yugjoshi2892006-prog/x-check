@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿<style>
+=======
+<style>
+>>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
     @import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
 
     :root {

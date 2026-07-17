@@ -265,6 +265,7 @@ document.getElementById('profileImage')
 
         const file = e.target.files[0];
 
+<<<<<<< HEAD
         if (!file) {
             return;
         }
@@ -292,4 +293,6 @@ document.getElementById('profileImage')
 
     });
 
+=======
+>>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
 </script>

@@ -95,9 +95,15 @@
                                 <th style="width: 50px;">#</th>
                                 <th style="width: 60px;">PDF</th>
                                 <th style="min-width: 200px;">Layout Information</th>
+<<<<<<< HEAD
                                 <th style="min-width: 160px;">Stage & Owner</th>
                                 <th style="min-width: 140px;">Customer</th>
                                 <th style="width: 120px;">Timeline</th>
+=======
+                                <th style="min-width: 160px;">Customer</th>
+                                <th style="width: 120px;">Start Date</th>
+                                <th style="width: 120px;">End Date</th>
+>>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
                                 <th style="width: 100px;">Schedule</th>
                                 <th style="min-width: 180px;">Approval Status</th>
                                 <th style="min-width: 280px;">Actions</th>
@@ -148,6 +154,7 @@
                                         </td>
 
                                         <td>
+<<<<<<< HEAD
                                             <div class="xc-stage-info">
                                                 <span
                                                     class="xc-stage-badge xc-stage-<?= strtolower(str_replace(' ', '-', $row->stage)); ?>">
@@ -161,10 +168,13 @@
                                         </td>
 
                                         <td>
+=======
+>>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
                                             <div class="xc-customer-name"><?= html_escape($row->customer_name); ?></div>
                                         </td>
 
                                         <td>
+<<<<<<< HEAD
                                             <div class="xc-timeline">
                                                 <?php if ($row->start_date) { ?>
                                                     <div class="xc-timeline-item">
@@ -228,6 +238,50 @@
                                             </div>
                                         </td>
 
+=======
+                                            <?= $row->start_date ? date('d/m/Y', strtotime($row->start_date)) : '<span class="xc-no-data">—</span>'; ?>
+                                        </td>
+
+                                        <td>
+                                            <?= $row->end_date ? date('d/m/Y', strtotime($row->end_date)) : '<span class="xc-no-data">—</span>'; ?>
+                                        </td>
+
+                                        <td>
+                                            <?php $schedule = $this->Layout_member_model->getScheduleStatus($row); ?>
+                                            <span
+                                                class="xc-schedule-badge xc-schedule-<?= strtolower(str_replace(' ', '-', $schedule->label)); ?>">
+                                                <?= html_escape($schedule->label); ?>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="xc-status-group">
+                                                <?php
+                                                $status_class = $row->status === 'Approved' ? 'approved' : ($row->status === 'Remarked' ? 'remarked' : 'pending');
+                                                ?>
+                                                <span class="xc-status-badge xc-status-<?= $status_class; ?>">
+                                                    <?= html_escape($row->status); ?>
+                                                </span>
+
+                                                <div class="xc-approvals">
+                                                    <div class="xc-approval-item xc-approval-<?= strtolower($row->client_status); ?>"
+                                                        title="Client: <?= html_escape($row->client_status); ?>">
+                                                        <i
+                                                            class="bx <?= $row->client_status === 'Approved' ? 'bx-check-circle' : ($row->client_status === 'Remarked' ? 'bx-x-circle' : 'bx-time-five'); ?>"></i>
+                                                        <span>Client</span>
+                                                    </div>
+
+                                                    <div class="xc-approval-item xc-approval-<?= strtolower($row->pmc_status); ?>"
+                                                        title="PMC: <?= html_escape($row->pmc_status); ?>">
+                                                        <i
+                                                            class="bx <?= $row->pmc_status === 'Approved' ? 'bx-check-circle' : ($row->pmc_status === 'Remarked' ? 'bx-x-circle' : 'bx-time-five'); ?>"></i>
+                                                        <span>PMC</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+>>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
                                         <td>
                                             <div class="xc-actions">
                                                 <a href="<?= base_url('employee/layout_process_view/' . $row->id); ?>"

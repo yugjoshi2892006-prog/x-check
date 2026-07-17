@@ -701,8 +701,12 @@
 
                         <?php } else { ?>
 
+<<<<<<< HEAD
                             <?php if (!empty($first_plan)): ?>
                             <a href="<?= base_url('plan/buy/' . (int) $first_plan->id) ?>" class="xc-plan-status-pill cta-state">
+=======
+                            <a href="<?= base_url('plan/buy/1') ?>" class="xc-plan-status-pill cta-state">
+>>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
                                 <span class="xc-plan-status-dot"></span>
                                 Get Started
                             </a>
