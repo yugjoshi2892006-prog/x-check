@@ -14,6 +14,7 @@ class Plan extends CI_Controller
         $company_id = $this->session->userdata('company_id');
 
         $data['plans'] = $this->Plan_model->getActivePlans();
+        $data['first_plan'] = !empty($data['plans']) ? $data['plans'][0] : null;
 
         $data['active_plan'] = $this->Plan_model->getCompanyActivePlan($company_id);
 

@@ -20,8 +20,19 @@ class Superadmin extends CI_Controller
 
     public function dashboard()
     {
-        $this->load->view('superadmin/header');
-        $this->load->view('superadmin/dashboard');
+        $today = date('Y-m-d');
+        $data['total_companies'] = $this->db->count_all('companies');
+        $data['active_companies'] = $this->db->where('status', 1)->count_all_results('companies');
+        $data['total_plans'] = $this->db->count_all('plans');
+        $data['active_plans'] = $this->db
+            ->where('status', 'Active')
+            ->where('expiry_date >=', $today)
+            ->count_all_results('company_plans');
+        $data['total_payments'] = $this->db->count_all('payments');
+        $data['inactive_companies'] = $this->db->where('status !=', 1)->count_all_results('companies');
+
+        $this->load->view('superadmin/header', $data);
+        $this->load->view('superadmin/dashboard', $data);
         $this->load->view('superadmin/footer');
     }
 
@@ -53,12 +64,12 @@ class Superadmin extends CI_Controller
 
     public function save_plan()
     {
-        $plan_data = [
-            'plan_name' => $this->input->post('plan_name'),
-            'duration_days' => (int) $this->input->post('duration_days'),
-            'amount' => (float) $this->input->post('amount'),
-            'status' => $this->input->post('status') === 'Inactive' ? 'Inactive' : 'Active'
-        ];
+        $plan_data = $this->plan_payload();
+
+        if ($plan_data['plan_name'] === '' || $plan_data['duration_days'] < 1 || $plan_data['amount'] < 0) {
+            $this->session->set_flashdata('error', 'Please enter a plan name, valid duration and price.');
+            redirect('superadmin/plan/add');
+        }
 
         $this->Plan_model->createPlan($plan_data);
         $this->session->set_flashdata('success', 'Plan created successfully.');
@@ -84,12 +95,12 @@ class Superadmin extends CI_Controller
     public function update_plan($plan_id = 0)
     {
         $plan_id = (int) $plan_id;
-        $plan_data = [
-            'plan_name' => $this->input->post('plan_name'),
-            'duration_days' => (int) $this->input->post('duration_days'),
-            'amount' => (float) $this->input->post('amount'),
-            'status' => $this->input->post('status') === 'Inactive' ? 'Inactive' : 'Active'
-        ];
+        $plan_data = $this->plan_payload();
+
+        if ($plan_id <= 0 || $plan_data['plan_name'] === '' || $plan_data['duration_days'] < 1 || $plan_data['amount'] < 0) {
+            $this->session->set_flashdata('error', 'Please enter a plan name, valid duration and price.');
+            redirect('superadmin/plans');
+        }
 
         $this->Plan_model->updatePlan($plan_id, $plan_data);
         $this->session->set_flashdata('success', 'Plan updated successfully.');
@@ -123,5 +134,18 @@ class Superadmin extends CI_Controller
 
         $this->session->set_flashdata('success', 'Company status has been updated successfully.');
         redirect('superadmin/companies');
+    }
+
+    private function plan_payload()
+    {
+        return [
+            'plan_name' => trim((string) $this->input->post('plan_name', true)),
+            'duration_days' => max(0, (int) $this->input->post('duration_days')),
+            'amount' => max(0, (float) $this->input->post('amount')),
+            'customer_limit' => max(0, (int) $this->input->post('customer_limit')),
+            'team_limit' => max(0, (int) $this->input->post('team_limit')),
+            'project_limit' => max(0, (int) $this->input->post('project_limit')),
+            'status' => $this->input->post('status') === 'Inactive' ? 'Inactive' : 'Active'
+        ];
     }
 }

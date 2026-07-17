@@ -365,6 +365,218 @@ $profile = $CI->Profile_model->getProfile();
             overflow: hidden;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
         }
+
+        /* Super admin dashboard design */
+        .sidebar-wrapper {
+            background: #39c7c7 !important;
+            border-right: none !important;
+        }
+
+        .sidebar-wrapper .metismenu {
+            background: #39c7c7 !important;
+            padding: 12px 10px;
+        }
+
+        .sidebar-wrapper .metismenu a {
+            color: #ffffff !important;
+            border-radius: 7px !important;
+            margin: 0 0 5px !important;
+            padding: 11px 14px !important;
+        }
+
+        .sidebar-wrapper .metismenu .parent-icon i {
+            color: #ffffff !important;
+        }
+
+        .sidebar-wrapper .metismenu a:hover,
+        .sidebar-wrapper .metismenu .mm-active>a,
+        .sidebar-wrapper .metismenu li.active>a {
+            background: rgba(255, 255, 255, .25) !important;
+            color: #ffffff !important;
+            margin-right: 0 !important;
+            border-radius: 7px !important;
+        }
+
+        .sidebar-wrapper .metismenu a:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, .18) !important;
+        }
+
+        .sidebar-wrapper .metismenu a:hover .parent-icon i,
+        .sidebar-wrapper .metismenu .mm-active>a .parent-icon i,
+        .sidebar-wrapper .metismenu li.active>a .parent-icon i,
+        .sidebar-wrapper .metismenu a:hover .parent-icon i {
+            color: #ffffff !important;
+        }
+
+        .topbar {
+            background: #39c7c7 !important;
+            border-bottom: none !important;
+        }
+
+        .topbar .mobile-toggle-menu i,
+        .topbar .navbar i {
+            color: #ffffff !important;
+        }
+
+        .profile-avatar {
+            border-color: #edf2f7 !important;
+        }
+
+        .page-wrapper {
+            background: #f6f8fb !important;
+        }
+
+        .page-content {
+            padding: 36px 24px !important;
+        }
+
+        .dashboard-heading {
+            margin: 2px 0 30px;
+        }
+
+        .dashboard-heading h1 {
+            margin: 10px 0 6px;
+            color: #26354a;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .dashboard-heading p {
+            margin: 0;
+            color: #8491a3;
+            font-size: 14px;
+        }
+
+        .dashboard-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 11px;
+            border-radius: 18px;
+            background: #f3ecff;
+            color: #8152d5;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .dashboard-stats {
+            max-width: 1400px;
+        }
+
+        .stat-card {
+            min-height: 164px;
+            height: 100%;
+            padding: 23px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            border: 1px solid #e7ebf0;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 3px 7px rgba(35, 54, 79, .08);
+        }
+
+        .stat-icon {
+            width: 46px;
+            height: 46px;
+            min-width: 46px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            color: #fff;
+            font-size: 25px;
+            box-shadow: 0 5px 11px rgba(0, 0, 0, .14);
+        }
+
+        .stat-card h6 {
+            margin: 7px 0 15px;
+            color: #566273;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .stat-card strong {
+            display: block;
+            color: #172238;
+            font-size: 34px;
+            line-height: 1;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            margin: 10px 0 0;
+            color: #8793a3;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .stat-card p i {
+            font-size: 7px;
+            vertical-align: 1px;
+        }
+
+        .stat-blue .stat-icon {
+            background: #4385ed;
+        }
+
+        .stat-blue p i {
+            color: #4385ed;
+        }
+
+        .stat-green .stat-icon {
+            background: #12b982;
+        }
+
+        .stat-green p i {
+            color: #12b982;
+        }
+
+        .stat-purple .stat-icon {
+            background: #8955e9;
+        }
+
+        .stat-purple p i {
+            color: #8955e9;
+        }
+
+        .stat-pink .stat-icon {
+            background: #ea3a92;
+        }
+
+        .stat-pink p i {
+            color: #ea3a92;
+        }
+
+        .stat-cyan .stat-icon {
+            background: #12b4cc;
+        }
+
+        .stat-cyan p i {
+            color: #12b4cc;
+        }
+
+        .stat-orange .stat-icon {
+            background: #f6a007;
+        }
+
+        .stat-orange p i {
+            color: #f6a007;
+        }
+
+        @media (max-width: 767.98px) {
+            .page-content {
+                padding: 26px 16px !important;
+            }
+
+            .dashboard-heading h1 {
+                font-size: 25px;
+            }
+
+            .stat-card p {
+                white-space: normal;
+            }
+        }
     </style>
 </head>
 
@@ -381,45 +593,51 @@ $profile = $CI->Profile_model->getProfile();
             <!--navigation-->
             <ul class="metismenu" id="menu">
 
+                <!-- MAIN -->
+                <!-- <li class="menu-label text-uppercase fw-bold text-muted px-3 py-2">
+                    MAIN
+                </li> -->
+
                 <!-- Dashboard -->
                 <li>
                     <a href="<?= base_url('superadmin/dashboard'); ?>">
                         <div class="parent-icon">
-                            <i class='bx bx-home-alt'></i>
+                            <i class='bx bxs-dashboard'></i>
                         </div>
-                        <div class="menu-title">Dashboard</div>
+                        <div class="menu-title">
+                            Dashboard
+                        </div>
                     </a>
                 </li>
 
-                <!-- Project Monitoring -->
-                <!-- <li>
-                    <a href="<?= base_url(''); ?>">
-                        <div class="parent-icon">
-                            <i class='bx bx-cctv'></i>
-                        </div>
-                        <div class="menu-title">Project Monitoring</div>
-                    </a>
+                <!-- COMPANY MANAGEMENT -->
+                <!-- <li class="menu-label text-uppercase fw-bold text-muted px-3 py-2">
+                    MANAGEMENT
                 </li> -->
+
+                <!-- Company -->
                 <li>
                     <a href="<?= base_url('superadmin/companies'); ?>">
                         <div class="parent-icon">
-                            <i class='bx bx-cctv'></i>
+                            <i class='bx bxs-buildings'></i>
                         </div>
-                        <div class="menu-title">Company</div>
+                        <div class="menu-title">
+                            Company
+                        </div>
                     </a>
                 </li>
+
+                <!-- Plan Management -->
                 <li>
                     <a href="<?= base_url('superadmin/plans'); ?>">
                         <div class="parent-icon">
-                            <i class='bx bx-wallet'></i>
+                            <i class='bx bxs-credit-card'></i>
                         </div>
-                        <div class="menu-title">Plan Management</div>
+                        <div class="menu-title">
+                            Plan Management
+                        </div>
                     </a>
                 </li>
-
-
-                <!-- Master -->
-
 
             </ul>
             <!--end navigation-->

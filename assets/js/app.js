@@ -206,9 +206,11 @@ $(function () {
 		return false;
 	});
 
+	// Mark the current page before rendering the accordion. This keeps the
+	// parent section (for example, Master) open after a page navigation.
+	markActiveMenu();
 	initMenuState();
 	bindAccordionMenu();
-	markActiveMenu();
 	bindDesktopHover();
 
 	// Collapse sidebar by default on small screens for better mobile UX

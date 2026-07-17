@@ -701,10 +701,12 @@
 
                         <?php } else { ?>
 
-                            <a href="<?= base_url('plan/buy/1') ?>" class="xc-plan-status-pill cta-state">
+                            <?php if (!empty($first_plan)): ?>
+                            <a href="<?= base_url('plan/buy/' . (int) $first_plan->id) ?>" class="xc-plan-status-pill cta-state">
                                 <span class="xc-plan-status-dot"></span>
                                 Get Started
                             </a>
+                            <?php endif; ?>
 
                         <?php } ?>
 
@@ -742,7 +744,8 @@
 
                             <div class="xc-plans-grid">
 
-                                <!-- Monthly (Starter) -->
+                                <?php if (false): ?>
+                                <!-- Legacy hard-coded plan cards retained only as a design reference. -->
                                 <div class="xc-plan-card starter">
                                     <div class="xc-plan-badge orange">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -942,6 +945,45 @@
                                     </div>
                                 </div>
 
+                                <?php endif; ?>
+
+                                <?php
+                                $card_styles = [
+                                    ['card' => 'starter', 'color' => 'orange', 'badge' => 'Starter', 'button' => 'Get Started'],
+                                    ['card' => 'popular', 'color' => 'teal', 'badge' => 'Most Popular', 'button' => 'Buy Now'],
+                                    ['card' => 'best', 'color' => 'purple', 'badge' => 'Best Value', 'button' => 'Buy Now']
+                                ];
+                                ?>
+                                <?php foreach ($plans as $index => $plan): ?>
+                                    <?php
+                                    $style = $card_styles[$index % count($card_styles)];
+                                    $display_limit = function ($limit) {
+                                        return (int) $limit >= 999999 ? 'Unlimited' : number_format((int) $limit);
+                                    };
+                                    ?>
+                                    <div class="xc-plan-card <?= $style['card'] ?>">
+                                        <div class="xc-plan-badge <?= $style['color'] ?>">
+                                            <i class="bx <?= $index === 0 ? 'bx-bolt-circle' : ($index === 1 ? 'bx-star' : 'bx-trophy') ?>"></i>
+                                            <span><?= $style['badge'] ?></span>
+                                        </div>
+                                        <div class="xc-plan-body">
+                                            <div class="xc-plan-name-row">
+                                                <p class="xc-plan-name"><?= html_escape($plan->plan_name) ?></p>
+                                                <span class="xc-plan-icon <?= $style['color'] ?>"><i class="bx <?= $index === 0 ? 'bx-calendar' : ($index === 1 ? 'bx-bolt-circle' : 'bx-star') ?>"></i></span>
+                                            </div>
+                                            <div class="xc-plan-price"><span class="currency">₹</span><span class="amount"><?= number_format((float) $plan->amount, 0) ?></span></div>
+                                            <div class="xc-plan-duration">Billed every <?= (int) $plan->duration_days ?> days</div>
+                                            <div class="xc-plan-divider"></div>
+                                            <ul class="xc-plan-features">
+                                                <li><span class="xc-feat-icon <?= $style['color'] ?>"><i class='bx bx-check'></i></span><?= $display_limit($plan->customer_limit) ?> Customers</li>
+                                                <li><span class="xc-feat-icon <?= $style['color'] ?>"><i class='bx bx-check'></i></span><?= $display_limit($plan->team_limit) ?> Team Members</li>
+                                                <li><span class="xc-feat-icon <?= $style['color'] ?>"><i class='bx bx-check'></i></span><?= $display_limit($plan->project_limit) ?> Projects</li>
+                                            </ul>
+                                            <a href="<?= base_url('plan/buy/' . (int) $plan->id) ?>" class="btn-xc-buy <?= $style['color'] ?>-solid"><span><?= $style['button'] ?></span><i class='bx bx-right-arrow-alt'></i></a>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                                <?php if (empty($plans)): ?><p class="text-center text-muted w-100">No subscription plans are currently available.</p><?php endif; ?>
                             </div><!-- /.xc-plans-grid -->
 
                             <div class="xc-plans-footer">
