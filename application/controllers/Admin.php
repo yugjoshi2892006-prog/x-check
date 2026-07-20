@@ -70,9 +70,127 @@ class Admin extends CI_Controller
             ->where('company_id', $company_id)
             ->count_all_results('folders');
 
+        $data['project_progress_chart'] = $this->get_project_progress_chart($company_id);
+        $data['recent_activities'] = $this->get_recent_activities($company_id);
+
         $this->load->view('admin/header');
         $this->load->view('admin/dashboard', $data);
         $this->load->view('admin/footer');
+    }
+
+    /**
+     * Return project-status totals for the dashboard's 1, 3 and 6 month chart.
+     * A project is counted in the month in which it was created.
+     */
+    private function get_project_progress_chart($company_id)
+    {
+        $start_date = date('Y-m-01 00:00:00', strtotime('-5 months'));
+        $rows = $this->db
+            ->select("DATE_FORMAT(created_at, '%Y-%m') AS month_key", FALSE)
+            ->select("SUM(status = 'Completed') AS completed", FALSE)
+            ->select("SUM(status = 'Running') AS running", FALSE)
+            ->select("SUM(status = 'Pending') AS pending", FALSE)
+            ->from('projects')
+            ->where('company_id', $company_id)
+            ->where('created_at >=', $start_date)
+            ->group_by("DATE_FORMAT(created_at, '%Y-%m')", FALSE)
+            ->get()
+            ->result();
+
+        $totals_by_month = array();
+        foreach ($rows as $row) {
+            $totals_by_month[$row->month_key] = array(
+                'completed' => (int) $row->completed,
+                'running' => (int) $row->running,
+                'pending' => (int) $row->pending,
+            );
+        }
+
+        $months = array();
+        for ($offset = 5; $offset >= 0; $offset--) {
+            $date = strtotime('-' . $offset . ' months');
+            $key = date('Y-m', $date);
+            $months[] = array(
+                'label' => date('M', $date),
+                'completed' => isset($totals_by_month[$key]) ? $totals_by_month[$key]['completed'] : 0,
+                'running' => isset($totals_by_month[$key]) ? $totals_by_month[$key]['running'] : 0,
+                'pending' => isset($totals_by_month[$key]) ? $totals_by_month[$key]['pending'] : 0,
+            );
+        }
+
+        $chart = array();
+        foreach (array('6months' => 6, '3months' => 3, '1month' => 1) as $range => $length) {
+            $period_months = array_slice($months, -$length);
+            $chart[$range] = array(
+                'labels' => array_column($period_months, 'label'),
+                'completed' => array_column($period_months, 'completed'),
+                'running' => array_column($period_months, 'running'),
+                'pending' => array_column($period_months, 'pending'),
+            );
+        }
+
+        return $chart;
+    }
+
+    /** Return the newest company records for the dashboard activity feed. */
+    private function get_recent_activities($company_id)
+    {
+        $activities = array();
+        $sources = array(
+            array(
+                'type' => 'project',
+                'records' => $this->db->select('project_name AS title, created_at')
+                    ->where('company_id', $company_id)->order_by('created_at', 'DESC')
+                    ->limit(5)->get('projects')->result()
+            ),
+            array(
+                'type' => 'member',
+                'records' => $this->db->select('name AS title, created_at')
+                    ->where('company_id', $company_id)->order_by('created_at', 'DESC')
+                    ->limit(5)->get('team_members')->result()
+            ),
+            array(
+                'type' => 'folder',
+                'records' => $this->db->select('folder_name AS title, created_at')
+                    ->where('company_id', $company_id)->order_by('created_at', 'DESC')
+                    ->limit(5)->get('folders')->result()
+            ),
+            array(
+                'type' => 'upload',
+                'records' => $this->db->select('projects.project_name AS title, project_images.created_at')
+                    ->from('project_images')->join('projects', 'projects.id = project_images.project_id')
+                    ->where('projects.company_id', $company_id)->order_by('project_images.created_at', 'DESC')
+                    ->limit(5)->get()->result()
+            ),
+            array(
+                'type' => 'plan',
+                'records' => $this->db->select('plans.plan_name AS title, company_plans.created_at')
+                    ->from('company_plans')->join('plans', 'plans.id = company_plans.plan_id', 'left')
+                    ->where('company_plans.company_id', $company_id)->order_by('company_plans.created_at', 'DESC')
+                    ->limit(5)->get()->result()
+            ),
+        );
+
+        foreach ($sources as $source) {
+            foreach ($source['records'] as $record) {
+                $timestamp = strtotime($record->created_at);
+                if ($timestamp === FALSE) {
+                    continue;
+                }
+
+                $activities[] = array(
+                    'type' => $source['type'],
+                    'title' => $record->title ?: 'Untitled',
+                    'timestamp' => $timestamp,
+                );
+            }
+        }
+
+        usort($activities, function ($first, $second) {
+            return $second['timestamp'] <=> $first['timestamp'];
+        });
+
+        return array_slice($activities, 0, 5);
     }
 
     public function project_dashboard($project_id)

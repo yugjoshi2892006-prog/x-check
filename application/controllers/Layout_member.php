@@ -490,7 +490,7 @@ class Layout_member extends CI_Controller
         redirect('layout_member/layout_plan_list');
     }
 
-    public function update_layout_plan($id)
+    private function update_layout_plan_legacy($id)
     {
         if (post_size_exceeded()) {
             $this->session->set_flashdata(

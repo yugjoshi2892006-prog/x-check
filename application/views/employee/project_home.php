@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * ============================================================================
  *  PROJECT DASHBOARD — PROFESSIONAL EDITION
@@ -1252,7 +1252,6 @@ if (!empty($project->customer_name)) {
 
                 </div>
 
-<<<<<<< HEAD
                 <!-- ============================================
                      ACTIONS / FEATURE CARDS
                      ============================================ -->
@@ -1268,53 +1267,6 @@ if (!empty($project->customer_name)) {
                     <a href="<?= base_url('employee/add_attendance/' . $project->id) ?>" class="pd-action-card">
                         <?php if (!$locked) { ?><span class="pd-action-badge">Done</span><?php } ?>
                         <div class="pd-action-icon">
-=======
-            </div>
-
-            <div class="xc-feature-row">
-
-                <?php
-                $locked = empty($attendance_today);
-                ?><div style="flex:1 1 220px;min-width:200px;">
-
-<a href="<?= base_url('employee/add_attendance/'.$project->id) ?>"
-class="xc-feature-card">
-
-<div class="xc-feature-icon">
-✓
-</div>
-
-<h5>Add Attendance</h5>
-
-<div class="xc-feature-sub">
-Mark Today's Attendance
-</div>
-
-</a>
-
-</div>
-
-                <div style="flex: 1 1 220px; min-width: 200px;">
-                    <a href="<?= base_url('employee/attendance_list/' . $project->id) ?>"
-                        class="xc-feature-card">
-
-                        <div class="xc-feature-icon">📋</div>
-
-                        <h5>Attendance List</h5>
-
-                        <div class="xc-feature-sub">
-                            View attendance history
-                        </div>
-
-                    </a>
-                </div>
-
-                <!-- Project Details -->
-                <div style="flex: 1 1 220px; min-width: 200px;">
-                    <a href="<?= base_url('employee/project_info/' . $project->id) ?>"
-                        class="xc-feature-card">
-                        <div class="xc-feature-icon">
->>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
                             <svg viewBox="0 0 24 24">
                                 <path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.4" fill="none"
                                     stroke-linecap="round" stroke-linejoin="round" />
@@ -1332,7 +1284,6 @@ Mark Today's Attendance
                         </div>
                     </a>
 
-<<<<<<< HEAD
                     <!-- Attendance List -->
                     <a href="<?= base_url('employee/attendance_list/' . $project->id) ?>" class="pd-action-card">
                         <div class="pd-action-icon">
@@ -1404,13 +1355,6 @@ Mark Today's Attendance
                     <?php if (!$locked) { ?>
                         <a href="<?= base_url('employee/capture_images/' . $project->id) ?>" class="pd-action-card">
                             <div class="pd-action-icon">
-=======
-                <!-- Capture Images (quick action) -->
-                <!-- <div style="flex: 1 1 220px; min-width: 200px;">
-                        <a href="<?= base_url('employee/capture_images/' . $project->id) ?>"
-                            class="xc-quick-btn">
-                            <div class="xc-feature-icon">
->>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
                                 <svg viewBox="0 0 24 24">
                                     <path
                                         d="M4 8a2 2 0 0 1 2-2h1.5l1-1.5h7l1 1.5H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" />
@@ -1421,89 +1365,12 @@ Mark Today's Attendance
                                 <h5>Capture Images</h5>
                                 <p class="pd-action-sub">Quick site capture</p>
                             </div>
-<<<<<<< HEAD
                             <div class="pd-action-arrow">
-=======
-
-                        </a>
-
-                    <?php } else { ?>
-
-                        <div class="xc-feature-card xc-disabled">
-
-                            <div class="xc-feature-icon">📷</div>
-
-                            <h5>Capture Images</h5>
-
-                            <div class="xc-feature-sub text-danger">
-                                Mark Attendance First
-                            </div>
-
-                        </div>
-
-                    <?php } ?>
-
-                </div>
-
-                <!-- Summary of Project -->
-                <div style="flex:1 1 220px;min-width:200px;">
-
-                    <?php if (!$locked) { ?>
-
-                        <a href="<?= base_url('employee/materials_report/' . $project->id) ?>" class="xc-feature-card">
-
-                            <div class="xc-feature-icon">
-                                📑
-                            </div>
-
-                            <h5>Material Report</h5>
-
-                            <div class="xc-feature-sub">
-                                View Material Report
-                            </div>
-
-                        </a>
-
-                    <?php } else { ?>
-
-                        <div class="xc-feature-card xc-disabled">
-
-                            <div class="xc-feature-icon">
-                                📑
-                            </div>
-
-                            <h5>Material Report</h5>
-
-                            <div class="xc-feature-sub text-danger">
-                                Mark Attendance First
-                            </div>
-
-                        </div>
-
-                    <?php } ?>
-
-                </div>
-
-                <!-- View Images -->
-                <div style="flex: 1 1 220px; min-width: 200px;">
-
-                    <?php if (!$locked) { ?>
-
-                        <a href="<?= base_url('employee/view_images/' . $project->id) ?>" class="xc-feature-card">
-
-                        <?php } else { ?>
-
-                            <div class="xc-feature-card xc-disabled">
-
-                            <?php } ?>
-                            <div class="xc-feature-icon">
->>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
                                 <svg viewBox="0 0 24 24">
                                     <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" fill="none"
                                         stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
                             </div>
-<<<<<<< HEAD
                         </a>
                     <?php } else { ?>
                         <div class="pd-action-card pd-locked">
@@ -1530,21 +1397,6 @@ Mark Today's Attendance
                                     Mark attendance first
                                 </p>
                             </div>
-=======
-                            <h5>View Images</h5>
-                            <div class="xc-feature-sub">Browse captured photos</div>
-                    </a>
-                </div>
-                <!-- Material Request -->
-
-                <div style="flex: 1 1 220px; min-width: 200px;">
-
-                    <a href="<?= base_url('employee/material_request/' . $project->id) ?>"
-                        class="xc-feature-card">
-
-                        <div class="xc-feature-icon">
-                            📦
->>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
                         </div>
                     <?php } ?>
 

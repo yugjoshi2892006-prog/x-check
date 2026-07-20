@@ -1,0 +1,29 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+$running = [];
+foreach ($reports as $r) {
+    $key = (int) $r->subcategory_id;
+    if (!isset($running[$key])) $running[$key] = ['received' => 0, 'cost' => 0];
+    $received = (float) $r->invoice_quantity;
+    $at_site = (float) $r->site_quantity;
+    $price = (float) $r->price;
+    $running[$key]['received'] += $received;
+    $used = max(0, $running[$key]['received'] - $at_site);
+    $received_cost = $received * $price;
+    $consumed_cost = $used * $price;
+    $running[$key]['cost'] += $consumed_cost;
+    $r->_total_received = $running[$key]['received'];
+    $r->_used = $used;
+    $r->_received_cost = $received_cost;
+    $r->_consumed_cost = $consumed_cost;
+    $r->_cumulative_consumed_cost = $running[$key]['cost'];
+}
+?>
+<style>
+.mrx{padding:26px;background:#f8fafc;min-height:100vh}.mrx-card{background:#fff;border:1px solid #dbe4ee;border-radius:12px;margin-bottom:20px;overflow:hidden}.mrx-title{padding:15px 20px;font-size:16px;font-weight:700;color:#0f172a;border-bottom:1px solid #dbe4ee}.mrx-body{padding:20px}.mrx-filter{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.mrx-field{min-width:190px;flex:1}.mrx-field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.mrx-field input,.mrx-field select{width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:6px}.mrx-btn{border:0;border-radius:6px;background:#0f766e;color:#fff;padding:10px 17px;font-weight:700;text-decoration:none}.mrx-reset{background:#fff;border:1px solid #dc2626;color:#dc2626}.mrx-scroll{overflow:auto}.mrx-table{border-collapse:collapse;min-width:2050px;width:100%;font-size:12px}.mrx-table th{background:#cfe8f5;color:#17324d;font-weight:700;white-space:nowrap}.mrx-table td,.mrx-table th{border:1px solid #cbd5e1;padding:8px;vertical-align:top}.mrx-table th:nth-child(17),.mrx-table td:nth-child(17){display:none}.mrx-yes{color:#15803d;font-weight:700}.mrx-no{color:#dc2626;font-weight:700}.mrx-file{color:#0f766e;font-weight:700;text-decoration:none}@media(max-width:600px){.mrx{padding:12px}}
+</style>
+<div class="page-wrapper"><div class="page-content"><div class="mrx">
+    <div class="mrx-card"><div class="mrx-title">Material Report — <?= html_escape($project->project_name ?? 'Project'); ?></div><div class="mrx-body"><form method="get" class="mrx-filter"><div class="mrx-field"><label>Cycle Date</label><input type="date" name="cycle_date" value="<?= html_escape($this->input->get('cycle_date')); ?>"></div><div class="mrx-field"><label>Category</label><select name="category_id"><option value="">All Categories</option><?php foreach ($categories as $c): ?><option value="<?= (int)$c->id; ?>" <?= $this->input->get('category_id') == $c->id ? 'selected' : ''; ?>><?= html_escape($c->category_name); ?></option><?php endforeach; ?></select></div><div class="mrx-field"><label>Material</label><select name="subcategory_id"><option value="">All Materials</option><?php foreach ($subcategories as $s): ?><option value="<?= (int)$s->id; ?>" <?= $this->input->get('subcategory_id') == $s->id ? 'selected' : ''; ?>><?= html_escape($s->subcategory_name); ?></option><?php endforeach; ?></select></div><button class="mrx-btn" type="submit">Search</button><a class="mrx-btn mrx-reset" href="<?= base_url('materials/project_reports/' . $project->id); ?>">Reset</a></form></div></div>
+    <div class="mrx-card"><div class="mrx-title">MATERIAL REPORT — BASED ON CHALLAN, BILL &amp; VISUAL INFORMATION (<?= count($reports); ?> records)</div><div class="mrx-scroll"><table class="mrx-table"><thead><tr><th>Sr. No.</th><th>Item</th><th>Make / Brand / Quality Criteria</th><th>Cycle</th><th>Date</th><th>Material Photo</th><th>Brand / Remark</th><th>As Per Make List</th><th>Material Quality Criteria</th><th>Material Application Quality</th><th>Remark</th><th>Total Received</th><th>Total at Site</th><th>Used</th><th>Unit</th><th>Challan</th><th>Bill</th><th>Price</th><th>Cost Received</th><th>Cost Consumed</th><th>Cumulative Consumed Cost</th><th>Notes</th></tr></thead><tbody>
+    <?php if (empty($reports)): ?><tr><td colspan="22">No material reports found.</td></tr><?php else: $i=1; foreach($reports as $r): ?><tr><td><?= $i++; ?></td><td><?= html_escape($r->subcategory_name); ?></td><td><?= html_escape($r->quality_criteria); ?></td><td>Cycle <?= (int)$r->cycle_id; ?></td><td><?= $r->report_date ? date('d-m-Y',strtotime($r->report_date)) : '—'; ?></td><td><?php if($r->site_photo): ?><a class="mrx-file" target="_blank" href="<?= base_url('uploads/materials/'.$r->site_photo); ?>">View</a><?php else: ?>—<?php endif; ?></td><td><?= html_escape($r->material_brand ?: $r->other_brand); ?></td><td class="<?= strtolower($r->make_list_status)==='no'?'mrx-no':'mrx-yes'; ?>"><?= html_escape($r->make_list_status ?: '—'); ?></td><td><?= html_escape($r->quality_criteria); ?></td><td><?= html_escape($r->application_quality); ?></td><td><?= html_escape($r->cycle_remark ?: $r->site_remark); ?></td><td><?= number_format($r->_total_received,2); ?></td><td><?= number_format((float)$r->site_quantity,2); ?></td><td><?= number_format($r->_used,2); ?></td><td><?= html_escape($r->site_unit ?: $r->invoice_unit); ?></td><td><?php if($r->invoice_photo): ?><a class="mrx-file" target="_blank" href="<?= base_url('uploads/materials/'.$r->invoice_photo); ?>">View</a><?php else: ?>—<?php endif; ?></td><td><?php if($r->bill_photo): ?><a class="mrx-file" target="_blank" href="<?= base_url('uploads/materials/'.$r->bill_photo); ?>">View</a><?php else: ?>—<?php endif; ?></td><td>₹<?= number_format((float)$r->price,2); ?></td><td>₹<?= number_format($r->_received_cost,2); ?></td><td>₹<?= number_format($r->_consumed_cost,2); ?></td><td>₹<?= number_format($r->_cumulative_consumed_cost,2); ?></td><td><?= html_escape($r->remarks); ?></td></tr><?php endforeach; endif; ?>
+    </tbody></table></div></div>
+</div></div></div>

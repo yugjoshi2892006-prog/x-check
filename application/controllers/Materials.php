@@ -195,6 +195,7 @@ class Materials extends CI_Controller
 
         material_reports.project_id,
         material_reports.employee_id,
+        material_reports.cycle_id,
         material_reports.report_date,
 
         attendance.attendance_date,
@@ -268,12 +269,14 @@ class Materials extends CI_Controller
 
         }
         $data['reports'] = $this->db
-            ->order_by('material_reports.report_date', 'DESC')
+            ->order_by('material_report_items.subcategory_id', 'ASC')
+            ->order_by('material_reports.cycle_id', 'ASC')
+            ->order_by('material_reports.report_date', 'ASC')
             ->get()
             ->result();
 
         $this->load->view('admin/header');
-        $this->load->view('admin/materials/project_material_report', $data);
+        $this->load->view('admin/materials/project_material_report_excel', $data);
         $this->load->view('admin/footer');
     }
 

@@ -386,7 +386,9 @@ $config['encryption_key'] = 'xcheck@2026_secure_key_123';
 $config['sess_driver'] = 'files';
 $config['sess_cookie_name'] = 'ci_session';
 $config['sess_samesite'] = 'Lax';
-$config['sess_expiration'] = 7200;
+// Keep users signed in until they explicitly use Logout. This long-lived
+// value also keeps the session file from being removed by PHP's session GC.
+$config['sess_expiration'] = 315360000; // 10 years
 $config['sess_save_path'] = APPPATH . 'cache/sessions/';
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;

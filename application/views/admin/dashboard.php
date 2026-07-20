@@ -189,6 +189,24 @@
 
             <!-- Recent Activity Card -->
             <div class="col-lg-4 col-md-12">
+                <?php
+                $activity_styles = [
+                    'project' => ['icon' => 'ti-file-plus', 'bg' => 'xc-bg-teal-subtle', 'text' => 'xc-text-teal'],
+                    'member' => ['icon' => 'ti-user-check', 'bg' => 'xc-bg-success-subtle', 'text' => 'xc-text-success'],
+                    'folder' => ['icon' => 'ti-folder-plus', 'bg' => 'xc-bg-orange-subtle', 'text' => 'xc-text-orange'],
+                    'upload' => ['icon' => 'ti-upload', 'bg' => 'xc-bg-purple-subtle', 'text' => 'xc-text-purple'],
+                    'plan' => ['icon' => 'ti-star', 'bg' => 'xc-bg-orange-subtle', 'text' => 'xc-text-orange'],
+                ];
+                $activity_time_ago = function ($timestamp) {
+                    $seconds = max(0, time() - (int) $timestamp);
+                    if ($seconds < 60) return 'Just now';
+                    if ($seconds < 3600) return floor($seconds / 60) . ' min ago';
+                    if ($seconds < 86400) return floor($seconds / 3600) . ' hour' . (floor($seconds / 3600) > 1 ? 's' : '') . ' ago';
+                    if ($seconds < 172800) return 'Yesterday';
+                    if ($seconds < 604800) return floor($seconds / 86400) . ' days ago';
+                    return date('d M Y', $timestamp);
+                };
+                ?>
                 <div class="xc-activity-card">
                     <div class="xc-card-header">
                         <h4 class="xc-card-title">
@@ -201,51 +219,41 @@
                         </a>
                     </div>
                     <div class="xc-activity-list">
-                        <div class="xc-activity-item">
-                            <div class="xc-activity-icon-wrap xc-bg-teal-subtle">
-                                <i class="ti ti-file-plus xc-text-teal"></i>
+                        <?php if (!empty($recent_activities)): ?>
+                            <?php foreach ($recent_activities as $index => $activity): ?>
+                                <?php $style = $activity_styles[$activity['type']]; ?>
+                                <div class="xc-activity-item">
+                                    <div class="xc-activity-icon-wrap <?= $style['bg'] ?>">
+                                        <i class="ti <?= $style['icon'] ?> <?= $style['text'] ?>"></i>
+                                    </div>
+                                    <div class="xc-activity-content">
+                                        <p class="xc-activity-text">
+                                            <?php if ($activity['type'] === 'project'): ?>
+                                                New project <strong>"<?= htmlspecialchars($activity['title']) ?>"</strong> created
+                                            <?php elseif ($activity['type'] === 'member'): ?>
+                                                <strong><?= htmlspecialchars($activity['title']) ?></strong> joined the team
+                                            <?php elseif ($activity['type'] === 'folder'): ?>
+                                                New folder <strong>"<?= htmlspecialchars($activity['title']) ?>"</strong> created
+                                            <?php elseif ($activity['type'] === 'upload'): ?>
+                                                New site photo added to <strong>"<?= htmlspecialchars($activity['title']) ?>"</strong>
+                                            <?php else: ?>
+                                                Plan activated: <strong><?= htmlspecialchars($activity['title']) ?></strong>
+                                            <?php endif; ?>
+                                        </p>
+                                        <span class="xc-activity-time">
+                                            <i class="ti ti-clock-hour-4"></i> <?= $activity_time_ago($activity['timestamp']) ?>
+                                        </span>
+                                    </div>
+                                    <?php if ($index === 0): ?><div class="xc-activity-indicator xc-new"></div><?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="xc-activity-item">
+                                <div class="xc-activity-content">
+                                    <p class="xc-activity-text">No recent activity yet.</p>
+                                </div>
                             </div>
-                            <div class="xc-activity-content">
-                                <p class="xc-activity-text">New project <strong>"Website Redesign"</strong> created</p>
-                                <span class="xc-activity-time">
-                                    <i class="ti ti-clock-hour-4"></i> 2 hours ago
-                                </span>
-                            </div>
-                            <div class="xc-activity-indicator xc-new"></div>
-                        </div>
-                        <div class="xc-activity-item">
-                            <div class="xc-activity-icon-wrap xc-bg-success-subtle">
-                                <i class="ti ti-user-check xc-text-success"></i>
-                            </div>
-                            <div class="xc-activity-content">
-                                <p class="xc-activity-text"><strong>Sarah Johnson</strong> joined the team</p>
-                                <span class="xc-activity-time">
-                                    <i class="ti ti-clock-hour-4"></i> 5 hours ago
-                                </span>
-                            </div>
-                        </div>
-                        <div class="xc-activity-item">
-                            <div class="xc-activity-icon-wrap xc-bg-purple-subtle">
-                                <i class="ti ti-upload xc-text-purple"></i>
-                            </div>
-                            <div class="xc-activity-content">
-                                <p class="xc-activity-text">Document uploaded to <strong>"Design Assets"</strong></p>
-                                <span class="xc-activity-time">
-                                    <i class="ti ti-clock-hour-4"></i> Yesterday
-                                </span>
-                            </div>
-                        </div>
-                        <div class="xc-activity-item">
-                            <div class="xc-activity-icon-wrap xc-bg-orange-subtle">
-                                <i class="ti ti-star xc-text-orange"></i>
-                            </div>
-                            <div class="xc-activity-content">
-                                <p class="xc-activity-text">Plan upgraded to <strong>Premium</strong></p>
-                                <span class="xc-activity-time">
-                                    <i class="ti ti-clock-hour-4"></i> 2 days ago
-                                </span>
-                            </div>
-                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -420,19 +428,19 @@
                             <span class="xc-legend-color"
                                 style="background: linear-gradient(135deg, #0fb4a0, #0c9786);"></span>
                             <span class="xc-legend-label">Completed Projects</span>
-                            <span class="xc-legend-value">30</span>
+                            <span class="xc-legend-value" id="completedProjectsTotal">0</span>
                         </div>
                         <div class="xc-legend-item">
                             <span class="xc-legend-color"
                                 style="background: linear-gradient(135deg, #7c3aed, #6d28d9);"></span>
                             <span class="xc-legend-label">In Progress</span>
-                            <span class="xc-legend-value">20</span>
+                            <span class="xc-legend-value" id="runningProjectsTotal">0</span>
                         </div>
                         <div class="xc-legend-item">
                             <span class="xc-legend-color"
                                 style="background: linear-gradient(135deg, #f97316, #ea580c);"></span>
                             <span class="xc-legend-label">Pending</span>
-                            <span class="xc-legend-value">5</span>
+                            <span class="xc-legend-value" id="pendingProjectsTotal">0</span>
                         </div>
                     </div>
                 </div>
@@ -2107,6 +2115,19 @@
     // Chart.js - Project Progress Chart
     const ctx = document.getElementById('projectProgressChart');
     let xcProjectChart = null;
+    const xcProjectProgressData = <?= json_encode($project_progress_chart, JSON_NUMERIC_CHECK) ?>;
+
+    function xcUpdateProjectLegend(period) {
+        const totals = {
+            completed: period.completed.reduce((sum, value) => sum + value, 0),
+            running: period.running.reduce((sum, value) => sum + value, 0),
+            pending: period.pending.reduce((sum, value) => sum + value, 0)
+        };
+
+        document.getElementById('completedProjectsTotal').textContent = totals.completed;
+        document.getElementById('runningProjectsTotal').textContent = totals.running;
+        document.getElementById('pendingProjectsTotal').textContent = totals.pending;
+    }
 
     if (ctx) {
         const gradient1 = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
@@ -2118,14 +2139,15 @@
         gradient2.addColorStop(1, 'rgba(124, 58, 237, 0.01)');
 
         const xcTheme = xcGetChartTheme();
+        const xcInitialPeriod = xcProjectProgressData['6months'];
 
         xcProjectChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                labels: xcInitialPeriod.labels,
                 datasets: [{
                     label: 'Completed Projects',
-                    data: [12, 19, 15, 25, 22, 30],
+                    data: xcInitialPeriod.completed,
                     borderColor: '#0fb4a0',
                     backgroundColor: gradient1,
                     tension: 0.4,
@@ -2140,7 +2162,7 @@
                     borderWidth: 3
                 }, {
                     label: 'In Progress',
-                    data: [8, 12, 10, 15, 18, 20],
+                    data: xcInitialPeriod.running,
                     borderColor: '#7c3aed',
                     backgroundColor: gradient2,
                     tension: 0.4,
@@ -2151,6 +2173,21 @@
                     pointRadius: 6,
                     pointHoverRadius: 8,
                     pointHoverBackgroundColor: '#7c3aed',
+                    pointHoverBorderWidth: 3,
+                    borderWidth: 3
+                }, {
+                    label: 'Pending Projects',
+                    data: xcInitialPeriod.pending,
+                    borderColor: '#f97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.08)',
+                    tension: 0.4,
+                    fill: false,
+                    pointBackgroundColor: '#f97316',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#f97316',
                     pointHoverBorderWidth: 3,
                     borderWidth: 3
                 }]
@@ -2227,6 +2264,8 @@
                 }
             }
         });
+
+        xcUpdateProjectLegend(xcInitialPeriod);
     }
 
     // Keep the chart in sync when dark mode is toggled anywhere on the page
@@ -2252,7 +2291,18 @@
         btn.addEventListener('click', function () {
             document.querySelectorAll('.xc-filter-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            console.log('Filter changed to:', this.getAttribute('data-filter'));
+            const period = xcProjectProgressData[this.getAttribute('data-filter')];
+
+            if (!xcProjectChart || !period) {
+                return;
+            }
+
+            xcProjectChart.data.labels = period.labels;
+            xcProjectChart.data.datasets[0].data = period.completed;
+            xcProjectChart.data.datasets[1].data = period.running;
+            xcProjectChart.data.datasets[2].data = period.pending;
+            xcProjectChart.update();
+            xcUpdateProjectLegend(period);
         });
     });
 

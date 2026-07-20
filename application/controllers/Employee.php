@@ -665,8 +665,17 @@ class Employee extends CI_Controller
             ->get()
             ->result();
 
+        // `cycle_id` is used as the cycle number in material reports.  Existing
+        // records remain valid; the next number is suggested for a new entry.
+        $last_cycle = $this->db
+            ->select_max('cycle_id')
+            ->where('project_id', $project_id)
+            ->get('material_reports')
+            ->row();
+        $data['next_cycle_no'] = max(1, ((int) ($last_cycle->cycle_id ?? 0)) + 1);
+
         $this->load->view('employee/header');
-        $this->load->view('employee/materials_report', $data);
+        $this->load->view('employee/materials_report_excel', $data);
         $this->load->view('employee/footer');
     }
     public function save_material_report()
@@ -679,20 +688,50 @@ class Employee extends CI_Controller
             redirect($_SERVER['HTTP_REFERER'] ?? 'employee/dashboard');
         }
 
-        $project_id = $this->input->post('project_id');
+        $project_id = (int) $this->input->post('project_id');
+        $material_selection = $this->input->post('material_id');
+        $is_other_material = ($material_selection === 'other');
+        $material_id = $is_other_material ? 0 : (int) $material_selection;
 
         if (!$project_id) {
             $this->session->set_flashdata('error', 'Missing project reference — please try submitting the report again.');
             redirect($_SERVER['HTTP_REFERER'] ?? 'employee/dashboard');
         }
 
+        if (!$material_id && !$is_other_material) {
+            $this->session->set_flashdata('error', 'Please select a material before saving the report.');
+            redirect($_SERVER['HTTP_REFERER'] ?? 'employee/dashboard');
+        }
+
+        $material_brand = $this->input->post('material_brand', TRUE);
+        if ($is_other_material) {
+            if (trim($material_brand) === '') {
+                $this->session->set_flashdata('error', 'Please enter the brand or name for the other material.');
+                redirect($_SERVER['HTTP_REFERER'] ?? 'employee/dashboard');
+            }
+            $make_list_status = 'No';
+            $category_id = 0;
+        } else {
+            $selected_material = $this->db->select('subcategory_name, category_id')->where('id', $material_id)->get('material_subcategories')->row();
+            if (!$selected_material) {
+                $this->session->set_flashdata('error', 'The selected material was not found. Please choose it again.');
+                redirect($_SERVER['HTTP_REFERER'] ?? 'employee/dashboard');
+            }
+            $material_brand = $selected_material->subcategory_name;
+            $make_list_status = 'Yes';
+            $category_id = (int) $selected_material->category_id;
+        }
+
+        $cycle_date = $this->input->post('cycle_date') ?: date('Y-m-d');
+        $cycle_no = max(1, (int) $this->input->post('cycle_no'));
+
         $report = [
 
             'admin_id' => $this->session->userdata('company_id'),
             'project_id' => $project_id,
             'employee_id' => $this->session->userdata('id'),
-            'cycle_id' => 1, // later we'll calculate current cycle
-            'report_date' => date('Y-m-d'),
+            'cycle_id' => $cycle_no,
+            'report_date' => $cycle_date,
             'created_at' => date('Y-m-d H:i:s')
 
         ];
@@ -714,6 +753,7 @@ class Employee extends CI_Controller
 
         $site_photo = '';
         $invoice_photo = '';
+        $bill_photo = '';
 
         // Site Photo
         if (!empty($_FILES['site_photo']['name'])) {
@@ -752,13 +792,32 @@ class Employee extends CI_Controller
             }
 
         }
+
+        // Bill upload (challan uses the legacy invoice_photo column so older
+        // records and URLs continue to work).
+        $this->upload->initialize($config);
+        if (!empty($_FILES['bill_photo']['name'])) {
+            if ($this->upload->do_upload('bill_photo')) {
+                $upload = $this->upload->data();
+                $bill_photo = $upload['file_name'];
+            } else {
+                $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
+                redirect($_SERVER['HTTP_REFERER'] ?? 'employee/dashboard');
+            }
+        }
         $item = [
 
             'report_id' => $report_id,
 
-            'category_id' => 0,
+            'category_id' => $category_id,
 
-            'subcategory_id' => $this->input->post('material_id'),
+            'subcategory_id' => $material_id,
+
+            'material_brand' => $material_brand,
+            'make_list_status' => $make_list_status,
+            'quality_criteria' => $this->input->post('quality_criteria', TRUE),
+            'application_quality' => $this->input->post('application_quality', TRUE),
+            'cycle_remark' => $this->input->post('cycle_remark', TRUE),
 
             'site_photo' => $site_photo,
             'site_quantity' => $this->input->post('site_quantity'),
@@ -767,12 +826,15 @@ class Employee extends CI_Controller
             'site_remark' => $this->input->post('site_remark'),
 
             'invoice_photo' => $invoice_photo,
-            'invoice_date' => $this->input->post('invoice_date'),
+            'bill_photo' => $bill_photo,
+            'invoice_date' => $this->input->post('invoice_date') ?: $cycle_date,
             'invoice_quantity' => $this->input->post('invoice_quantity'),
             'invoice_unit' => $this->input->post('invoice_unit'),
             'invoice_size' => $this->input->post('invoice_size'),
 
-            'other_brand' => $this->input->post('other_brand'),
+            'price' => $this->input->post('price'),
+
+            'other_brand' => $is_other_material ? $material_brand : NULL,
             'remarks' => $this->input->post('remarks'),
 
             'created_at' => date('Y-m-d H:i:s')

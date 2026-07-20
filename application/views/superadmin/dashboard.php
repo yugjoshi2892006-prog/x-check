@@ -1747,56 +1747,6 @@ function xc_activity_icon($name)
                 </div>
 
                 <!-- ============================================
-                     ANALYTICS CHARTS
-                     ============================================ -->
-                <div class="sa2-section-head">
-                    <h3 class="sa2-section-title"><span class="sa2-section-dot"></span> Analytics Overview</h3>
-                    <span class="sa2-section-hint">Wire these placeholders to your charting library of choice</span>
-                </div>
-
-                <div class="sa2-charts-grid">
-
-                    <div class="sa2-chart-card">
-                        <div class="sa2-chart-head">
-                            <h4 class="sa2-chart-title">Company Growth</h4>
-                            <div class="sa2-chart-filters">
-                                <button type="button" class="sa2-filter-btn sa2-active">Week</button>
-                                <button type="button" class="sa2-filter-btn">Month</button>
-                                <button type="button" class="sa2-filter-btn">Year</button>
-                            </div>
-                        </div>
-                        <div class="sa2-chart-placeholder">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M3 3v18h18" />
-                                <path d="M7 15l4-6 4 3 4-8" />
-                            </svg>
-                            <span>Chart renders here</span>
-                        </div>
-                    </div>
-
-                    <div class="sa2-chart-card">
-                        <div class="sa2-chart-head">
-                            <h4 class="sa2-chart-title">Revenue Trends</h4>
-                            <div class="sa2-chart-filters">
-                                <button type="button" class="sa2-filter-btn sa2-active">Week</button>
-                                <button type="button" class="sa2-filter-btn">Month</button>
-                                <button type="button" class="sa2-filter-btn">Year</button>
-                            </div>
-                        </div>
-                        <div class="sa2-chart-placeholder">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M3 3v18h18" />
-                                <rect x="6" y="12" width="3" height="6" />
-                                <rect x="11" y="8" width="3" height="10" />
-                                <rect x="16" y="5" width="3" height="13" />
-                            </svg>
-                            <span>Chart renders here</span>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- ============================================
                      FOOTER MINI-STATS
                      ============================================ -->
                 <div class="sa2-section-head">
@@ -1820,19 +1770,31 @@ function xc_activity_icon($name)
                     <div class="sa2-footer-card">
                         <div class="sa2-footer-label">Active Users</div>
                         <div class="sa2-footer-value">
-                            <?= $activeUsers !== null ? number_format((int) $activeUsers) : '—' ?></div>
+                            <?= $activeUsers !== null ? number_format((int) $activeUsers) : '—' ?>
+                        </div>
                         <?php if ($activeUsers === null) { ?><span class="sa2-footer-note">Connect data</span><?php } ?>
                     </div>
                     <div class="sa2-footer-card">
                         <div class="sa2-footer-label">Satisfaction</div>
                         <div class="sa2-footer-value">
-                            <?= $satisfactionRate !== null ? htmlspecialchars($satisfactionRate) : '—' ?></div>
+                            <?= $satisfactionRate !== null ? htmlspecialchars($satisfactionRate) : '—' ?>
+                        </div>
                         <?php if ($satisfactionRate === null) { ?><span class="sa2-footer-note">Connect
                                 data</span><?php } ?>
                     </div>
                 </div>
 
-             
+                <!-- ============================================
+                     FOOTNOTE
+                     ============================================ -->
+                <div class="sa2-footnote">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 8v4l2 2" />
+                    </svg>
+                    Platform metrics update automatically; activity, charts, and footer stats can be wired to your live
+                    data sources.
+                </div>
 
             </div>
         </div>
