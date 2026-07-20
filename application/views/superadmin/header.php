@@ -16,7 +16,7 @@ $profile = $CI->Profile_model->getProfile();
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!--favicon-->
-    <link rel="icon" href="" type="image/png">
+    <link rel="icon" href="<?= base_url('assets/images/small_logo.png') ?>" type="image/png"> 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!--plugins-->
@@ -587,7 +587,7 @@ $profile = $CI->Profile_model->getProfile();
         <div class="sidebar-wrapper" data-simplebar="true">
 
             <div class="sidebar-header company-logo-box">
-                <img id="logoFull" src="<?= base_url('assets/images/big_logo.jpeg') ?>" alt="Logo">
+                <img id="logoFull" src="<?= base_url('assets/images/small_logo.png') ?>" alt="X-CHECK Logo">
             </div>
 
             <!--navigation-->
