@@ -375,56 +375,7 @@
                     <a href="<?= base_url('employee/add_attendance/' . $project->id) ?>" class="pd-action-card">
                         <?php if (!$locked) { ?><span class="pd-action-badge">Done</span><?php } ?>
                         <div class="pd-action-icon">
-<<<<<<< HEAD
-=======
-
-            </div>
-
-            <div class="xc-feature-row">
-
-                <?php
-                $locked = empty($attendance_today);
-                ?><div style="flex:1 1 220px;min-width:200px;">
-
-<a href="<?= base_url('employee/add_attendance/'.$project->id) ?>"
-class="xc-feature-card">
-
-<div class="xc-feature-icon">
-✓
-</div>
-
-<h5>Add Attendance</h5>
-
-<div class="xc-feature-sub">
-Mark Today's Attendance
-</div>
-
-</a>
-
-</div>
-
-                <div style="flex: 1 1 220px; min-width: 200px;">
-                    <a href="<?= base_url('employee/attendance_list/' . $project->id) ?>"
-                        class="xc-feature-card">
-
-                        <div class="xc-feature-icon">📋</div>
-
-                        <h5>Attendance List</h5>
-
-                        <div class="xc-feature-sub">
-                            View attendance history
-                        </div>
-
-                    </a>
-                </div>
-
-                <!-- Project Details -->
-                <div style="flex: 1 1 220px; min-width: 200px;">
-                    <a href="<?= base_url('employee/project_info/' . $project->id) ?>"
-                        class="xc-feature-card">
-                        <div class="xc-feature-icon">
->>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
->>>>>>> 92a2b32 (Update employee project home)
+<!-- >>>>>>> 92a2b32 (Update employee project home) -->
                             <svg viewBox="0 0 24 24">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                 <path d="M14 2v6h6"></path>
@@ -548,10 +499,6 @@ Mark Today's Attendance
                                     <path d="M21 15l-5-5L5 21"></path>
                                 </svg>
                             </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> 92a2b32 (Update employee project home)
                         </a>
                     <?php } else { ?>
                         <div class="pd-action-card pd-locked">
@@ -578,24 +525,7 @@ Mark Today's Attendance
                                     Mark attendance first
                                 </p>
                             </div>
-<<<<<<< HEAD
-=======
 
-                            <h5>View Images</h5>
-                            <div class="xc-feature-sub">Browse captured photos</div>
-                    </a>
-                </div>
-                <!-- Material Request -->
-
-                <div style="flex: 1 1 220px; min-width: 200px;">
-
-                    <a href="<?= base_url('employee/material_request/' . $project->id) ?>"
-                        class="xc-feature-card">
-
-                        <div class="xc-feature-icon">
-                            📦
->>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
->>>>>>> 92a2b32 (Update employee project home)
                         </div>
 
                         <h5>Manpower</h5>

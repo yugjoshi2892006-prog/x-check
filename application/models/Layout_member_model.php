@@ -307,6 +307,187 @@ class Layout_member_model extends CI_Model
         }
     }
 
+    // ---------------- Extra reviewers on a Layout Process submission ----------------
+    // Besides the fixed Client / PMC (/ Architect) slots above, whoever is
+    // submitting a Layout Process report can also invite extra people from
+    // the Layout Member List (Structure, Interior, Electrical, PHE,
+    // Landscape, HVAC, Liasoning, ...) per submission:
+    //   - "main"       => mandatory reviewer. The report cannot resolve to
+    //                     Approved/Remarked until this person also
+    //                     Approves or Remarks - see recomputeOverallStatus().
+    //   - "suggestion" => optional. Can only view the submission and leave
+    //                     a comment. Never blocks or changes the report's
+    //                     overall status.
+    public function ensureLayoutProcessReviewersTable()
+    {
+        $this->db->query("
+            CREATE TABLE IF NOT EXISTS layout_process_reviewers (
+                id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+                report_id INT(11) UNSIGNED NOT NULL,
+                member_id INT(11) NOT NULL,
+                member_name VARCHAR(150) NULL,
+                member_role VARCHAR(100) NULL,
+                reviewer_type VARCHAR(20) NOT NULL DEFAULT 'main',
+                status VARCHAR(20) NOT NULL DEFAULT 'Pending',
+                remark TEXT NULL,
+                acted_at DATETIME NULL,
+                created_at DATETIME NULL,
+                PRIMARY KEY (id),
+                KEY report_id (report_id),
+                KEY member_id (member_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+        ");
+    }
+
+    // Layout Member List entries this company can invite as extra
+    // reviewers. PMC and Architect are left out - they already have their
+    // own dedicated slot on every report, so re-picking them here would
+    // just double them up.
+    public function getSelectableReviewers($company_id, $exclude_member_id = 0)
+    {
+        $this->db
+            ->where('added_by_company_id', $company_id)
+            ->where('status', 1)
+            ->where_not_in('role', ['PMC', 'Architect']);
+
+        if ($exclude_member_id) {
+            $this->db->where('id !=', $exclude_member_id);
+        }
+
+        return $this->db->order_by('role', 'ASC')->get('layout_members')->result();
+    }
+
+    // Saves the Main (mandatory) and Suggestion (optional, comment-only)
+    // reviewers picked on the Add Layout Plan form for one report.
+    public function addReviewersToReport($report_id, array $main_ids, array $suggestion_ids)
+    {
+        $this->ensureLayoutProcessReviewersTable();
+
+        $rows = [];
+
+        foreach (array_unique(array_filter(array_map('intval', $main_ids))) as $member_id) {
+            $rows[$member_id] = ['member_id' => $member_id, 'reviewer_type' => 'main'];
+        }
+
+        // A member picked in both lists only ever gets ONE row - Main
+        // (mandatory) wins over Suggestion (optional).
+        foreach (array_unique(array_filter(array_map('intval', $suggestion_ids))) as $member_id) {
+            if (isset($rows[$member_id])) {
+                continue;
+            }
+            $rows[$member_id] = ['member_id' => $member_id, 'reviewer_type' => 'suggestion'];
+        }
+
+        if (!$rows) {
+            return;
+        }
+
+        $members = $this->db->where_in('id', array_keys($rows))->get('layout_members')->result();
+        $members_by_id = [];
+        foreach ($members as $m) {
+            $members_by_id[$m->id] = $m;
+        }
+
+        $insert_rows = [];
+        foreach ($rows as $member_id => $row) {
+            $m = isset($members_by_id[$member_id]) ? $members_by_id[$member_id] : null;
+            $insert_rows[] = [
+                'report_id' => $report_id,
+                'member_id' => $member_id,
+                'member_name' => $m ? $m->member_name : null,
+                'member_role' => $m ? $m->role : null,
+                'reviewer_type' => $row['reviewer_type'],
+                'status' => $row['reviewer_type'] === 'main' ? 'Pending' : 'Not Required',
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+        }
+
+        $this->db->insert_batch('layout_process_reviewers', $insert_rows);
+    }
+
+    public function getReviewersForReport($report_id)
+    {
+        $this->ensureLayoutProcessReviewersTable();
+
+        return $this->db
+            ->where('report_id', $report_id)
+            ->order_by('reviewer_type', 'ASC')
+            ->order_by('id', 'ASC')
+            ->get('layout_process_reviewers')
+            ->result();
+    }
+
+    // The reviewer row (Main or Suggestion) assigned to this particular
+    // Layout Member on this report, if any - used to decide whether to
+    // show them Approve/Remark (Main) or just a comment box (Suggestion)
+    // on the report view.
+    public function getMyReviewerRow($report_id, $member_id)
+    {
+        if (!$member_id) {
+            return null;
+        }
+
+        $this->ensureLayoutProcessReviewersTable();
+
+        return $this->db
+            ->where('report_id', $report_id)
+            ->where('member_id', $member_id)
+            ->get('layout_process_reviewers')
+            ->row();
+    }
+
+    public function actOnMainReviewer($reviewer_id, $status, $remark = null)
+    {
+        $this->ensureLayoutProcessReviewersTable();
+
+        $this->db->where('id', $reviewer_id)->update('layout_process_reviewers', [
+            'status' => $status,
+            'remark' => $remark,
+            'acted_at' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
+    // Suggestion members never block approval - saving their comment just
+    // records it against their row and never touches the report's status.
+    public function addSuggestionComment($reviewer_id, $remark)
+    {
+        $this->ensureLayoutProcessReviewersTable();
+
+        $this->db->where('id', $reviewer_id)->update('layout_process_reviewers', [
+            'status' => 'Commented',
+            'remark' => $remark,
+            'acted_at' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
+    // True once every extra Main reviewer on this report has responded
+    // (Approved or Remarked). Suggestion members are never counted here.
+    public function allMainReviewersDone($report_id)
+    {
+        $this->ensureLayoutProcessReviewersTable();
+
+        $pending = $this->db
+            ->where('report_id', $report_id)
+            ->where('reviewer_type', 'main')
+            ->where('status', 'Pending')
+            ->count_all_results('layout_process_reviewers');
+
+        return $pending === 0;
+    }
+
+    public function allMainReviewersApproved($report_id)
+    {
+        $this->ensureLayoutProcessReviewersTable();
+
+        $not_approved = $this->db
+            ->where('report_id', $report_id)
+            ->where('reviewer_type', 'main')
+            ->where('status !=', 'Approved')
+            ->count_all_results('layout_process_reviewers');
+
+        return $not_approved === 0;
+    }
+
     // ---------------- Final Project (Architect -> Structural handoff) ----------------
     // After Client + PMC approve the Architect's stage, the Architect fills
     // this one lightweight form (Project Name, Final Doc, Notes). Saving it
@@ -589,12 +770,19 @@ class Layout_member_model extends CI_Model
         $architect_required = self::isArchitectReviewRequired($report->stage);
         $architect_done = !$architect_required || in_array($report->architect_status, ['Approved', 'Remarked']);
 
-        if (!$client_done || !$pmc_done || !$architect_done) {
+        // Extra Main reviewers picked on the Add Layout Plan form (e.g. an
+        // Interior Consultant added just for this submission) are just as
+        // mandatory as Client/PMC/Architect - the gate doesn't open until
+        // they've responded too. Suggestion members are never checked here.
+        $extra_main_done = $this->allMainReviewersDone($id);
+
+        if (!$client_done || !$pmc_done || !$architect_done || !$extra_main_done) {
             $overall = 'Pending Review';
         } else {
             $all_approved = $report->client_status === 'Approved'
                 && $report->pmc_status === 'Approved'
-                && (!$architect_required || $report->architect_status === 'Approved');
+                && (!$architect_required || $report->architect_status === 'Approved')
+                && $this->allMainReviewersApproved($id);
 
             $overall = $all_approved ? 'Approved' : 'Remarked';
         }

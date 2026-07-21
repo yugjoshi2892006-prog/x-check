@@ -1305,6 +1305,12 @@ class Employee extends CI_Controller
         $data['parent_report'] = $parent_report;
         $data['customer'] = $customer;
         $data['plans'] = $plans;
+        // Extra reviewers this submission can invite, besides the fixed
+        // Client/PMC(/Architect) slots - see Layout_member_model.
+        $data['selectable_reviewers'] = $this->Layout_member_model->getSelectableReviewers(
+            $layout_role->added_by_company_id,
+            $layout_role->id
+        );
 
         $this->load->view('employee/header');
         $this->load->view('employee/layout_process_form', $data);
@@ -1419,6 +1425,17 @@ class Employee extends CI_Controller
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
+
+        $new_report_id = $this->db->insert_id();
+
+        // Main = mandatory reviewer, must Approve/Remark before the report
+        // can resolve. Suggestion = optional, view + comment only, never
+        // blocks the outcome. Picked fresh on this form for this submission.
+        $this->Layout_member_model->addReviewersToReport(
+            $new_report_id,
+            (array) $this->input->post('main_members'),
+            (array) $this->input->post('suggestion_members')
+        );
 
         if ($parent_id) {
             $this->Layout_member_model->updateLayoutProcessReport($parent_id, [
@@ -1645,9 +1662,86 @@ class Employee extends CI_Controller
             show_404();
         }
 
+        // Extra Main/Suggestion reviewers picked at submission time - see
+        // Layout_member_model::addReviewersToReport().
+        $data['extra_reviewers'] = $this->Layout_member_model->getReviewersForReport($id);
+        $data['my_reviewer_row'] = $data['layout_role']
+            ? $this->Layout_member_model->getMyReviewerRow($id, $data['layout_role']->id)
+            : null;
+
         $this->load->view('employee/header');
         $this->load->view('employee/layout_process_view', $data);
         $this->load->view('employee/footer');
+    }
+
+    // Mandatory reviewer approving their assigned stage of the submission.
+    public function approve_extra_review($reviewer_id)
+    {
+        $layout_role = $this->Layout_member_model->getCurrentLayoutRole();
+        $reviewer_row = $this->Layout_member_model->getMyReviewerRow(
+            $this->input->post('report_id'),
+            $layout_role ? $layout_role->id : 0
+        );
+
+        if (!$reviewer_row || (int) $reviewer_row->id !== (int) $reviewer_id || $reviewer_row->reviewer_type !== 'main') {
+            show_404();
+        }
+
+        if ($reviewer_row->status !== 'Pending') {
+            $this->session->set_flashdata('error', 'You have already responded to this submission.');
+            redirect('employee/layout_process_view/' . (int) $reviewer_row->report_id);
+        }
+
+        $this->Layout_member_model->actOnMainReviewer($reviewer_id, 'Approved');
+        $this->Layout_member_model->recomputeOverallStatus($reviewer_row->report_id);
+
+        $this->session->set_flashdata('success', 'Your approval has been recorded.');
+        redirect('employee/layout_process_view/' . (int) $reviewer_row->report_id);
+    }
+
+    // Mandatory reviewer sending it back with a remark.
+    public function remark_extra_review($reviewer_id)
+    {
+        $layout_role = $this->Layout_member_model->getCurrentLayoutRole();
+        $reviewer_row = $this->Layout_member_model->getMyReviewerRow(
+            $this->input->post('report_id'),
+            $layout_role ? $layout_role->id : 0
+        );
+
+        if (!$reviewer_row || (int) $reviewer_row->id !== (int) $reviewer_id || $reviewer_row->reviewer_type !== 'main') {
+            show_404();
+        }
+
+        if ($reviewer_row->status !== 'Pending') {
+            $this->session->set_flashdata('error', 'You have already responded to this submission.');
+            redirect('employee/layout_process_view/' . (int) $reviewer_row->report_id);
+        }
+
+        $this->Layout_member_model->actOnMainReviewer($reviewer_id, 'Remarked', $this->input->post('review_remark'));
+        $this->Layout_member_model->recomputeOverallStatus($reviewer_row->report_id);
+
+        $this->session->set_flashdata('success', 'Your remark has been recorded.');
+        redirect('employee/layout_process_view/' . (int) $reviewer_row->report_id);
+    }
+
+    // Suggestion (optional) member leaving a comment. This can NEVER block
+    // or change the report's overall Approved/Remarked status.
+    public function comment_extra_review($reviewer_id)
+    {
+        $layout_role = $this->Layout_member_model->getCurrentLayoutRole();
+        $reviewer_row = $this->Layout_member_model->getMyReviewerRow(
+            $this->input->post('report_id'),
+            $layout_role ? $layout_role->id : 0
+        );
+
+        if (!$reviewer_row || (int) $reviewer_row->id !== (int) $reviewer_id || $reviewer_row->reviewer_type !== 'suggestion') {
+            show_404();
+        }
+
+        $this->Layout_member_model->addSuggestionComment($reviewer_id, $this->input->post('review_remark'));
+
+        $this->session->set_flashdata('success', 'Your comment has been added.');
+        redirect('employee/layout_process_view/' . (int) $reviewer_row->report_id);
     }
 
     // Works out which reviewer slot (client / pmc / architect) the current

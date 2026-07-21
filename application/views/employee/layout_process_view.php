@@ -324,7 +324,7 @@
 
     .xc-pdf-card:hover {
         border-color: var(--danger);
-        transform: translateY(-4px); 
+        transform: translateY(-4px);
         box-shadow: 0 10px 26px rgba(201, 58, 58, 0.18);
         color: var(--text-dark);
     }
@@ -496,253 +496,333 @@
 <div class="page-wrapper">
     <div class="page-content">
         <!-- <div class="xc-view-wrapper"> -->
-            <!-- Breadcrumb -->
-            <div class="xc-breadcrumb">
-                <i class="bx bx-home-alt"></i>
-                <a href="<?= base_url('employee/layout_process'); ?>">Layout Process</a>
-                <i class="bx bx-chevron-right"></i>
-                <span>View Details</span>
+        <!-- Breadcrumb -->
+        <div class="xc-breadcrumb">
+            <i class="bx bx-home-alt"></i>
+            <a href="<?= base_url('employee/layout_process'); ?>">Layout Process</a>
+            <i class="bx bx-chevron-right"></i>
+            <span>View Details</span>
+        </div>
+
+        <div class="xc-card">
+            <!-- Header -->
+            <div class="xc-card-header">
+                <div class="xc-header-content">
+                    <div class="xc-header-text">
+                        <p class="xc-title"><?= html_escape($report->plan_title); ?></p>
+                        <p class="xc-subtitle">Layout Plan Details</p>
+                        <?php
+                        if ($this->session->userdata('role') === 'customer') {
+                            $viewer_label = 'Client';
+                            $viewer_icon = 'bx-briefcase';
+                        } elseif (!empty($layout_role)) {
+                            $viewer_label = $layout_role->role;
+                            $viewer_icon = 'bx-user-check';
+                        } else {
+                            $viewer_label = 'Employee';
+                            $viewer_icon = 'bx-user';
+                        }
+                        ?>
+                        <span class="xc-viewer-badge" style="margin-top:14px;">
+                            <i class="bx <?= $viewer_icon; ?>"></i>
+                            Viewing as: <?= html_escape($viewer_label); ?>
+                        </span>
+                    </div>
+
+                    <span class="xc-header-status">
+                        <i
+                            class="bx <?= $report->status === 'Approved' ? 'bx-check-circle' : ($report->status === 'Remarked' ? 'bx-error-circle' : 'bx-time-five'); ?>"></i>
+                        <?= html_escape($report->status); ?> &middot; Rev. <?= (int) $report->revision_no; ?>
+                    </span>
+                </div>
             </div>
 
-            <div class="xc-card">
-                <!-- Header -->
-                <div class="xc-card-header">
-                    <div class="xc-header-content">
-                        <div class="xc-header-text">
-                            <p class="xc-title"><?= html_escape($report->plan_title); ?></p>
-                            <p class="xc-subtitle">Layout Plan Details</p>
-                            <?php
-                            if ($this->session->userdata('role') === 'customer') {
-                                $viewer_label = 'Client';
-                                $viewer_icon = 'bx-briefcase';
-                            } elseif (!empty($layout_role)) {
-                                $viewer_label = $layout_role->role;
-                                $viewer_icon = 'bx-user-check';
-                            } else {
-                                $viewer_label = 'Employee';
-                                $viewer_icon = 'bx-user';
-                            }
-                            ?>
-                            <span class="xc-viewer-badge" style="margin-top:14px;">
-                                <i class="bx <?= $viewer_icon; ?>"></i>
-                                Viewing as: <?= html_escape($viewer_label); ?>
-                            </span>
+            <div class="xc-card-body">
+                <!-- PDF Section -->
+                <?php if (!empty($report->plan_doc)) { ?>
+                    <div class="xc-section">
+                        <div class="xc-section-title">
+                            <i class="bx bxs-file-pdf"></i>
+                            Document
                         </div>
+                        <a href="<?= base_url('uploads/layout_process/' . $report->plan_doc); ?>" target="_blank"
+                            class="xc-pdf-card">
+                            <div class="xc-pdf-icon-wrapper">
+                                <i class="bx bxs-file-pdf"></i>
+                            </div>
+                            <span class="xc-pdf-card-text">
+                                <strong>View Layout Plan</strong>
+                                <small>Click to open PDF in a new tab</small>
+                            </span>
+                        </a>
+                    </div>
+                <?php } ?>
 
-                        <span class="xc-header-status">
-                            <i
-                                class="bx <?= $report->status === 'Approved' ? 'bx-check-circle' : ($report->status === 'Remarked' ? 'bx-error-circle' : 'bx-time-five'); ?>"></i>
-                            <?= html_escape($report->status); ?> &middot; Rev. <?= (int) $report->revision_no; ?>
-                        </span>
+                <!-- Project Information -->
+                <div class="xc-section">
+                    <div class="xc-section-title">
+                        <i class="bx bx-info-circle"></i>
+                        Project Information
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="xc-label">Client Name</label>
+                            <div class="xc-box">
+                                <i class="bx bx-user xc-box-icon" style="color: var(--primary);"></i>
+                                <?= html_escape($report->customer_name); ?>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="xc-label">Architect</label>
+                            <div class="xc-box">
+                                <i class="bx bx-hard-hat xc-box-icon" style="color: var(--primary);"></i>
+                                <?= html_escape($report->architect_name); ?>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="xc-label">Start Date</label>
+                            <div class="xc-box">
+                                <i class="bx bx-calendar-check xc-box-icon" style="color: var(--success);"></i>
+                                <?= $report->start_date ? date('d M Y', strtotime($report->start_date)) : '-'; ?>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="xc-label">End Date</label>
+                            <div class="xc-box">
+                                <i class="bx bx-calendar-x xc-box-icon" style="color: var(--danger);"></i>
+                                <?= $report->end_date ? date('d M Y', strtotime($report->end_date)) : '-'; ?>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="xc-label">Status & Revision</label>
+                            <div class="xc-box">
+                                <i class="bx bx-git-branch xc-box-icon" style="color: var(--info);"></i>
+                                <?= html_escape($report->status); ?>, Rev. <?= (int) $report->revision_no; ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="xc-card-body">
-                    <!-- PDF Section -->
-                    <?php if (!empty($report->plan_doc)) { ?>
-                        <div class="xc-section">
-                            <div class="xc-section-title">
-                                <i class="bx bxs-file-pdf"></i>
-                                Document
-                            </div>
-                            <a href="<?= base_url('uploads/layout_process/' . $report->plan_doc); ?>" target="_blank"
-                                class="xc-pdf-card">
-                                <div class="xc-pdf-icon-wrapper">
-                                    <i class="bx bxs-file-pdf"></i>
-                                </div>
-                                <span class="xc-pdf-card-text">
-                                    <strong>View Layout Plan</strong>
-                                    <small>Click to open PDF in a new tab</small>
+                <!-- Approval Status -->
+                <div class="xc-section">
+                    <div class="xc-section-title">
+                        <i class="bx bx-check-shield"></i>
+                        Approval Status
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="xc-label">
+                                <?= Layout_member_model::isArchitectReviewRequired($report->stage)
+                                    ? 'Architect / Client / PMC Response'
+                                    : 'Client / PMC Response'; ?>
+                            </label>
+                            <div class="xc-status-grid">
+                                <?php if (Layout_member_model::isArchitectReviewRequired($report->stage)) { ?>
+                                    <span
+                                        class="xc-pill <?= $report->architect_status === 'Approved' ? 'xc-green' : ($report->architect_status === 'Remarked' ? 'xc-red' : 'xc-gray'); ?>">
+                                        <i
+                                            class="bx <?= $report->architect_status === 'Approved' ? 'bx-check-circle' : ($report->architect_status === 'Remarked' ? 'bx-x-circle' : 'bx-time-five'); ?>"></i>
+                                        Architect: <?= html_escape($report->architect_status); ?>
+                                    </span>
+                                <?php } ?>
+                                <span
+                                    class="xc-pill <?= $report->client_status === 'Approved' ? 'xc-green' : ($report->client_status === 'Remarked' ? 'xc-red' : 'xc-gray'); ?>">
+                                    <i
+                                        class="bx <?= $report->client_status === 'Approved' ? 'bx-check-circle' : ($report->client_status === 'Remarked' ? 'bx-x-circle' : 'bx-time-five'); ?>"></i>
+                                    Client: <?= html_escape($report->client_status); ?>
                                 </span>
+                                <span
+                                    class="xc-pill <?= $report->pmc_status === 'Approved' ? 'xc-green' : ($report->pmc_status === 'Remarked' ? 'xc-red' : 'xc-gray'); ?>">
+                                    <i
+                                        class="bx <?= $report->pmc_status === 'Approved' ? 'bx-check-circle' : ($report->pmc_status === 'Remarked' ? 'bx-x-circle' : 'bx-time-five'); ?>"></i>
+                                    PMC: <?= html_escape($report->pmc_status); ?>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="xc-label">Schedule Status</label>
+                            <?php $schedule = $this->Layout_member_model->getScheduleStatus($report); ?>
+                            <div class="xc-box" style="background:transparent;border:none;padding:0;min-height:auto;">
+                                <span class="xc-pill <?= $schedule->class; ?>">
+                                    <i
+                                        class="bx <?= $schedule->class === 'xc-green' ? 'bx-check-circle' : ($schedule->class === 'xc-red' ? 'bx-error-circle' : 'bx-time-five'); ?>"></i>
+                                    <?= html_escape($schedule->label); ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Reviewers (Main = mandatory, Suggestion = optional comment-only) -->
+                <?php if (!empty($extra_reviewers)) { ?>
+                    <div class="xc-section">
+                        <div class="xc-section-title">
+                            <i class="bx bx-group"></i>
+                            Additional Reviewers
+                        </div>
+                        <div class="xc-status-grid">
+                            <?php foreach ($extra_reviewers as $rev) { ?>
+                                <span
+                                    class="xc-pill <?= $rev->status === 'Approved' ? 'xc-green' : ($rev->status === 'Remarked' ? 'xc-red' : ($rev->status === 'Commented' ? 'xc-teal' : 'xc-gray')); ?>">
+                                    <i
+                                        class="bx <?= $rev->status === 'Approved' ? 'bx-check-circle' : ($rev->status === 'Remarked' ? 'bx-x-circle' : ($rev->status === 'Commented' ? 'bx-comment-detail' : 'bx-time-five')); ?>"></i>
+                                    <?= html_escape($rev->member_name . ' (' . $rev->member_role . ')'); ?>
+                                    &mdash;
+                                    <?= $rev->reviewer_type === 'main' ? 'Main: ' . html_escape($rev->status) : 'Suggestion: ' . html_escape($rev->status === 'Not Required' ? 'No comment yet' : $rev->status); ?>
+                                </span>
+                            <?php } ?>
+                        </div>
+
+                        <?php foreach ($extra_reviewers as $rev) { ?>
+                            <?php if (!empty($rev->remark)) { ?>
+                                <div class="xc-box"
+                                    style="background: var(--warning-light); border-color: var(--warning); align-items: flex-start; margin-top:10px;">
+                                    <i class="bx bx-comment-detail xc-box-icon" style="color: var(--warning); margin-top:2px;"></i>
+                                    <span><strong><?= html_escape($rev->member_name); ?>:</strong>
+                                        <?= nl2br(html_escape($rev->remark)); ?></span>
+                                </div>
+                            <?php } ?>
+                        <?php } ?>
+                    </div>
+                <?php } ?>
+
+                <!-- Remarks Section -->
+                <?php if (!empty($report->architect_remark) || !empty($report->client_remark) || !empty($report->pmc_remark)) { ?>
+                    <div class="xc-section">
+                        <div class="xc-section-title">
+                            <i class="bx bx-message-square-detail"></i>
+                            Remarks & Feedback
+                        </div>
+                        <div class="xc-box"
+                            style="background: var(--warning-light); border-color: var(--warning); align-items: flex-start;">
+                            <i class="bx bx-comment-detail xc-box-icon" style="color: var(--warning); margin-top:2px;"></i>
+                            <span><?= nl2br(html_escape(trim($report->architect_remark . "\n" . $report->client_remark . "\n" . $report->pmc_remark))); ?></span>
+                        </div>
+                    </div>
+                <?php } ?>
+
+                <div class="xc-divider"></div>
+
+                <!-- Action Section -->
+                <?php
+                $is_client_viewer = $this->session->userdata('role') === 'customer';
+                $is_pmc_viewer = !empty($layout_role) && $layout_role->role === 'PMC';
+                $is_architect_reviewer = !empty($layout_role) && $layout_role->role === 'Architect' && Layout_member_model::isArchitectReviewRequired($report->stage);
+                $my_turn = ($is_client_viewer && $report->client_status === 'Pending')
+                    || ($is_pmc_viewer && $report->pmc_status === 'Pending')
+                    || ($is_architect_reviewer && $report->architect_status === 'Pending');
+                ?>
+
+                <?php if ($my_turn) { ?>
+                    <div class="xc-action-section">
+                        <div class="xc-action-title">
+                            <i class="bx bx-edit"></i>
+                            Your Review Required
+                        </div>
+
+                        <div class="xc-btn-group">
+                            <a href="<?= base_url('employee/approve_layout_process/' . $report->id); ?>"
+                                onclick="return confirm('Are you sure you want to approve this layout report?');"
+                                class="xc-pill xc-green">
+                                <i class="bx bx-check-double"></i> Approve Layout
                             </a>
                         </div>
-                    <?php } ?>
 
-                    <!-- Project Information -->
-                    <div class="xc-section">
-                        <div class="xc-section-title">
-                            <i class="bx bx-info-circle"></i>
-                            Project Information
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="xc-label">Client Name</label>
-                                <div class="xc-box">
-                                    <i class="bx bx-user xc-box-icon" style="color: var(--primary);"></i>
-                                    <?= html_escape($report->customer_name); ?>
-                                </div>
+                        <form id="remark" action="<?= base_url('employee/remark_layout_process/' . $report->id); ?>"
+                            method="post" class="mt-4">
+                            <div class="xc-form-group">
+                                <label class="xc-label">Add Remark (Optional)</label>
+                                <textarea name="review_remark" class="xc-form-control" rows="4"
+                                    placeholder="Enter your feedback or concerns here..." required></textarea>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="xc-label">Architect</label>
-                                <div class="xc-box">
-                                    <i class="bx bx-hard-hat xc-box-icon" style="color: var(--primary);"></i>
-                                    <?= html_escape($report->architect_name); ?>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="xc-label">Start Date</label>
-                                <div class="xc-box">
-                                    <i class="bx bx-calendar-check xc-box-icon" style="color: var(--success);"></i>
-                                    <?= $report->start_date ? date('d M Y', strtotime($report->start_date)) : '-'; ?>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="xc-label">End Date</label>
-                                <div class="xc-box">
-                                    <i class="bx bx-calendar-x xc-box-icon" style="color: var(--danger);"></i>
-                                    <?= $report->end_date ? date('d M Y', strtotime($report->end_date)) : '-'; ?>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="xc-label">Status & Revision</label>
-                                <div class="xc-box">
-                                    <i class="bx bx-git-branch xc-box-icon" style="color: var(--info);"></i>
-                                    <?= html_escape($report->status); ?>, Rev. <?= (int) $report->revision_no; ?>
-                                </div>
-                            </div>
-                        </div>
+                            <button class="xc-pill xc-orange" type="submit">
+                                <i class="bx bx-message-square-x"></i> Submit Remark & Request Changes
+                            </button>
+                        </form>
                     </div>
-
-                    <!-- Approval Status -->
-                    <div class="xc-section">
-                        <div class="xc-section-title">
-                            <i class="bx bx-check-shield"></i>
-                            Approval Status
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="xc-label">
-                                    <?= Layout_member_model::isArchitectReviewRequired($report->stage)
-                                        ? 'Architect / Client / PMC Response'
-                                        : 'Client / PMC Response'; ?>
-                                </label>
-                                <div class="xc-status-grid">
-                                    <?php if (Layout_member_model::isArchitectReviewRequired($report->stage)) { ?>
-                                        <span
-                                            class="xc-pill <?= $report->architect_status === 'Approved' ? 'xc-green' : ($report->architect_status === 'Remarked' ? 'xc-red' : 'xc-gray'); ?>">
-                                            <i
-                                                class="bx <?= $report->architect_status === 'Approved' ? 'bx-check-circle' : ($report->architect_status === 'Remarked' ? 'bx-x-circle' : 'bx-time-five'); ?>"></i>
-                                            Architect: <?= html_escape($report->architect_status); ?>
-                                        </span>
-                                    <?php } ?>
-                                    <span
-                                        class="xc-pill <?= $report->client_status === 'Approved' ? 'xc-green' : ($report->client_status === 'Remarked' ? 'xc-red' : 'xc-gray'); ?>">
-                                        <i
-                                            class="bx <?= $report->client_status === 'Approved' ? 'bx-check-circle' : ($report->client_status === 'Remarked' ? 'bx-x-circle' : 'bx-time-five'); ?>"></i>
-                                        Client: <?= html_escape($report->client_status); ?>
-                                    </span>
-                                    <span
-                                        class="xc-pill <?= $report->pmc_status === 'Approved' ? 'xc-green' : ($report->pmc_status === 'Remarked' ? 'xc-red' : 'xc-gray'); ?>">
-                                        <i
-                                            class="bx <?= $report->pmc_status === 'Approved' ? 'bx-check-circle' : ($report->pmc_status === 'Remarked' ? 'bx-x-circle' : 'bx-time-five'); ?>"></i>
-                                        PMC: <?= html_escape($report->pmc_status); ?>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="xc-label">Schedule Status</label>
-                                <?php $schedule = $this->Layout_member_model->getScheduleStatus($report); ?>
-                                <div class="xc-box"
-                                    style="background:transparent;border:none;padding:0;min-height:auto;">
-                                    <span class="xc-pill <?= $schedule->class; ?>">
-                                        <i
-                                            class="bx <?= $schedule->class === 'xc-green' ? 'bx-check-circle' : ($schedule->class === 'xc-red' ? 'bx-error-circle' : 'bx-time-five'); ?>"></i>
-                                        <?= html_escape($schedule->label); ?>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                <?php } elseif ($is_client_viewer || $is_pmc_viewer || $is_architect_reviewer) { ?>
+                    <div class="xc-info-box">
+                        <i class="bx bx-check-circle"></i>
+                        <span>You've already responded to this submission. Waiting for other reviewers to complete their
+                            review.</span>
                     </div>
+                <?php } ?>
 
-                    <!-- Remarks Section -->
-                    <?php if (!empty($report->architect_remark) || !empty($report->client_remark) || !empty($report->pmc_remark)) { ?>
-                        <div class="xc-section">
-                            <div class="xc-section-title">
-                                <i class="bx bx-message-square-detail"></i>
-                                Remarks & Feedback
-                            </div>
-                            <div class="xc-box"
-                                style="background: var(--warning-light); border-color: var(--warning); align-items: flex-start;">
-                                <i class="bx bx-comment-detail xc-box-icon"
-                                    style="color: var(--warning); margin-top:2px;"></i>
-                                <span><?= nl2br(html_escape(trim($report->architect_remark . "\n" . $report->client_remark . "\n" . $report->pmc_remark))); ?></span>
-                            </div>
+                <?php if (!empty($my_reviewer_row) && $my_reviewer_row->reviewer_type === 'main' && $my_reviewer_row->status === 'Pending') { ?>
+                    <div class="xc-action-section">
+                        <div class="xc-action-title">
+                            <i class="bx bx-edit"></i>
+                            Your Review Required (Additional Reviewer)
                         </div>
-                    <?php } ?>
 
-                    <div class="xc-divider"></div>
-
-                    <!-- Action Section -->
-                    <?php
-                    $is_client_viewer = $this->session->userdata('role') === 'customer';
-                    $is_pmc_viewer = !empty($layout_role) && $layout_role->role === 'PMC';
-                    $is_architect_reviewer = !empty($layout_role) && $layout_role->role === 'Architect' && Layout_member_model::isArchitectReviewRequired($report->stage);
-                    $my_turn = ($is_client_viewer && $report->client_status === 'Pending')
-                        || ($is_pmc_viewer && $report->pmc_status === 'Pending')
-                        || ($is_architect_reviewer && $report->architect_status === 'Pending');
-                    ?>
-
-                    <?php if ($my_turn) { ?>
-                        <div class="xc-action-section">
-                            <div class="xc-action-title">
-                                <i class="bx bx-edit"></i>
-                                Your Review Required
-                            </div>
-
-                            <div class="xc-btn-group">
-                                <a href="<?= base_url('employee/approve_layout_process/' . $report->id); ?>"
-                                    onclick="return confirm('Are you sure you want to approve this layout report?');"
-                                    class="xc-pill xc-green">
+                        <div class="xc-btn-group">
+                            <form action="<?= base_url('employee/approve_extra_review/' . $my_reviewer_row->id); ?>"
+                                method="post" style="display:inline;"
+                                onsubmit="return confirm('Are you sure you want to approve this layout report?');">
+                                <input type="hidden" name="report_id" value="<?= (int) $report->id; ?>">
+                                <button type="submit" class="xc-pill xc-green" style="border:none;">
                                     <i class="bx bx-check-double"></i> Approve Layout
-                                </a>
-                            </div>
-
-                            <form id="remark"
-                                action="<?= base_url('employee/remark_layout_process/' . $report->id); ?>"
-                                method="post" class="mt-4">
-                                <div class="xc-form-group">
-                                    <label class="xc-label">Add Remark (Optional)</label>
-                                    <textarea name="review_remark" class="xc-form-control" rows="4"
-                                        placeholder="Enter your feedback or concerns here..." required></textarea>
-                                </div>
-                                <button class="xc-pill xc-orange" type="submit">
-                                    <i class="bx bx-message-square-x"></i> Submit Remark & Request Changes
                                 </button>
                             </form>
                         </div>
-                    <?php } elseif ($is_client_viewer || $is_pmc_viewer || $is_architect_reviewer) { ?>
-                        <div class="xc-info-box">
-                            <i class="bx bx-check-circle"></i>
-                            <span>You've already responded to this submission. Waiting for other reviewers to complete their
-                                review.</span>
-                        </div>
-                    <?php } ?>
 
-                    <!-- Resubmit Section -->
-                    <?php if (!empty($layout_role) && $layout_role->role === $report->stage && $report->status === 'Remarked') { ?>
-                        <div class="xc-action-section" style="border-color: var(--warning); margin-top: 20px;">
-                            <div class="xc-action-title">
-                                <i class="bx bx-revision"></i>
-                                Resubmission Required
+                        <form action="<?= base_url('employee/remark_extra_review/' . $my_reviewer_row->id); ?>"
+                            method="post" class="mt-4">
+                            <input type="hidden" name="report_id" value="<?= (int) $report->id; ?>">
+                            <div class="xc-form-group">
+                                <label class="xc-label">Add Remark (Optional)</label>
+                                <textarea name="review_remark" class="xc-form-control" rows="4"
+                                    placeholder="Enter your feedback or concerns here..." required></textarea>
                             </div>
-                            <p style="color: var(--gray-600); margin-bottom: 16px; font-size: 14px;">
-                                This layout has been remarked. Please review the feedback and submit a revised version.
-                            </p>
-                            <a href="<?= base_url('employee/layout_process_add/' . $report->id); ?>"
-                                class="xc-pill xc-orange">
-                                <i class="bx bx-upload"></i> Submit Revised Layout
-                            </a>
+                            <button class="xc-pill xc-orange" type="submit">
+                                <i class="bx bx-message-square-x"></i> Submit Remark & Request Changes
+                            </button>
+                        </form>
+                    </div>
+                <?php } elseif (!empty($my_reviewer_row) && $my_reviewer_row->reviewer_type === 'suggestion' && $my_reviewer_row->status === 'Not Required') { ?>
+                    <div class="xc-action-section">
+                        <div class="xc-action-title">
+                            <i class="bx bx-comment-detail"></i>
+                            Leave a Comment (Optional - won't block approval)
                         </div>
-                    <?php } ?>
+                        <form action="<?= base_url('employee/comment_extra_review/' . $my_reviewer_row->id); ?>"
+                            method="post">
+                            <input type="hidden" name="report_id" value="<?= (int) $report->id; ?>">
+                            <div class="xc-form-group">
+                                <textarea name="review_remark" class="xc-form-control" rows="3"
+                                    placeholder="Your comment..." required></textarea>
+                            </div>
+                            <button class="xc-pill xc-teal" type="submit">
+                                <i class="bx bx-send"></i> Add Comment
+                            </button>
+                        </form>
+                    </div>
+                <?php } ?>
 
-                    <!-- Back Button -->
-                    <div class="mt-4">
-                        <a href="<?= base_url('employee/layout_process'); ?>" class="xc-pill xc-teal">
-                            <i class="bx bx-arrow-back"></i> Back to Layout Process
+                <!-- Resubmit Section -->
+                <?php if (!empty($layout_role) && $layout_role->role === $report->stage && $report->status === 'Remarked') { ?>
+                    <div class="xc-action-section" style="border-color: var(--warning); margin-top: 20px;">
+                        <div class="xc-action-title">
+                            <i class="bx bx-revision"></i>
+                            Resubmission Required
+                        </div>
+                        <p style="color: var(--gray-600); margin-bottom: 16px; font-size: 14px;">
+                            This layout has been remarked. Please review the feedback and submit a revised version.
+                        </p>
+                        <a href="<?= base_url('employee/layout_process_add/' . $report->id); ?>" class="xc-pill xc-orange">
+                            <i class="bx bx-upload"></i> Submit Revised Layout
                         </a>
                     </div>
+                <?php } ?>
+
+                <!-- Back Button -->
+                <div class="mt-4">
+                    <a href="<?= base_url('employee/layout_process'); ?>" class="xc-pill xc-teal">
+                        <i class="bx bx-arrow-back"></i> Back to Layout Process
+                    </a>
                 </div>
             </div>
+        </div>
         <!-- </div> -->
     </div>
 </div>

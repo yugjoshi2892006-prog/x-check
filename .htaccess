@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /new_company/
+    RewriteBase /x-check/
 
     # Redirect requests to index.php unless the file or directory exists
     RewriteCond %{REQUEST_FILENAME} !-f
