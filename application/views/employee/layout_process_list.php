@@ -88,22 +88,16 @@
 
         <div class="xc-card">
             <div class="xc-card-body">
-                <div class="xc-table-container">
+                <div class="        ">
                     <table class="xc-table">
                         <thead>
                             <tr>
                                 <th style="width: 50px;">#</th>
                                 <th style="width: 60px;">PDF</th>
                                 <th style="min-width: 200px;">Layout Information</th>
-<<<<<<< HEAD
                                 <th style="min-width: 160px;">Stage & Owner</th>
                                 <th style="min-width: 140px;">Customer</th>
                                 <th style="width: 120px;">Timeline</th>
-=======
-                                <th style="min-width: 160px;">Customer</th>
-                                <th style="width: 120px;">Start Date</th>
-                                <th style="width: 120px;">End Date</th>
->>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
                                 <th style="width: 100px;">Schedule</th>
                                 <th style="min-width: 180px;">Approval Status</th>
                                 <th style="min-width: 280px;">Actions</th>

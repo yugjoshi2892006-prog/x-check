@@ -18,10 +18,21 @@ $profile = $CI->Profile_model->getProfile();
     <!--favicon-->
 <<<<<<< HEAD
     <link rel="icon" href="" type="image/png">
+<<<<<<< HEAD
 =======
     <link rel="icon" href="<?= base_url('assets/images/small_logo.png') ?>" type="image/png">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 >>>>>>> 157062a (16-07)
+=======
+    <!--favicon-->
+    <link rel="icon" href="" type="image/png">
+
+    <!-- Load jQuery FIRST, locally hosted (no CDN dependency), before any other script -->
+    <script src="<?= base_url('assets/js/jquery-3.6.0.min.js') ?>"></script>
+
+    <!--plugins-->
+    <link href="<?= base_url('assets/plugins/vectormap/jquery-jvectormap-2.0.2.css') ?>" rel="stylesheet">
+>>>>>>> ce8a3a3 (Layout member updates)
 
     <!--plugins-->
     <link href="<?= base_url('assets/plugins/vectormap/jquery-jvectormap-2.0.2.css') ?>" rel="stylesheet">
@@ -846,4 +857,3 @@ $profile = $CI->Profile_model->getProfile();
             </script> -->
         </header>
         <!--end header -->
-
