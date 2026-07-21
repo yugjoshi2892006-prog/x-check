@@ -18,7 +18,7 @@
                 <div class="xc-flow-title-wrapper">
                     <div class="xc-flow-icon-wrapper">
                         <i class="bx bx-git-branch"></i>
-                    </div>--
+                    </div>
                     <div>
                         <h4 class="xc-flow-title">Layout Process Flow</h4>
                         <p class="xc-flow-sub">
@@ -34,8 +34,7 @@
 
             <div class="xc-flow-head-actions">
                 <?php if (!empty($scopes)) { ?>
-                    <div class="xc-select-wrapper"> 
-                        
+                    <div class="xc-select-wrapper">
                         <i class="bx bx-building"></i>
                         <select class="xc-scope-select"
                             onchange="window.location='<?= base_url('employee/layout_process_flow/'); ?>' + this.value">

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-﻿<style>
-=======
 <style>
->>>>>>> 2f8dfd3b0f046064104d1c8f4568951f42a76596
     @import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
 
     :root {
@@ -286,7 +282,64 @@
         background: var(--xc-gray-50);
     }
 
-    /* Stats row */
+    /* Toolbar (search) */
+    .xc-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+
+    .xc-search-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex: 1;
+        min-width: 220px;
+        max-width: 360px;
+    }
+
+    .xc-search-wrap i {
+        position: absolute;
+        left: 14px;
+        font-size: 18px;
+        color: var(--xc-gray-400);
+        pointer-events: none;
+    }
+
+    .xc-search-input {
+        width: 100%;
+        padding: 10px 14px 10px 42px;
+        border-radius: 10px;
+        border: 2px solid var(--xc-gray-200);
+        font-family: var(--xc-font-body);
+        font-size: 14px;
+        color: var(--xc-navy);
+        background: white;
+        box-shadow: var(--xc-shadow-sm);
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .xc-search-input:focus {
+        outline: none;
+        border-color: var(--xc-teal);
+        box-shadow: 0 0 0 3px var(--xc-teal-light);
+    }
+
+    .xc-search-input::placeholder {
+        color: var(--xc-gray-400);
+    }
+
+    .xc-result-count {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--xc-gray-500);
+        white-space: nowrap;
+    }
+
+    /* Stats row / filter chips */
     .xc-stats-row {
         display: flex;
         flex-wrap: wrap;
@@ -304,10 +357,31 @@
         font-weight: 700;
         background: white;
         box-shadow: var(--xc-shadow-sm);
+        border: 2px solid transparent;
+        font-family: inherit;
+        cursor: pointer;
+        transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
     }
 
     .xc-stat-chip i {
         font-size: 16px;
+    }
+
+    .xc-stat-chip:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--xc-shadow-md);
+    }
+
+    .xc-stat-chip.is-active {
+        border-color: currentColor;
+    }
+
+    .xc-stat-chip.is-all {
+        color: var(--xc-navy);
+    }
+
+    .xc-stat-chip.is-all i {
+        color: var(--xc-navy-soft);
     }
 
     .xc-stat-chip.is-green {
@@ -400,6 +474,7 @@
         background: var(--xc-gray-50);
         border-radius: 16px;
         padding: 24px;
+        position: relative;
     }
 
     .xc-flow-list {
@@ -422,6 +497,11 @@
 
     .xc-flow-item.done .xc-flow-line {
         background: linear-gradient(180deg, var(--xc-teal) 0%, var(--xc-teal-dark) 100%);
+    }
+
+    .xc-flow-item.is-hidden,
+    .xc-parallel-card-wrapper.is-hidden {
+        display: none !important;
     }
 
     /* Rail */
@@ -780,6 +860,72 @@
         animation: fadeInUp 0.5s ease-out backwards;
     }
 
+    /* No results */
+    .xc-no-results {
+        text-align: center;
+        padding: 48px 20px;
+        color: var(--xc-gray-500);
+    }
+
+    .xc-no-results i {
+        font-size: 34px;
+        color: var(--xc-gray-300);
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .xc-no-results p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    /* Jump to next action floating button */
+    .xc-jump-btn {
+        position: fixed;
+        right: 28px;
+        bottom: 28px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 20px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, var(--xc-orange) 0%, var(--xc-orange-dark) 100%);
+        color: white;
+        font-family: var(--xc-font-body);
+        font-weight: 700;
+        font-size: 14px;
+        box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4);
+        cursor: pointer;
+        z-index: 40;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .xc-jump-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 36px rgba(249, 115, 22, 0.48);
+    }
+
+    .xc-jump-btn i {
+        font-size: 20px;
+    }
+
+    @keyframes xcFlash {
+
+        0%,
+        100% {
+            box-shadow: var(--xc-shadow-md);
+        }
+
+        30% {
+            box-shadow: 0 0 0 4px var(--xc-orange-light), var(--xc-shadow-md);
+        }
+    }
+
+    .xc-flash {
+        animation: xcFlash 1.2s ease;
+    }
+
     /* Empty state */
     .xc-empty-flow {
         text-align: center;
@@ -888,6 +1034,15 @@
             width: 100%;
         }
 
+        .xc-toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .xc-search-wrap {
+            max-width: none;
+        }
+
         .xc-progress-grid {
             grid-template-columns: 1fr;
         }
@@ -950,6 +1105,16 @@
         .xc-stat-chip {
             font-size: 12px;
             padding: 8px 12px;
+        }
+
+        .xc-jump-btn span {
+            display: none;
+        }
+
+        .xc-jump-btn {
+            padding: 14px;
+            right: 20px;
+            bottom: 20px;
         }
     }
 </style>
@@ -1227,6 +1392,13 @@
                 $state_counts[$c->state]++;
             }
         }
+
+        // Helper to build a stage+member search string consistently for
+        // both the sequential list and the parallel grid.
+        $build_search_key = function ($card) {
+            $member_name = $card->member ? $card->member->member_name : 'unassigned';
+            return strtolower(trim($card->stage . ' ' . $member_name));
+        };
         ?>
 
         <?php if (empty($flow)) { ?>
@@ -1239,26 +1411,43 @@
             </div>
         <?php } else { ?>
 
-            <div class="xc-stats-row">
+            <div class="xc-toolbar">
+                <div class="xc-search-wrap">
+                    <i class="bx bx-search"></i>
+                    <input type="text" id="xcFlowSearch" class="xc-search-input" placeholder="Search by stage or member…"
+                        aria-label="Search stages or members">
+                </div>
+                <span class="xc-result-count" id="xcResultCount" aria-live="polite"></span>
+            </div>
+
+            <div class="xc-stats-row" id="xcFilterRow">
+                <button type="button" class="xc-stat-chip is-all is-active" data-filter="all">
+                    <i class="bx bx-layer"></i> All (<?= count($flow); ?>)
+                </button>
                 <?php if ($state_counts['Approved'] > 0) { ?>
-                    <div class="xc-stat-chip is-green"><i class="bx bx-check-circle"></i> <?= $state_counts['Approved']; ?>
-                        Approved</div>
+                    <button type="button" class="xc-stat-chip is-green" data-filter="approved">
+                        <i class="bx bx-check-circle"></i> <?= $state_counts['Approved']; ?> Approved
+                    </button>
                 <?php } ?>
                 <?php if ($state_counts['Pending Review'] > 0) { ?>
-                    <div class="xc-stat-chip is-orange"><i class="bx bx-time-five"></i> <?= $state_counts['Pending Review']; ?>
-                        Pending Review</div>
+                    <button type="button" class="xc-stat-chip is-orange" data-filter="pending-review">
+                        <i class="bx bx-time-five"></i> <?= $state_counts['Pending Review']; ?> Pending Review
+                    </button>
                 <?php } ?>
                 <?php if ($state_counts['Remarked'] > 0) { ?>
-                    <div class="xc-stat-chip is-red"><i class="bx bx-message-square-x"></i> <?= $state_counts['Remarked']; ?>
-                        Needs Revision</div>
+                    <button type="button" class="xc-stat-chip is-red" data-filter="remarked">
+                        <i class="bx bx-message-square-x"></i> <?= $state_counts['Remarked']; ?> Needs Revision
+                    </button>
                 <?php } ?>
                 <?php if ($state_counts['Not Started'] > 0) { ?>
-                    <div class="xc-stat-chip is-gray"><i class="bx bx-hourglass"></i> <?= $state_counts['Not Started']; ?> Not
-                        Started</div>
+                    <button type="button" class="xc-stat-chip is-gray" data-filter="not-started">
+                        <i class="bx bx-hourglass"></i> <?= $state_counts['Not Started']; ?> Not Started
+                    </button>
                 <?php } ?>
                 <?php if ($state_counts['Locked'] > 0) { ?>
-                    <div class="xc-stat-chip is-gray"><i class="bx bx-lock-alt"></i> <?= $state_counts['Locked']; ?> Locked
-                    </div>
+                    <button type="button" class="xc-stat-chip is-gray" data-filter="locked">
+                        <i class="bx bx-lock-alt"></i> <?= $state_counts['Locked']; ?> Locked
+                    </button>
                 <?php } ?>
             </div>
 
@@ -1289,6 +1478,11 @@
             </div>
 
             <div class="xc-flow-container">
+                <div class="xc-no-results" id="xcNoResults" hidden>
+                    <i class="bx bx-search-alt"></i>
+                    <p>No stages match your search or filter.</p>
+                </div>
+
                 <ul class="xc-flow-list">
                     <?php foreach ($sequential_cards as $index => $card) {
                         $state = $card->state;
@@ -1317,6 +1511,7 @@
                         ?>
                         <li class="xc-flow-item <?= $line_done ? 'done' : ''; ?>"
                             data-state="<?= strtolower(str_replace(' ', '-', $state)); ?>"
+                            data-search="<?= html_escape($build_search_key($card)); ?>"
                             style="animation-delay: <?= min($index * 0.08, 0.5); ?>s;">
                             <div class="xc-flow-rail">
                                 <div class="xc-flow-dot <?= $dot_class; ?>">
@@ -1344,7 +1539,7 @@
                         </div>
                         <div class="xc-parallel-grid">
                             <?php foreach ($parallel_cards as $index => $card) {
-                                echo '<div class="xc-parallel-card-wrapper" style="animation-delay: ' . min(0.5 + $index * 0.08, 1) . 's;">';
+                                echo '<div class="xc-parallel-card-wrapper" data-state="' . strtolower(str_replace(' ', '-', $card->state)) . '" data-search="' . html_escape($build_search_key($card)) . '" style="animation-delay: ' . min(0.5 + $index * 0.08, 1) . 's;">';
                                 $render_flow_card_inner($card);
                                 echo '</div>';
                             } ?>
@@ -1352,6 +1547,86 @@
                     </div>
                 <?php } ?>
             </div>
+
+            <?php if (($state_counts['Pending Review'] > 0) || ($state_counts['Remarked'] > 0)) { ?>
+                <button type="button" id="xcJumpAction" class="xc-jump-btn" title="Jump to the next item needing attention">
+                    <i class="bx bx-radar"></i>
+                    <span>Next Action</span>
+                </button>
+            <?php } ?>
         <?php } ?>
     </div>
 </div>
+
+<script>
+    (function () {
+        var searchInput = document.getElementById('xcFlowSearch');
+        var filterRow = document.getElementById('xcFilterRow');
+        var resultCount = document.getElementById('xcResultCount');
+        var noResults = document.getElementById('xcNoResults');
+        var jumpBtn = document.getElementById('xcJumpAction');
+        var items = Array.prototype.slice.call(document.querySelectorAll('.xc-flow-item, .xc-parallel-card-wrapper'));
+        var activeFilter = 'all';
+
+        function applyFilters() {
+            var query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+            var visibleCount = 0;
+
+            items.forEach(function (item) {
+                var stateMatch = activeFilter === 'all' || item.getAttribute('data-state') === activeFilter;
+                var searchMatch = !query || (item.getAttribute('data-search') || '').indexOf(query) !== -1;
+                var show = stateMatch && searchMatch;
+                item.classList.toggle('is-hidden', !show);
+                if (show) {
+                    visibleCount++;
+                }
+            });
+
+            if (resultCount) {
+                resultCount.textContent = visibleCount + ' of ' + items.length + ' shown';
+            }
+            if (noResults) {
+                noResults.hidden = visibleCount !== 0;
+            }
+        }
+
+        if (filterRow) {
+            filterRow.addEventListener('click', function (e) {
+                var btn = e.target.closest('[data-filter]');
+                if (!btn) {
+                    return;
+                }
+                var chips = filterRow.querySelectorAll('.xc-stat-chip');
+                for (var i = 0; i < chips.length; i++) {
+                    chips[i].classList.remove('is-active');
+                }
+                btn.classList.add('is-active');
+                activeFilter = btn.getAttribute('data-filter');
+                applyFilters();
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applyFilters);
+        }
+
+        if (jumpBtn) {
+            jumpBtn.addEventListener('click', function () {
+                var target = document.querySelector('[data-state="pending-review"]:not(.is-hidden), [data-state="remarked"]:not(.is-hidden)');
+                if (!target) {
+                    target = document.querySelector('[data-state="pending-review"], [data-state="remarked"]');
+                }
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    var flashTarget = target.classList.contains('xc-flow-card') ? target : target.querySelector('.xc-flow-card') || target;
+                    flashTarget.classList.add('xc-flash');
+                    setTimeout(function () {
+                        flashTarget.classList.remove('xc-flash');
+                    }, 1200);
+                }
+            });
+        }
+
+        applyFilters();
+    })();
+</script>
