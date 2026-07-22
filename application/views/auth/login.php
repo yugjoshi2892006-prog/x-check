@@ -859,7 +859,7 @@
 
     <!-- JS -->
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
-    <script src="<?= base_url('assets/js/jquery.min.js') ?>"></script>
+    <script src="<?= base_url('assets/js/jquery-3.6.0.min.js') ?>"></script>
     <script src="<?= base_url('assets/plugins/simplebar/js/simplebar.min.js') ?>"></script>
     <script src="<?= base_url('assets/plugins/metismenu/js/metisMenu.min.js') ?>"></script>
     <script src="<?= base_url('assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js') ?>"></script>

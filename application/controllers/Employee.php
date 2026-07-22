@@ -100,6 +100,8 @@ class Employee extends CI_Controller
             ->get('attendance')
             ->row();
 
+        $data['locked'] = empty($data['attendance_today']);
+
         $this->load->view('employee/header');
         $this->load->view('employee/project_home', $data);
         $this->load->view('employee/footer');

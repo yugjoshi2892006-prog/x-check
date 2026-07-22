@@ -288,130 +288,130 @@
 
 <div class="page-wrapper">
     <div class="page-content">
-        <div class="xc-dash-wrapper">
+        <!-- <div class="xc-dash-wrapper"> -->
 
-            <div class="xc-stat-row">
+        <div class="xc-stat-row">
 
-                <div class="xc-stat-card">
+            <div class="xc-stat-card">
 
-                    <div class="xc-stat-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M3 21h18"></path>
-                            <path d="M5 21V7l8-4v18"></path>
-                            <path d="M19 21V11l-6-4"></path>
-                        </svg>
-                    </div>
+                <div class="xc-stat-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 21h18"></path>
+                        <path d="M5 21V7l8-4v18"></path>
+                        <path d="M19 21V11l-6-4"></path>
+                    </svg>
+                </div>
 
-                    <div>
-                        <p class="xc-stat-label">Asigned Projects</p>
-                        <h2 class="xc-stat-value"><?= count($projects); ?></h2>
-                    </div>
-
+                <div>
+                    <p class="xc-stat-label">Asigned Projects</p>
+                    <h2 class="xc-stat-value"><?= count($projects); ?></h2>
                 </div>
 
             </div>
 
-            <div class="xc-card">
+        </div>
 
-                <div class="xc-card-header">
-                    <svg viewBox="0 0 24 24">
-                        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-                        <path d="M3 9h18"></path>
-                        <path d="M9 21V9"></path>
-                    </svg>
-                    My Projects
-                </div>
+        <div class="xc-card">
 
-                <div class="xc-card-body">
+            <div class="xc-card-header">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <path d="M3 9h18"></path>
+                    <path d="M9 21V9"></path>
+                </svg>
+                My Projects
+            </div>
 
-                    <div class="xc-table-wrap">
+            <div class="xc-card-body">
 
-                        <table class="xc-table">
+                <div class="xc-table-wrap">
 
-                            <thead>
+                    <table class="xc-table">
 
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Project</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Project</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <?php if (empty($projects)) { ?>
+
+                                <tr class="xc-empty-row">
+                                    <td colspan="4">No projects assigned yet.</td>
                                 </tr>
 
-                            </thead>
+                            <?php } else {
+                                foreach ($projects as $row) {
 
-                            <tbody>
+                                    $xc_status_key = strtolower(str_replace(' ', '_', (string) $row->status));
 
-                                <?php if (empty($projects)) { ?>
+                                    ?>
 
-                                    <tr class="xc-empty-row">
-                                        <td colspan="4">No projects assigned yet.</td>
+                                    <tr>
+
+                                        <td>
+                                            <span class="xc-id-cell">#<?= $row->id ?></span>
+                                        </td>
+
+                                        <td>
+                                            <span class="xc-project-name">
+                                                <?= $row->project_name ?>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span class="xc-pill xc-pill-<?= $xc_status_key ?: 'default' ?>">
+                                                <?= $row->status ?>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="xc-actions">
+
+                                                <a href="<?= base_url('employee/project/' . $row->id) ?>"
+                                                    class="xc-btn xc-btn-view">
+                                                    <svg viewBox="0 0 24 24">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                        <circle cx="12" cy="12" r="3"></circle>
+                                                    </svg>
+                                                    View
+                                                </a>
+
+                                                <a href="<?= base_url('chat/project/' . $row->id) ?>"
+                                                    class="xc-btn xc-btn-chat">
+                                                    <svg viewBox="0 0 24 24">
+                                                        <path
+                                                            d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                                                        </path>
+                                                    </svg>
+                                                    Chat
+                                                </a>
+
+                                            </div>
+                                        </td>
+
                                     </tr>
 
-                                <?php } else {
-                                    foreach ($projects as $row) {
+                                <?php }
+                            } ?>
 
-                                        $xc_status_key = strtolower(str_replace(' ', '_', (string) $row->status));
+                        </tbody>
 
-                                        ?>
-
-                                        <tr>
-
-                                            <td>
-                                                <span class="xc-id-cell">#<?= $row->id ?></span>
-                                            </td>
-
-                                            <td>
-                                                <span class="xc-project-name">
-                                                    <?= $row->project_name ?>
-                                                </span>
-                                            </td>
-
-                                            <td>
-                                                <span class="xc-pill xc-pill-<?= $xc_status_key ?: 'default' ?>">
-                                                    <?= $row->status ?>
-                                                </span>
-                                            </td>
-
-                                            <td>
-                                                <div class="xc-actions">
-
-                                                    <a href="<?= base_url('employee/project/' . $row->id) ?>"
-                                                        class="xc-btn xc-btn-view">
-                                                        <svg viewBox="0 0 24 24">
-                                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                            <circle cx="12" cy="12" r="3"></circle>
-                                                        </svg>
-                                                        View
-                                                    </a>
-
-                                                    <a href="<?= base_url('chat/project/' . $row->id) ?>"
-                                                        class="xc-btn xc-btn-chat">
-                                                        <svg viewBox="0 0 24 24">
-                                                            <path
-                                                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
-                                                            </path>
-                                                        </svg>
-                                                        Chat
-                                                    </a>
-
-                                                </div>
-                                            </td>
-
-                                        </tr>
-
-                                    <?php }
-                                } ?>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
+                    </table>
 
                 </div>
 
             </div>
 
         </div>
+
     </div>
 </div>
+<!-- </div> -->
