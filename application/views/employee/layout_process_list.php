@@ -88,7 +88,7 @@
 
         <div class="xc-card">
             <div class="xc-card-body">
-                <div class="        ">
+                <div class="xc-table-container">
                     <table class="xc-table">
                         <thead>
                             <tr>
@@ -120,11 +120,11 @@
                                     $prev_stage_key = $stage_key;
                                     ?>
                                     <tr class="xc-table-row">
-                                        <td>
+                                        <td data-label="#">
                                             <span class="xc-row-number"><?= $i++; ?></span>
                                         </td>
 
-                                        <td>
+                                        <td data-label="PDF">
                                             <?php if (!empty($row->plan_doc)) { ?>
                                                 <a href="<?= base_url('uploads/layout_process/' . $row->plan_doc); ?>"
                                                     target="_blank" class="xc-pdf-badge" title="View PDF">
@@ -135,7 +135,7 @@
                                             <?php } ?>
                                         </td>
 
-                                        <td>
+                                        <td data-label="Layout Information">
                                             <div class="xc-layout-info">
                                                 <div class="xc-layout-title"><?= html_escape($row->plan_title); ?></div>
                                                 <div class="xc-layout-meta">
@@ -147,7 +147,7 @@
                                             </div>
                                         </td>
 
-                                        <td>
+                                        <td data-label="Stage & Owner">
                                             <div class="xc-stage-info">
                                                 <span
                                                     class="xc-stage-badge xc-stage-<?= strtolower(str_replace(' ', '-', $row->stage)); ?>">
@@ -160,11 +160,11 @@
                                             </div>
                                         </td>
 
-                                        <td>
+                                        <td data-label="Customer">
                                             <div class="xc-customer-name"><?= html_escape($row->customer_name); ?></div>
                                         </td>
 
-                                        <td>
+                                        <td data-label="Timeline">
                                             <div class="xc-timeline">
                                                 <?php if ($row->start_date) { ?>
                                                     <div class="xc-timeline-item">
@@ -184,7 +184,7 @@
                                             </div>
                                         </td>
 
-                                        <td>
+                                        <td data-label="Schedule">
                                             <?php $schedule = $this->Layout_member_model->getScheduleStatus($row); ?>
                                             <span
                                                 class="xc-schedule-badge xc-schedule-<?= strtolower(str_replace(' ', '-', $schedule->label)); ?>">
@@ -192,7 +192,7 @@
                                             </span>
                                         </td>
 
-                                        <td>
+                                        <td data-label="Approval Status">
                                             <div class="xc-status-group">
                                                 <?php
                                                 $status_class = $row->status === 'Approved' ? 'approved' : ($row->status === 'Remarked' ? 'remarked' : 'pending');
@@ -228,7 +228,8 @@
                                             </div>
                                         </td>
 
-                                        <td>
+
+                                        <td data-label="Actions">
                                             <div class="xc-actions">
                                                 <a href="<?= base_url('employee/layout_process_view/' . $row->id); ?>"
                                                     class="xc-action-btn xc-action-view">
@@ -464,6 +465,7 @@
         color: white;
         font-size: 28px;
         box-shadow: 0 8px 20px rgba(15, 180, 160, 0.3);
+        flex-shrink: 0;
     }
 
     .xc-page-title {
@@ -541,11 +543,13 @@
         display: flex;
         gap: 12px;
         align-items: center;
+        flex-wrap: wrap;
     }
 
     /* Filter Form */
     .xc-filter-form {
         margin: 0;
+        width: 100%;
     }
 
     .xc-filter-group {
@@ -569,6 +573,7 @@
     .xc-filter-icon {
         color: var(--xc-gray-400);
         font-size: 1.25rem;
+        flex-shrink: 0;
     }
 
     .xc-select {
@@ -598,6 +603,7 @@
         background: var(--xc-gray-200);
         color: var(--xc-gray-600);
         transition: var(--xc-transition);
+        flex-shrink: 0;
     }
 
     .xc-clear-filter:hover {
@@ -609,6 +615,7 @@
     .xc-btn {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
         padding: 10px 20px;
         border-radius: var(--xc-radius);
@@ -674,6 +681,7 @@
     ============================================ */
     .xc-table-container {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .xc-table {
@@ -1144,9 +1152,13 @@
     }
 
     /* ============================================
-       RESPONSIVE
+       RESPONSIVE — TABLET (≤1024px)
+       Keep table format, tighten spacing, allow scroll
     ============================================ */
-    @media (max-width: 1200px) {
+    @media (max-width: 1024px) {
+        .xc-page-title {
+            font-size: 1.5rem;
+        }
 
         .xc-table th,
         .xc-table td {
@@ -1154,24 +1166,32 @@
         }
 
         .xc-actions {
-            flex-direction: column;
-            align-items: flex-start;
+            flex-wrap: wrap;
         }
 
         .xc-action-btn {
-            width: 100%;
-            justify-content: center;
+            font-size: 0.75rem;
+            padding: 6px 10px;
         }
     }
 
-    @media (max-width: 768px) {
+    /* ============================================
+       RESPONSIVE — TABLET / LARGE PHONE (≤900px)
+       Stack header + action bar, full-width controls
+    ============================================ */
+    @media (max-width: 900px) {
         .xc-page-header {
             flex-direction: column;
+            align-items: stretch;
         }
 
-        .xc-page-header-left,
         .xc-page-header-right {
             width: 100%;
+        }
+
+        .xc-role-indicator {
+            width: 100%;
+            justify-content: flex-start;
         }
 
         .xc-action-bar {
@@ -1182,7 +1202,14 @@
         .xc-action-bar-left,
         .xc-action-bar-right {
             width: 100%;
-            flex-direction: column;
+        }
+
+        .xc-action-bar-right {
+            justify-content: stretch;
+        }
+
+        .xc-action-bar-right .xc-btn {
+            flex: 1;
         }
 
         .xc-filter-group {
@@ -1191,31 +1218,160 @@
 
         .xc-select {
             width: 100%;
+            min-width: 0;
+        }
+    }
+
+    /* ============================================
+       RESPONSIVE — PHONE (≤768px)
+       Convert table rows into stacked cards
+    ============================================ */
+    @media (max-width: 768px) {
+
+        .xc-page-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 22px;
+        }
+
+        .xc-page-title {
+            font-size: 1.25rem;
+        }
+
+        .xc-page-subtitle {
+            font-size: 0.8125rem;
         }
 
         .xc-btn {
             width: 100%;
-            justify-content: center;
+        }
+
+        .xc-card {
+            border-radius: var(--xc-radius);
         }
 
         .xc-table-container {
-            overflow-x: scroll;
+            overflow-x: visible;
         }
 
-        .xc-table {
-            min-width: 1200px;
+        /* Hide native table header */
+        .xc-table thead {
+            display: none;
+        }
+
+        .xc-table,
+        .xc-table tbody,
+        .xc-table tr,
+        .xc-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .xc-table tbody tr.xc-table-row {
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--xc-gray-200);
+            border-radius: var(--xc-radius);
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: var(--xc-shadow-sm);
+        }
+
+        .xc-table tbody tr.xc-table-row:hover {
+            background: var(--xc-teal-light);
+        }
+
+        .xc-table td {
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--xc-gray-200);
+            position: relative;
+        }
+
+        .xc-table td:last-child {
+            border-bottom: none;
+        }
+
+        /* Turn each cell's data-label into a visible mini-heading */
+        .xc-table td[data-label]::before {
+            content: attr(data-label);
+            display: block;
+            font-family: var(--xc-font-heading);
+            font-size: 0.6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--xc-gray-500);
+            margin-bottom: 4px;
+        }
+
+        /* First cell (#) doubles as the card's row index — de-emphasize */
+        .xc-table td[data-label="#"] {
+            display: none;
+        }
+
+        .xc-divider-row {
+            display: none;
+        }
+
+        .xc-timeline,
+        .xc-status-group,
+        .xc-stage-info {
+            width: 100%;
+        }
+
+        .xc-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .xc-action-btn,
+        .xc-action-disabled,
+        .xc-action-completed {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .xc-approvals {
+            width: 100%;
         }
     }
 
+    /* ============================================
+       RESPONSIVE — SMALL PHONE (≤480px)
+    ============================================ */
     @media (max-width: 480px) {
         .xc-page-title {
-            font-size: 1.5rem;
+            font-size: 1.125rem;
         }
 
         .xc-page-icon {
-            width: 48px;
-            height: 48px;
-            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+
+        .xc-role-indicator {
+            padding: 8px 12px;
+        }
+
+        .xc-table tbody tr.xc-table-row {
+            padding: 12px;
+        }
+
+        .xc-layout-title {
+            font-size: 0.875rem;
+        }
+
+        .xc-empty-state {
+            padding: 40px 16px;
+        }
+
+        .xc-empty-icon {
+            width: 64px;
+            height: 64px;
+        }
+
+        .xc-empty-icon i {
+            font-size: 2.25rem;
         }
     }
 </style>
