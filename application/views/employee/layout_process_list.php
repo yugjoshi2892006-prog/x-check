@@ -347,8 +347,8 @@
        X-CHECK DESIGN SYSTEM — VARIABLES
     ============================================ */
     :root {
-        --xc-teal: #0fb4a0;
-        --xc-teal-dark: #0c9484;
+        --xc-teal: #0da1a7;
+        --xc-teal-dark: rgb(7, 196, 174);
         --xc-teal-light: #e5faf6;
         --xc-navy: #1a1a2e;
         --xc-navy-soft: #2b2b45;
